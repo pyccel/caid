@@ -1,0 +1,15 @@
+.. topic:: Abstract
+
+**CAID** is a multi-platform software that has been designed for IsoGeometric Analysis Pre and Post Processing. Its design goal is to provide a fast, light and user-friendly designer and meshing tool.
+
+The Post-Processing and advanced visualization capabilities are still under development, as well as an optimized 3D computing engine.
+
+.. _isogeometric analysis:
+    http://en.wikipedia.org/wiki/Isogeometric_analysis
+
+.. _IgaKit:
+    http://bitbucket.org/dalcinl/igakit
+
+.. Local Variables:
+.. mode: rst
+.. End:

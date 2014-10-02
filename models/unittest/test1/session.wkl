@@ -1,0 +1,123 @@
+<?xml version="1.0" ?>
+<caid center="[0.99624999999999941, 0.49548387096774182, 0.0]" color-background="[0.0, 0.0, 0.0]" color-markerPoints="[0.25, 0.25, 0.95]" color-selectedGeoMesh="[0.2, 0.1, 0.57]" color-selectedGeoNurbs="[0.5, 0.5, 0.5]" color-selectedGeoPoints="[0.1, 0.1, 0.1]" color-selectedPatchMesh="[0.65, 0.65, 0.65]" color-selectedPatchNurbs="[0.2, 0.8, 0.57]" color-selectedPatchPoints="[0.2, 0.2, 0.2]" color-selectedPoints="[1.0, 0.0, 0.0]" eye="[0.99624999999999941, 0.49548387096774182, 2.0]" up="[0.0, 1.0, 0.0]">
+	<geometry color-nurbs="[0.0, 0.0, 1.0]" name="domain" show="False">
+		<patch color="[ 0.          0.50196078  0.        ]" type="cad_nurbs">
+			<rational>no</rational>
+			<dimension> 2 </dimension>
+			<shape> 2, 2 </shape>
+			<degree> 1, 1 </degree>
+			<knots> 0.0, 0.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 1.0, 1.0 </knots>
+			<points> 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0 </points>
+			<weights> 1.0, 1.0, 1.0, 1.0 </weights>
+			<orientation> 1, -1, -1, 1 </orientation>
+		</patch>
+		<patch type="cad_nurbs">
+			<rational>no</rational>
+			<dimension> 2 </dimension>
+			<shape> 2, 2 </shape>
+			<degree> 1, 1 </degree>
+			<knots> 0.0, 0.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 1.0, 1.0 </knots>
+			<points> 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 2.0, 0.0, 0.0, 2.0, 1.0, 0.0 </points>
+			<weights> 1.0, 1.0, 1.0, 1.0 </weights>
+			<orientation> 1, -1, -1, 1 </orientation>
+		</patch>
+		<internal_faces>
+			<face> 0, 3 </face>
+			<face> 1, 1 </face>
+		</internal_faces>
+		<external_faces>
+			<face> 0, 0 </face>
+			<face> 0, 1 </face>
+			<face> 0, 2 </face>
+			<face> 1, 0 </face>
+			<face> 1, 2 </face>
+			<face> 1, 3 </face>
+		</external_faces>
+		<connectivity>
+			<original> 0, 3 </original>
+			<clone> 1, 1 </clone>
+		</connectivity>
+	</geometry>
+	<geometry color-nurbs="[0.0, 0.0, 1.0]" name="domain n0x1p3x3" show="True">
+		<patch color="[ 0.          0.50196078  0.        ]" type="cad_nurbs">
+			<rational>no</rational>
+			<dimension> 2 </dimension>
+			<shape> 4, 5 </shape>
+			<degree> 3, 3 </degree>
+			<knots> 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0 </knots>
+			<points> 0.0, 0.0, 0.0, 0.0, 0.166666666667, 0.0, 0.0, 0.5, 0.0, 0.0, 0.833333333333, 0.0, 0.0, 1.0, 0.0, 0.333333333333, 0.0, 0.0, 0.333333333333, 0.166666666667, 0.0, 0.333333333333, 0.5, 0.0, 0.333333333333, 0.833333333333, 0.0, 0.333333333333, 1.0, 0.0, 0.666666666667, 0.0, 0.0, 0.666666666667, 0.166666666667, 0.0, 0.666666666667, 0.5, 0.0, 0.666666666667, 0.833333333333, 0.0, 0.666666666667, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.166666666667, 0.0, 1.0, 0.5, 0.0, 1.0, 0.833333333333, 0.0, 1.0, 1.0, 0.0 </points>
+			<weights> 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 </weights>
+			<orientation> 1, -1, -1, 1 </orientation>
+		</patch>
+		<patch type="cad_nurbs">
+			<rational>no</rational>
+			<dimension> 2 </dimension>
+			<shape> 4, 5 </shape>
+			<degree> 3, 3 </degree>
+			<knots> 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0 </knots>
+			<points> 1.0, 0.0, 0.0, 1.0, 0.166666666667, 0.0, 1.0, 0.5, 0.0, 1.0, 0.833333333333, 0.0, 1.0, 1.0, 0.0, 1.33333333333, 0.0, 0.0, 1.33333333333, 0.166666666667, 0.0, 1.33333333333, 0.5, 0.0, 1.33333333333, 0.833333333333, 0.0, 1.33333333333, 1.0, 0.0, 1.66666666667, 0.0, 0.0, 1.66666666667, 0.166666666667, 0.0, 1.66666666667, 0.5, 0.0, 1.66666666667, 0.833333333333, 0.0, 1.66666666667, 1.0, 0.0, 2.0, 0.0, 0.0, 2.0, 0.166666666667, 0.0, 2.0, 0.5, 0.0, 2.0, 0.833333333333, 0.0, 2.0, 1.0, 0.0 </points>
+			<weights> 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 </weights>
+			<orientation> 1, -1, -1, 1 </orientation>
+		</patch>
+		<internal_faces>
+			<face> 0, 3 </face>
+			<face> 1, 1 </face>
+		</internal_faces>
+		<external_faces>
+			<face> 0, 0 </face>
+			<face> 0, 1 </face>
+			<face> 0, 2 </face>
+			<face> 1, 0 </face>
+			<face> 1, 2 </face>
+			<face> 1, 3 </face>
+		</external_faces>
+		<connectivity>
+			<original> 0, 3 </original>
+			<clone> 1, 1 </clone>
+		</connectivity>
+	</geometry>
+	<geometry color-nurbs="[0.0, 0.0, 1.0]" name="domain n1x1p3x3" show="False">
+		<patch color="[ 0.          0.50196078  0.        ]" type="cad_nurbs">
+			<rational>no</rational>
+			<dimension> 2 </dimension>
+			<shape> 5, 5 </shape>
+			<degree> 3, 3 </degree>
+			<knots> 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0 </knots>
+			<points> 0.0, 0.0, 0.0, 0.0, 0.166666666667, 0.0, 0.0, 0.5, 0.0, 0.0, 0.833333333333, 0.0, 0.0, 1.0, 0.0, 0.166666666667, 0.0, 0.0, 0.166666666667, 0.166666666667, 0.0, 0.166666666667, 0.5, 0.0, 0.166666666667, 0.833333333333, 0.0, 0.166666666667, 1.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.166666666667, 0.0, 0.5, 0.5, 0.0, 0.5, 0.833333333333, 0.0, 0.5, 1.0, 0.0, 0.833333333333, 0.0, 0.0, 0.833333333333, 0.166666666667, 0.0, 0.833333333333, 0.5, 0.0, 0.833333333333, 0.833333333333, 0.0, 0.833333333333, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.166666666667, 0.0, 1.0, 0.5, 0.0, 1.0, 0.833333333333, 0.0, 1.0, 1.0, 0.0 </points>
+			<weights> 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 </weights>
+			<orientation> 1, -1, -1, 1 </orientation>
+		</patch>
+		<patch type="cad_nurbs">
+			<rational>no</rational>
+			<dimension> 2 </dimension>
+			<shape> 5, 5 </shape>
+			<degree> 3, 3 </degree>
+			<knots> 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0 </knots>
+			<points> 1.0, 0.0, 0.0, 1.0, 0.166666666667, 0.0, 1.0, 0.5, 0.0, 1.0, 0.833333333333, 0.0, 1.0, 1.0, 0.0, 1.16666666667, 0.0, 0.0, 1.16666666667, 0.166666666667, 0.0, 1.16666666667, 0.5, 0.0, 1.16666666667, 0.833333333333, 0.0, 1.16666666667, 1.0, 0.0, 1.5, 0.0, 0.0, 1.5, 0.166666666667, 0.0, 1.5, 0.5, 0.0, 1.5, 0.833333333333, 0.0, 1.5, 1.0, 0.0, 1.83333333333, 0.0, 0.0, 1.83333333333, 0.166666666667, 0.0, 1.83333333333, 0.5, 0.0, 1.83333333333, 0.833333333333, 0.0, 1.83333333333, 1.0, 0.0, 2.0, 0.0, 0.0, 2.0, 0.166666666667, 0.0, 2.0, 0.5, 0.0, 2.0, 0.833333333333, 0.0, 2.0, 1.0, 0.0 </points>
+			<weights> 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 </weights>
+			<orientation> 1, -1, -1, 1 </orientation>
+		</patch>
+		<internal_faces>
+			<face> 0, 3 </face>
+			<face> 1, 1 </face>
+		</internal_faces>
+		<external_faces>
+			<face> 0, 0 </face>
+			<face> 0, 1 </face>
+			<face> 0, 2 </face>
+			<face> 1, 0 </face>
+			<face> 1, 2 </face>
+			<face> 1, 3 </face>
+		</external_faces>
+		<connectivity>
+			<original> 0, 3 </original>
+			<clone> 1, 1 </clone>
+		</connectivity>
+	</geometry>
+</caid>

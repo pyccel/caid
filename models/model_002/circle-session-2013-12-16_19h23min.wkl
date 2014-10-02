@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<caid center="[0.0, 0.0, 0.0]" color-background="[0.0, 0.0, 0.0]" color-markerPoints="[0.25, 0.25, 0.95]" color-selectedGeoMesh="[0.2, 0.1, 0.57]" color-selectedGeoNurbs="[0.5, 0.5, 0.5]" color-selectedGeoPoints="[0.1, 0.1, 0.1]" color-selectedPatchMesh="[0.65, 0.65, 0.65]" color-selectedPatchNurbs="[0.2, 0.8, 0.57]" color-selectedPatchPoints="[0.2, 0.2, 0.2]" color-selectedPoints="[1.0, 0.0, 0.0]" eye="[0.0, 0.0, 5.0]" up="[0.0, 1.0, 0.0]">
+	<geometry>
+		<patch>
+			<rational>yes</rational>
+			<dimension> 2 </dimension>
+			<shape> 3, 3 </shape>
+			<degree> 2, 2 </degree>
+			<knots> 0.0, 0.0, 0.0, 1.0, 1.0, 1.0 </knots>
+			<knots> 0.0, 0.0, 0.0, 1.0, 1.0, 1.0 </knots>
+			<points> 0.0, -2.0, 0.0, 1.0, -1.0, 0.0, 1.0, -7.85233423423e-17, 0.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, -1.0, 7.85233423423e-17, 0.0, -1.0, 1.0, 0.0, 7.85233423423e-17, 1.0, 0.0 </points>
+			<weights> 1.0, 0.707106781187, 1.0, 0.707106781187, 1.0, 0.707106781187, 1.0, 0.707106781187, 1.0 </weights>
+			<orientation> -1, 1, 1, -1 </orientation>
+		</patch>
+		<external_faces>
+			<face> 0, 0 </face>
+			<face> 0, 1 </face>
+			<face> 0, 2 </face>
+			<face> 0, 3 </face>
+		</external_faces>
+	</geometry>
+</caid>
