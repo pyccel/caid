@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import wx
 from geometry import geometry
-from igakit.cad_geometry import cad_geometry, cad_nurbs
+from cad.cad_geometry import cad_geometry, cad_nurbs
 from viewer import Viewer
 from numpy import pi, linspace, array, zeros
 import numpy as np
@@ -202,7 +202,7 @@ class PatchActions(ClassActions):
                 print "Coons algorithm needs 4 curves, but ", len(list_patchs), " curves was given"
                 return
 
-            from igakit.cad import coons, coonsInitialize
+            from cad.utils.coons import coons, coonsInitialize
             c0 = list_patchs[0]
             c1 = list_patchs[1]
             c2 = list_patchs[2]
@@ -268,7 +268,7 @@ class PatchActions(ClassActions):
                         , len(list_patchs), " curves were given"
                 return
 
-            from igakit.cad import intersect_crv
+            from cad.utils.intersection import intersect_crv
             c0 = list_patchs[0]
             geo0 = cad_geometry()
             geo0.append(c0)
@@ -591,7 +591,7 @@ class PatchActionsTCoons(ClassActions):
                 print "TCoons algorithm needs 3 curves, but ", len(list_patchs), " curves was given"
                 return
 
-            from igakit.cad_geometry import tcoons
+            from cad.cad_geometry import tcoons
             c0 = list_patchs[0]
             c1 = list_patchs[1]
             c2 = list_patchs[2]
@@ -1307,7 +1307,6 @@ class PatchActionsExtrude(ClassActions):
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
             geo = wk.inspector.tree.GetPyData(geoItem)
             from igakit.cad import extrude
-            from igakit.cad_geometry import cad_nurbs
             nrb = extrude(patch, displ=self.displ)
             cnrb = cad_nurbs(nrb.knots, nrb.points, weights= nrb.weights)
             wk.add_patch(geoItem, geo, cnrb)
@@ -1762,7 +1761,7 @@ class PatchActionsStickC1(ClassActions):
                 print "Stick-C1 algorithm needs 2 nurbs, but ", len(list_patchs), " were given"
                 return
 
-            from igakit.cad import stickC1
+            from cad.utlis.stick import stickC1
             nrb_m   = list_patchs[0]
             nrb_s   = list_patchs[1]
             face_m  = list_faces[0]
@@ -1870,7 +1869,6 @@ class PatchActionsInsert(ClassActions):
             patchItem = wk.inspector.currentPatchItem
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
             geo = wk.inspector.tree.GetPyData(geoItem)
-            from igakit.cad_geometry import cad_nurbs
             if (self.knot is not None) and (self.axis is not None):
                 knot = self.knot
                 axis = self.axis
@@ -1981,7 +1979,6 @@ class PatchActionsRemap(ClassActions):
             patchItem = wk.inspector.currentPatchItem
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
             geo = wk.inspector.tree.GetPyData(geoItem)
-            from igakit.cad_geometry import cad_nurbs
             if (self.start is not None) \
                and (self.end is not None) \
                and (self.axis is not None):
@@ -2115,7 +2112,6 @@ class PatchActionsRemove(ClassActions):
             patchItem = wk.inspector.currentPatchItem
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
             geo = wk.inspector.tree.GetPyData(geoItem)
-            from igakit.cad_geometry import cad_nurbs
             if (self.knot is not None) \
                and (self.axis is not None):
                 value = self.knot
@@ -2235,7 +2231,6 @@ class PatchActionsSlice(ClassActions):
             wk = self.parent.WorkGroup
             patch     = wk.inspector.currentPatch
             patchItem = wk.inspector.currentPatchItem
-            from igakit.cad_geometry import cad_nurbs
             if (self.start is not None) \
                and (self.end is not None) \
                and (self.axis is not None):

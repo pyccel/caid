@@ -17,7 +17,7 @@ from OpenGL.GLUT import *
 
 from MenuCAIDViewer import MenuCAIDViewer
 from geometry import geometry, pointsToList
-from igakit.cad_geometry import cad_geometry, bilinear
+from cad.cad_geometry import cad_geometry, bilinear
 import numpy as np
 from numpy import zeros
 from math import copysign

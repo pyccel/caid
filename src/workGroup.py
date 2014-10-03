@@ -3,7 +3,7 @@ import wx
 from directActions import *
 from classActions import *
 from time import localtime
-from igakit.field import field
+from cad.field import field
 from global_vars import strtoArray
 from scripture import scripture
 from PythonEditor import Editor as PythonEditor
@@ -304,7 +304,7 @@ class WorkGroup(wx.Frame):
         # ...
 
         # ...
-        from igakit.io import XML
+        from cad.io import XML
         io = XML()
         for geo in self.list_geo:
             geo.save_attributs()
@@ -340,8 +340,8 @@ class WorkGroup(wx.Frame):
             # Destroy the dialog
             dialog.Destroy()
 
-        from igakit.cad_geometry import cad_geometry
-        from igakit.io import XML
+        from cad.cad_geometry import cad_geometry
+        from cad.io import XML
         from geometry import geometry
         io = XML()
 

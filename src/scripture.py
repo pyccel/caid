@@ -64,12 +64,17 @@ class scripture(object):
         self.append(command)
 
         # import cad_geometry
-        command = "from igakit.cad_geometry import *"
+        command = "from cad.cad_geometry import *"
+        self.append(command)
+
+        # import igakit.cad
+        command = "from igakit.cad import *"
         self.append(command)
 
         # import cad
-        command = "from igakit.cad import *"
+        command = "from cad.utils import *"
         self.append(command)
+
 
         # import geometry
         command = "from geometry import *"

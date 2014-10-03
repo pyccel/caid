@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import numpy as np
-from igakit.graphics.color import Color
+from cad.graphics.color import Color
 from global_vars import strtoArray
 
 def my_color(value):

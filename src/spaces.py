@@ -3,7 +3,7 @@
 import wx
 import wx.lib.scrolledpanel as scrolled
 from geometry import geometry
-from igakit.cad_geometry import cad_geometry
+from cad.cad_geometry import cad_geometry
 from viewer import Viewer
 from numpy import pi, linspace
 import numpy as np
@@ -341,7 +341,7 @@ if __name__ == '__main__':
     app = MyApp(0)
     frame = app.frame
     tree = frame.tree
-    from igakit.cad_geometry import circle_5mp, square
+    from cad.cad_geometry import circle_5mp, square
     s1 = circle_5mp()
     s2 = square()
     geo1 = geometry(s1)

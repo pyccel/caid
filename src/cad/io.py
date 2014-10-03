@@ -206,8 +206,8 @@ class XML(object):
         self.xmltogeo(geo, doc, rootElt)
 
     def xmltogeo(self, geo, doc, rootElt):
-        from igakit.cad_geometry import cad_nurbs, cad_op_nurbs, cad_grad_nurbs
-        from igakit.op_nurbs import grad
+        from cad.cad_geometry import cad_nurbs, cad_op_nurbs, cad_grad_nurbs
+        from cad.op_nurbs import grad
 
         geo_attributs       = {}
         # ... geometry attributs

@@ -2,7 +2,7 @@
 import wx
 import os
 from geometry import geometry
-from igakit.cad_geometry import cad_geometry
+from cad.cad_geometry import cad_geometry
 from viewer import Viewer
 from numpy import pi, linspace
 import numpy as np
@@ -330,8 +330,6 @@ class GeometryActionsNew(ClassActions):
         if ID == self.BCK_ID:
             self.parent.ShowAction(self.parent.geometryActions)
         if ID == self.EMP_ID:
-            from igakit.cad_geometry import cad_geometry
-            from geometry import geometry
             geo = cad_geometry()
             wk.add_geometry(geometry(geo))
             if wk.macroRecording:
@@ -342,8 +340,7 @@ class GeometryActionsNew(ClassActions):
                 macro_script.append("wk.add_geometry(geometry(_geo))")
                 macro_script.append("# ...")
         if ID == self.LIN_ID:
-            from igakit.cad_geometry import line as domain
-            from geometry import geometry
+            from cad.cad_geometry import line as domain
             geo = domain()
             wk.add_geometry(geometry(geo))
             if wk.macroRecording:
@@ -363,8 +360,7 @@ class GeometryActionsNew(ClassActions):
             self.parent.objectActionsCurve.asGeometry()
             self.parent.ShowAction(self.parent.objectActionsCurve)
         if ID == self.SQR_ID:
-            from igakit.cad_geometry import square as domain
-            from geometry import geometry
+            from cad.cad_geometry import square as domain
             geo = domain()
             wk.add_geometry(geometry(geo))
             # macro recording
@@ -458,7 +454,7 @@ class GeometryActionsAdd(ClassActions):
             self.parent.ShowAction(self.parent.objectActionsCreateTriangle)
 
         if ID == self.LIN_ID:
-            from igakit.cad_geometry import line as domain
+            from cad.cad_geometry import line as domain
             nrb = domain()[0]
             # inspector = self.parent
             wk = self.parent.WorkGroup
@@ -490,7 +486,7 @@ class GeometryActionsAdd(ClassActions):
             wk.Refresh(inspector=True)
 
         if ID == self.SQR_ID:
-            from igakit.cad_geometry import square as domain
+            from cad.cad_geometry import square as domain
             nrb = domain()[0]
             # inspector = self.parent
             wk = self.parent.WorkGroup

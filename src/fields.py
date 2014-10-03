@@ -5,7 +5,7 @@ from wx.glcanvas import *
 import wx
 import wx.lib.scrolledpanel as scrolled
 from geometry import geometry
-from igakit.cad_geometry import cad_geometry
+from cad.cad_geometry import cad_geometry
 from numpy import pi, linspace
 
 import numpy as np
@@ -192,7 +192,7 @@ class fieldsTree(wx.TreeCtrl):
             F.Show(True)
             F.set_surface(False)
 
-            from igakit.graphics.colormap import Hot
+            from cad.graphics.colormap import Hot
             cmap = Hot
             F.view(colormap=cmap, n=[100,100])
 
