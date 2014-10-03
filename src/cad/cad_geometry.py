@@ -985,7 +985,7 @@ class cad_nurbs(cad_object, NURBS):
         >>> U = [0,0,0, 1,1,1]           # knot vector
         >>> crv = cad_nurbs([U], C, weights=w)
         >>> u = np.linspace(0,1,1000)
-        >>> xyz = crv.evaluate(u)
+        >>> xyz = crv(u)
         >>> x, y, z = xyz.T
         >>> r = np.sqrt(x**2+y**2)
         >>> np.allclose(r, 1, rtol=0, atol=1e-15)
@@ -1003,7 +1003,7 @@ class cad_nurbs(cad_object, NURBS):
         >>> Cw[2,:] = [1.0, 0.0, 0.0, 1.0]
         >>> crv = cad_nurbs([U], Cw)
         >>> u = np.linspace(0,1,1000)
-        >>> xyz = crv.evaluate(u)
+        >>> xyz = crv(u)
         >>> x, y, z = xyz.T
         >>> r = np.sqrt(x**2+y**2)
         >>> np.allclose(r, 1, rtol=0, atol=1e-15)
@@ -1182,8 +1182,8 @@ class cad_nurbs(cad_object, NURBS):
         >>> c2.degree
         (4,)
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
         >>> np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
         True
 
@@ -1199,8 +1199,8 @@ class cad_nurbs(cad_object, NURBS):
         >>> s2.degree
         (3, 2)
         >>> u = v = np.linspace(0,1,100)
-        >>> xyz1 = s1.evaluate(u, v)
-        >>> xyz2 = s2.evaluate(u, v)
+        >>> xyz1 = s1(u, v)
+        >>> xyz2 = s2(u, v)
         >>> np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
         True
         """
@@ -1235,14 +1235,14 @@ class cad_nurbs(cad_object, NURBS):
             list_xref = []
             for u in breaks:
                 list_xref.append(_refine_array(np.asarray(u), npts))
-            return [self.evaluate(list_xref)]
+            return [self(list_xref)]
         if self.dim == 2:
             list_lines = []
             for i in range(0,2):
                 xref = _refine_array(breaks[self.dim-i-1], npts)
                 for brk in breaks[i]:
                     crv = self.extract(i, brk)
-                    list_lines.append(crv.evaluate(xref))
+                    list_lines.append(crv(xref))
             return list_lines
         if self.dim == 3:
             print "Not yet implemented"
@@ -1285,7 +1285,7 @@ class cad_nurbs(cad_object, NURBS):
         >>> dy = Dw[1,:,1]
         >>> plt.figure()
         >>> t = np.linspace(0,1,100)
-        >>> D = nrb.evaluate(t)
+        >>> D = nrb(t)
         >>> xc = D[:,0]
         >>> yc = D[:,1]
         >>> plt.plot(x,y, 'ob')
@@ -1393,7 +1393,7 @@ class cad_nurbs(cad_object, NURBS):
                 dx = Dw[1,:,0]
                 dy = Dw[1,:,1]
 
-                D = nrb.evaluate(t2)
+                D = nrb(t2)
                 xc = D[:,0]
                 yc = D[:,1]
 
@@ -1525,8 +1525,8 @@ class cad_op_nurbs(opNURBS, cad_object):
         >>> c2.degree
         (4,)
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
         >>> np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
         True
 
@@ -1542,8 +1542,8 @@ class cad_op_nurbs(opNURBS, cad_object):
         >>> s2.degree
         (3, 2)
         >>> u = v = np.linspace(0,1,100)
-        >>> xyz1 = s1.evaluate(u, v)
-        >>> xyz2 = s2.evaluate(u, v)
+        >>> xyz1 = s1(u, v)
+        >>> xyz2 = s2(u, v)
         >>> np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
         True
         """
@@ -1596,7 +1596,7 @@ class cad_op_nurbs(opNURBS, cad_object):
         >>> dy = Dw[1,:,1]
         >>> plt.figure()
         >>> t = np.linspace(0,1,100)
-        >>> D = nrb.evaluate(t)
+        >>> D = nrb(t)
         >>> xc = D[:,0]
         >>> yc = D[:,1]
         >>> plt.plot(x,y, 'ob')
@@ -1701,7 +1701,7 @@ class cad_op_nurbs(opNURBS, cad_object):
                 dx = Dw[1,:,0]
                 dy = Dw[1,:,1]
 
-                D = nrb.evaluate(t2)
+                D = nrb(t2)
                 xc = D[:,0]
                 yc = D[:,1]
 
@@ -2412,11 +2412,11 @@ class cad_geometry(object):
                 for f_m in range(0, nfaces):
                     bnd_m = nrb_m.extract_face(f_m).clone()
                     u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
-                    P_m = bnd_m.evaluate(u_m)
+                    P_m = bnd_m(u_m)
                     for f_s in range(0, nfaces):
                         bnd_s = nrb_s.extract_face(f_s).clone()
                         u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
-                        P_s = bnd_s.evaluate(u_s)
+                        P_s = bnd_s(u_s)
 
                         isSameFace = np.allclose(P_m, P_s, rtol=0, atol=tol)
                         isInvertFace = np.allclose(P_m[::-1], P_s, rtol=0, atol=tol)
@@ -2538,11 +2538,11 @@ class cad_geometry(object):
         for f_m in range(0, nfaces):
             bnd_m = nrb_m.extract_face(f_m).clone()
             u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
-            P_m = bnd_m.evaluate(u_m)
+            P_m = bnd_m(u_m)
             for f_s in range(f_m+1, nfaces):
                 bnd_s = nrb_m.extract_face(f_s).clone()
                 u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
-                P_s = bnd_s.evaluate(u_s)
+                P_s = bnd_s(u_s)
 
                 isSameFace = np.allclose(P_m, P_s)
                 isInvertFace = np.allclose(P_m[::-1], P_s)
