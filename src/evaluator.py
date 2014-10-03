@@ -160,7 +160,7 @@ class PatchEvaluator(GLEvaluator):
         v = self.v
 
         nrb = self.patch
-        P = nrb.evaluate(u,v)
+        P = nrb(u,v)
         n,m,d = P.shape
         glDisable(GL_DEPTH_TEST)
         glEnable(self.target)
@@ -229,7 +229,7 @@ class PatchEvaluator(GLEvaluator):
         v = self.v
 
         nrb = self.patch
-        P = nrb.evaluate(u,v)
+        P = nrb(u,v)
         n,m,d = P.shape
 #        glEnable(self.target)
 #        glPolygonMode(GL_FRONT, GL_FILL)

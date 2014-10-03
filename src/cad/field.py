@@ -160,8 +160,8 @@ class field(object):
             v = linspace(vb,ve,ny)
 
             array_vertex = zeros((4*(nx-1)*(ny-1),4))
-            P = nrb.evaluate(u,v)
-            A = srf.evaluate(u,v)
+            P = nrb(u,v)
+            A = srf(u,v)
             vertex_ID = 0
             for j in range(0,ny-1):
                 for i in range(0,nx-1):

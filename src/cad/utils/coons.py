@@ -18,32 +18,32 @@ def coonsInitialize(curves, tol=1.e-3):
 
 
     # c0 and c1 compatibility
-    P = c0.evaluate(ub)
-    Q = c1.evaluate(vb)
+    P = c0(ub)
+    Q = c1(vb)
     if not np.allclose(P, Q, rtol=0, atol=tol):
         c1.reverse()
-        Q = c1.evaluate(vb)
+        Q = c1(vb)
         assert np.allclose(P, Q, rtol=0, atol=tol)
 
     # c1 and c2 compatibility
-    P = c1.evaluate(ve)
-    Q = c2.evaluate(ub)
+    P = c1(ve)
+    Q = c2(ub)
     if not np.allclose(P, Q, rtol=0, atol=tol):
         c2.reverse()
-        Q = c2.evaluate(ub)
+        Q = c2(ub)
         assert np.allclose(P, Q, rtol=0, atol=tol)
 
     # c2 and c3 compatibility
-    P = c2.evaluate(ue)
-    Q = c3.evaluate(ve)
+    P = c2(ue)
+    Q = c3(ve)
     if not np.allclose(P, Q, rtol=0, atol=tol):
         c3.reverse()
-        Q = c3.evaluate(ve)
+        Q = c3(ve)
         assert np.allclose(P, Q, rtol=0, atol=tol)
 
     # c3 and c0 compatibility
-    P = c3.evaluate(vb)
-    Q = c0.evaluate(ue)
+    P = c3(vb)
+    Q = c0(ue)
     assert np.allclose(P, Q, rtol=0, atol=tol)
 
     return [[c1,c3],[c0,c2]]
@@ -70,18 +70,18 @@ def coons(curves, tol=1.e-10):
     p, U = C10.degree[0], C10.knots[0]
     u0, u1 = U[p], U[-p-1]
     P = np.zeros((2,2,3), dtype='d')
-    P[0,0] = C10.evaluate(u0)
-    P[1,0] = C10.evaluate(u1)
-    P[0,1] = C11.evaluate(u0)
-    P[1,1] = C11.evaluate(u1)
+    P[0,0] = C10(u0)
+    P[1,0] = C10(u1)
+    P[0,1] = C11(u0)
+    P[1,1] = C11(u1)
     #
     q, V = C00.degree[0], C00.knots[0]
     v0, v1 = V[q], V[-q-1]
     Q = np.zeros((2,2,3), dtype='d')
-    Q[0,0] = C00.evaluate(v0)
-    Q[0,1] = C00.evaluate(v1)
-    Q[1,0] = C01.evaluate(v0)
-    Q[1,1] = C01.evaluate(v1)
+    Q[0,0] = C00(v0)
+    Q[0,1] = C00(v1)
+    Q[1,0] = C01(v0)
+    Q[1,1] = C01(v1)
     #
 
 #    print "P[0,0] ", P[0,0] , "  Q[0,0] ", Q[0,0]

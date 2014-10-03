@@ -215,8 +215,8 @@ class opNURBS(object):
         >>> srf1 = grad(nrb)
         >>> srf2 = srf1.clone().transpose([1,0])
         >>> u = 0.25; v = 0.50
-        >>> xyz1 = srf1.evaluate(u,v)
-        >>> xyz2 = srf2.evaluate(v,u)
+        >>> xyz1 = srf1(u,v)
+        >>> xyz2 = srf2(v,u)
         >>> print [np.allclose(xyz1[i], xyz2[i], rtol=0, atol=1e-12) for i in range(0, len(xyz1))]
 
         """
@@ -247,8 +247,8 @@ class opNURBS(object):
         >>> srf1 = grad(nrb)
         >>> srf2 = srf1.clone().swap(1,0)
         >>> u = 0.25; v = 0.50
-        >>> xyz1 = srf1.evaluate(u,v)
-        >>> xyz2 = srf2.evaluate(v,u)
+        >>> xyz1 = srf1(u,v)
+        >>> xyz2 = srf2(v,u)
         >>> print [np.allclose(xyz1[i], xyz2[i], rtol=0, atol=1e-8) for i in range(0, len(xyz1))]
 
         """
@@ -283,7 +283,7 @@ class opNURBS(object):
         >>> c2 = c1.copy()
         >>> c2 = c2.reverse()
         >>> u = 0.3
-        >>> print (abs(c1.evaluate(u)- (-c2.evaluate(1.0-u)))).max() < 1.0e-15
+        >>> print (abs(c1(u)- (-c2(1.0-u)))).max() < 1.0e-15
 
         """
         self._nrb.reverse(*axes)
@@ -308,18 +308,18 @@ class opNURBS(object):
         >>> U = [0,0,0,0.25,0.75,0.75,1,1,1]
         >>> nrb = NURBS([U], C)
         >>> c0 = grad(nrb)
-        >>> v0 = c0.evaluate([0,0.5,1])
+        >>> v0 = c0([0,0.5,1])
         >>> c1 = c0.copy().remap(0, -2, 2)
         >>> c1.knots[0].tolist()
-        >>> v1 = c1.evaluate([-2,0.0,2])
+        >>> v1 = c1([-2,0.0,2])
         >>> print np.allclose(v0, v1, rtol=0, atol=1e-15)
         >>> c2 = c0.copy().remap(0, None, 2)
         >>> c2.knots[0].tolist()
-        >>> v2 = c2.evaluate([0,1.0,2])
+        >>> v2 = c2([0,1.0,2])
         >>> print np.allclose(v0, v2, rtol=0, atol=1e-15)
         >>> c3 = c0.copy().remap(0, -1, None)
         >>> c3.knots[0].tolist()
-        >>> v3 = c3.evaluate([-1,0.0,1])
+        >>> v3 = c3([-1,0.0,1])
         >>> print np.allclose(v0, v3, rtol=0, atol=1e-15)
 
 
@@ -351,10 +351,10 @@ class opNURBS(object):
         >>> c3 = c2.clone().insert(0, 0.50, 2)
         >>> c4 = c3.clone().insert(0, 0.75, 3)
         >>> u = np.linspace(0,1,5)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
-        >>> xyz3 = c3.evaluate(u)
-        >>> xyz4 = c4.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
+        >>> xyz3 = c3(u)
+        >>> xyz4 = c4(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-8)
         >>> print np.allclose(xyz1, xyz3, rtol=0, atol=1e-8)
         >>> print np.allclose(xyz1, xyz4, rtol=0, atol=1e-8)
@@ -367,8 +367,8 @@ class opNURBS(object):
         >>> s1 = grad(nrb)
         >>> s2 = s1.clone().insert(0, 0.25).insert(1, 0.75, 2)
         >>> u = v = np.linspace(0,1,100)
-        >>> xyz1 = s1.evaluate(u, v)
-        >>> xyz2 = s2.evaluate(u, v)
+        >>> xyz1 = s1(u, v)
+        >>> xyz2 = s2(u, v)
         >>> print [np.allclose(xyz1[i], xyz2[i], rtol=0, atol=1e-6) for i in range(0, len(xyz1))]
 
         """
@@ -405,10 +405,10 @@ class opNURBS(object):
         ...                .remove(0, 0.75, 1) \
         ...                .remove(0, 0.75, 2)
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
-        >>> xyz3 = c3.evaluate(u)
-        >>> xyz4 = c4.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
+        >>> xyz3 = c3(u)
+        >>> xyz4 = c4(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-5)
         >>> print np.allclose(xyz1, xyz3, rtol=0, atol=1e-5)
         >>> print np.allclose(xyz1, xyz4, rtol=0, atol=1e-5)
@@ -467,20 +467,20 @@ class opNURBS(object):
         >>> c2 = c1.clone().unclamp()
         >>> c2.knots[0].tolist()
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
         >>> c3 = c1.clone().unclamp(side=0)
         >>> c3.knots[0].tolist()
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
         >>> c4 = c1.clone().unclamp(axis=0,side=1)
         >>> c4.knots[0].tolist()
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-15)
 
         """
@@ -516,9 +516,9 @@ class opNURBS(object):
         >>> s2 = s1.clone().refine(0, u).refine(1, v)
         >>> s3 = s1.clone().refine(0, u).refine(1, u)
         >>> u = v = np.linspace(0,1,100)
-        >>> xyz1 = s1.evaluate(u, v)
-        >>> xyz2 = s2.evaluate(u, v)
-        >>> xyz3 = s3.evaluate(u, v)
+        >>> xyz1 = s1(u, v)
+        >>> xyz2 = s2(u, v)
+        >>> xyz3 = s3(u, v)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-5)
         >>> print np.allclose(xyz1, xyz3, rtol=0, atol=1e-5)
 
@@ -552,8 +552,8 @@ class opNURBS(object):
         >>> c1 = grad(nrb)
         >>> c2 = c1.clone().elevate(0, 2)
         >>> u = np.linspace(0,1,100)
-        >>> xyz1 = c1.evaluate(u)
-        >>> xyz2 = c2.evaluate(u)
+        >>> xyz1 = c1(u)
+        >>> xyz2 = c2(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-5)
 
         Create a random surface, degree elevate, check error:
@@ -565,8 +565,8 @@ class opNURBS(object):
         >>> s1 = grad(nrb)
         >>> s2 = s1.clone().elevate(0, 1).elevate(1, 1)
         >>> u = v = np.linspace(0,1,100)
-        >>> xyz1 = s1.evaluate(u, v)
-        >>> xyz2 = s2.evaluate(u, v)
+        >>> xyz1 = s1(u, v)
+        >>> xyz2 = s2(u, v)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-5)
 
         """
@@ -591,8 +591,8 @@ class opNURBS(object):
         >>> crv = grad(nrb)
         >>> sub = crv.slice(0,0.5,0.75)
         >>> u = np.linspace(0.5,0.75,100)
-        >>> xyz1 = crv.evaluate(u)
-        >>> xyz2 = sub.evaluate(u)
+        >>> xyz1 = crv(u)
+        >>> xyz2 = sub(u)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-5)
 
         Create a random surface, slice along first axis,
@@ -605,8 +605,8 @@ class opNURBS(object):
         >>> sub = srf.slice(0,1./3,2./3)
         >>> u = np.linspace(1./3,2./3,100)
         >>> v = np.linspace(0,1,100)
-        >>> xyz1 = srf.evaluate(u,v)
-        >>> xyz2 = sub.evaluate(u,v)
+        >>> xyz1 = srf(u,v)
+        >>> xyz2 = sub(u,v)
         >>> print np.allclose(xyz1, xyz2, rtol=0, atol=1e-5)
 
         """
@@ -645,9 +645,9 @@ class opNURBS(object):
         (3,)
         >>> crv.degree
         (2,)
-        >>> p1 = vol.evaluate(u,v,w)
-        >>> p2 = srf.evaluate(u,v)
-        >>> p3 = crv.evaluate(v)
+        >>> p1 = vol(u,v,w)
+        >>> p2 = srf(u,v)
+        >>> p3 = crv(v)
         >>> np.allclose(p1, p2, rtol=0, atol=1e-15)
         True
         >>> np.allclose(p2, p3, rtol=0, atol=1e-15)
