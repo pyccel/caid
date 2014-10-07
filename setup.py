@@ -27,9 +27,9 @@ packages=[  'caid' \
           , 'caid.graphics' \
           , 'caid.utils' \
          ]
-package_dir={  'caid': 'src/cad'\
-              ,'caid.graphics': 'src/cad/graphics' \
-              ,'caid.utils':  'src/cad/utils' \
+package_dir={  'caid': 'src/caid'\
+              ,'caid.graphics': 'src/caid/graphics' \
+              ,'caid.utils':  'src/caid/utils' \
               ,}
 
 def setup_package():
