@@ -137,6 +137,114 @@ class splineRefMat(object):
             return csr_matrix(kron(M2,M1))
     # ...
 
+class BezierExtraction():
+    def __init__(self, nrb, check=False, verbose=False):
+
+        self._matrices = []
+        self._lmatrices = []
+        self._nrb  = nrb
+
+        from caid.cad_geometry import cad_geometry
+        # ...
+        spl = splineRefMat(1)
+        geo = cad_geometry()
+        geo.append(nrb)
+
+        if verbose:
+            print "== shape before ", nrb.shape
+            print nrb.knots
+
+        for axis in range(0, nrb.dim):
+            brk, mult = nrb.breaks(axis=axis, mults=True)
+            nbrk = len(mult)
+            mult = np.asarray(mult)
+            times = nrb.degree[axis] * np.ones(nbrk, dtype=np.int) - mult
+            print ">> spans ", nrb.spans(axis=axis)
+
+            list_r = []
+            for t,k in zip(brk, times):
+                for i in range(0, k):
+                    list_r.append(t)
+
+            knots   = nrb.knots[0]
+            n       = nrb.shape[0]
+            p       = nrb.degree[0]
+            P       = nrb.points
+            dim     = P.shape[1]
+
+            M = spl.construct(list_r, p, n, knots)
+            # ...
+            if check:
+                if nrb.dim == 1:
+                    if verbose:
+                        print "matrix shape ", M.shape
+                    R = M.dot(nrb.points[:,0])
+
+                    geo.refine(id=0, list_t=[list_r])
+                    nrb     = geo[0]
+                    if verbose:
+                        print "== shape after ", nrb.shape
+                        print nrb.knots
+
+                    P = np.asarray(nrb.points[:,0])
+                    assert(np.allclose(P,R))
+                    if verbose:
+                        print "check: OK"
+            # ...
+
+            self._matrices.append(M)
+
+    @property
+    def matrices(self):
+        return self._matrices
+
+    @property
+    def nrb(self):
+        return self._nrb
+
+    @property
+    def dim(self):
+        return self._nrb.dim
+
+    @property
+    def nelts(self):
+        n = np.asarray(self.nrb.shape)
+        return n.prod()
+
+    def local_matrices(self):
+        lmatrices = []
+        if self.dim == 1 :
+            nelt = self.nelts
+            n = self.nrb.shape
+            p = self.nrb.degree
+            M = self.matrices[0]
+            for i in range(p[0],n[0]):
+                ie_bezier = i + p[0]
+                ie_spline = i + 1
+                print "ie_bezier, ie_spline = ", ie_bezier, ie_spline
+                lmatrices.append(M[i:ie_bezier,i:ie_spline])
+
+        if self.dim == 2 :
+            nelt = self.nelts
+            n = self.nrb.shape
+            p = self.nrb.degree
+            M0 = self.matrices[0]
+            M1 = self.matrices[1]
+            for j in range(p[1],n[1]):
+                je_bezier = j + p[1]
+                je_spline = j + 1
+                print "je_bezier, je_spline = ", je_bezier, je_spline
+                for i in range(p[0],n[0]):
+                    ie_bezier = i + p[0]
+                    ie_spline = i + 1
+                    print "ie_bezier, ie_spline = ", ie_bezier, ie_spline
+                    lmatrices.append([M0[i:ie_bezier,i:ie_spline] \
+                                    ,M1[j:je_bezier,j:je_spline]])
+
+        self._lmatrices = lmatrices
+        return lmatrices
+
+
 if __name__ == '__main__':
 
     import caid.cad_geometry  as cg

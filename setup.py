@@ -25,10 +25,12 @@ setup_args = dict(
 
 packages=[  'caid' \
           , 'caid.graphics' \
+          , 'caid.numbering' \
           , 'caid.utils' \
          ]
 package_dir={  'caid': 'src/caid'\
               ,'caid.graphics': 'src/caid/graphics' \
+              ,'caid.numbering':  'src/caid/numbering' \
               ,'caid.utils':  'src/caid/utils' \
               ,}
 
