@@ -2,7 +2,7 @@
 import sys
 import numpy as np
 from numpy import array, linspace, zeros, zeros_like
-from cad.cad_geometry import cad_geometry
+from caid.cad_geometry import cad_geometry
 #from igakit.graphics import glFreeType
 
 try:
@@ -13,7 +13,7 @@ try:
 except:
     print '''ERROR: PyOpenGL not installed properly.'''
 
-from cad.field import field
+from caid.field import field
 
 class colorbar(field):
     def __init__(self, C, xmax=0., xmin=0., ymax=0., ymin=0., zmax=0., zmin=0., colormap=None, side='right'):
@@ -39,7 +39,7 @@ class colorbar(field):
             displ = [0.,ymax+2.]
             n = [len(C)-2,0]
 
-        from cad.cad_geometry import square
+        from caid.cad_geometry import square
         geometry = square()
         values   = square(n=n)
 

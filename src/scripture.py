@@ -64,7 +64,7 @@ class scripture(object):
         self.append(command)
 
         # import cad_geometry
-        command = "from cad.cad_geometry import *"
+        command = "from caid.cad_geometry import *"
         self.append(command)
 
         # import igakit.cad
@@ -72,7 +72,7 @@ class scripture(object):
         self.append(command)
 
         # import cad
-        command = "from cad.utils import *"
+        command = "from caid.utils import *"
         self.append(command)
 
 

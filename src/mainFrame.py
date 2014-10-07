@@ -3,7 +3,7 @@ from MenuCAIDFile import MenuCAIDFile
 from MenuCAIDEdit import MenuCAIDEdit
 from MenuCAIDTools import MenuCAIDTools
 from workGroup import *
-from cad.field import field
+from caid.field import field
 import sys
 import os
 from glob import glob

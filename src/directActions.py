@@ -2,8 +2,8 @@
 import wx
 from geometry import geometry
 from igakit.cad import join
-from cad.cad_geometry import cad_geometry, cad_nurbs
-from cad.cad_geometry import linear
+from caid.cad_geometry import cad_geometry, cad_nurbs
+from caid.cad_geometry import linear
 from viewer import Viewer
 from numpy import pi, linspace, array, asarray
 import numpy as np
@@ -99,7 +99,7 @@ class directActions(object):
 #        weights[0,1] = C[3]
 #        weights[1,1] = D[3]
 
-        from cad.cad_geometry import bilinear
+        from caid.cad_geometry import bilinear
         nrb = bilinear(points=points)[0]
 
         wk.viewer.CleanMarkerPoints()
@@ -154,7 +154,7 @@ class directActions(object):
                         , len(list_patchs), " curves were given"
                 return
 
-            from cad.utils.intersect import intersect_crv
+            from caid.utils.intersect import intersect_crv
             c0 = list_patchs[0]
             geo0 = cad_geometry()
             geo0.append(c0)

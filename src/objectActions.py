@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import wx
 from geometry import geometry
-from cad.cad_geometry import cad_geometry, cad_nurbs
+from caid.cad_geometry import cad_geometry, cad_nurbs
 from viewer import Viewer
 from numpy import pi, linspace, array, asarray
 import numpy as np
@@ -89,7 +89,7 @@ class ObjectActionsCreateCircle(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import circle as domain
+            from caid.cad_geometry import circle as domain
             _geo = domain(radius=self.radius, center=self.center)
             # macro recording
             if wk.macroRecording:
@@ -245,7 +245,7 @@ class ObjectActionsCreateQuartCircle(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import quart_circle as domain
+            from caid.cad_geometry import quart_circle as domain
             _geo = domain(rmin=self.rmin, rmax=self.rmax, center=self.center)
             # macro recording
             if wk.macroRecording:
@@ -404,7 +404,7 @@ class ObjectActionsCreateAnnulus(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import annulus as domain
+            from caid.cad_geometry import annulus as domain
             _geo = domain(rmin=self.rmin, rmax=self.rmax, center=self.center)
             # macro recording
             if wk.macroRecording:
@@ -563,7 +563,7 @@ class ObjectActionsCreateCircle_5mp(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import circle_5mp as domain
+            from caid.cad_geometry import circle_5mp as domain
             _geo = domain(rmin=self.rmin, rmax=self.rmax, center=self.center)
             # macro recording
             if wk.macroRecording:
@@ -1024,7 +1024,7 @@ class ObjectActionsCreateLinear(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import linear as domain
+            from caid.cad_geometry import linear as domain
             _geo = domain(points=self.points)
             # macro recording
             if wk.macroRecording:
@@ -1185,7 +1185,7 @@ class ObjectActionsCreateBilinear(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import bilinear as domain
+            from caid.cad_geometry import bilinear as domain
             _geo = domain(points=self.points)
             # macro recording
             if wk.macroRecording:
@@ -1347,7 +1347,7 @@ class ObjectActionsCreateTriangle(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import triangle as domain
+            from caid.cad_geometry import triangle as domain
             points = [self.A, self.B, self.C]
             _geo = domain(points=points, profile=self.profile)
             # macro recording
@@ -1505,7 +1505,7 @@ class ObjectActionsCreateArc(ObjectClassActions):
             wk = self.parent.WorkGroup
             geo = wk.inspector.currentGeometry
             geoItem = wk.inspector.currentGeometryItem
-            from cad.cad_geometry import arc as domain
+            from caid.cad_geometry import arc as domain
             angle = self.angle * pi / 180
             _geo = domain(angle=angle, radius=self.radius,center=self.center)
             # macro recording
@@ -1651,7 +1651,7 @@ class ObjectActionsPolarExtrude(ObjectClassActions):
                 xyzc = [self.xcenter, self.ycenter, self.zcenter]
             # inspector = self.parent
             wk = self.parent.WorkGroup
-            from cad.cad_geometry import cad_geometry
+            from caid.cad_geometry import cad_geometry
             if self.patch:
                 patch = wk.inspector.currentObject
                 patchItem = wk.inspector.currentPatchItem
@@ -1897,7 +1897,7 @@ class ObjectActionsCurve(ObjectClassActions):
                 C[:,1] = array(Py)
                 nrb = cad_nurbs([knots], C)
             if self.cbLines.GetValue():
-                from cad.cad_geometry import linear
+                from caid.cad_geometry import linear
                 from igakit.cad import join
                 list_crv = []
                 for P,Q in zip(list_P[:-1], list_P[1:]):

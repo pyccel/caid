@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import wx
 from geometry import geometry
-from cad.cad_geometry import cad_geometry, cad_nurbs
+from caid.cad_geometry import cad_geometry, cad_nurbs
 from viewer import Viewer
 from numpy import pi, linspace, array, zeros
 import numpy as np
@@ -202,7 +202,7 @@ class PatchActions(ClassActions):
                 print "Coons algorithm needs 4 curves, but ", len(list_patchs), " curves was given"
                 return
 
-            from cad.utils.coons import coons, coonsInitialize
+            from caid.utils.coons import coons, coonsInitialize
             c0 = list_patchs[0]
             c1 = list_patchs[1]
             c2 = list_patchs[2]
@@ -268,7 +268,7 @@ class PatchActions(ClassActions):
                         , len(list_patchs), " curves were given"
                 return
 
-            from cad.utils.intersection import intersect_crv
+            from caid.utils.intersection import intersect_crv
             c0 = list_patchs[0]
             geo0 = cad_geometry()
             geo0.append(c0)
@@ -591,7 +591,7 @@ class PatchActionsTCoons(ClassActions):
                 print "TCoons algorithm needs 3 curves, but ", len(list_patchs), " curves was given"
                 return
 
-            from cad.cad_geometry import tcoons
+            from caid.cad_geometry import tcoons
             c0 = list_patchs[0]
             c1 = list_patchs[1]
             c2 = list_patchs[2]
@@ -1761,7 +1761,7 @@ class PatchActionsStickC1(ClassActions):
                 print "Stick-C1 algorithm needs 2 nurbs, but ", len(list_patchs), " were given"
                 return
 
-            from cad.utlis.stick import stickC1
+            from caid.utlis.stick import stickC1
             nrb_m   = list_patchs[0]
             nrb_s   = list_patchs[1]
             face_m  = list_faces[0]

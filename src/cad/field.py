@@ -2,7 +2,7 @@
 import sys
 import numpy as np
 from numpy import array, linspace, zeros, zeros_like
-from cad.cad_geometry import cad_geometry
+from caid.cad_geometry import cad_geometry
 
 try:
     from OpenGL.arrays import vbo
@@ -68,8 +68,8 @@ class field(object):
         return self._show
 
     def open(self, filename):
-        from cad.cad_geometry import cad_geometry
-        from cad.io import XML
+        from caid.cad_geometry import cad_geometry
+        from caid.io import XML
         io = XML()
 
         from xml.dom.minidom import parse
@@ -106,7 +106,7 @@ class field(object):
     #    rootElt.setAttribute("eye", str(eye))
 
         doc.appendChild(rootElt)
-        from cad.io import XML
+        from caid.io import XML
         io = XML()
         # ... geometry
         geoElt = doc.createElement("geometry")
@@ -130,7 +130,7 @@ class field(object):
     def view(self, colormap=None, colorbar=None, n=None):
         V = viewer()
         if colormap is None:
-            from cad.graphics.colormap import IceAndFire
+            from caid.graphics.colormap import IceAndFire
             colormap = IceAndFire
         V.set_field(self)
         V.main(colormap=colormap, colorbar=colorbar, n=n)
@@ -208,8 +208,8 @@ gl_FragColor = vertex_color;
 }
 """
 
-from cad.graphics.viewer import viewer as basic_viewer
-from cad.graphics.viewer import Action, Menu
+from caid.graphics.viewer import viewer as basic_viewer
+from caid.graphics.viewer import Action, Menu
 class viewer(basic_viewer):
     def __init__(self, colormap=None, field=None, colorbar=None, title="", size=(100,100) \
                 , backGroundColor=(1.0, 1.0, 1.0, 0.0)):
@@ -233,62 +233,62 @@ class viewer(basic_viewer):
         # ------------------------------------------
 
     def menu_colormap_Ice(self):
-        from cad.graphics.colormap import Ice as cmap
+        from caid.graphics.colormap import Ice as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_Hot(self):
-        from cad.graphics.colormap import Hot as cmap
+        from caid.graphics.colormap import Hot as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_IceAndFire(self):
-        from cad.graphics.colormap import IceAndFire as cmap
+        from caid.graphics.colormap import IceAndFire as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_Fire(self):
-        from cad.graphics.colormap import Fire as cmap
+        from caid.graphics.colormap import Fire as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_Grey(self):
-        from cad.graphics.colormap import Grey as cmap
+        from caid.graphics.colormap import Grey as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_Grey_r(self):
-        from cad.graphics.colormap import Grey_r as cmap
+        from caid.graphics.colormap import Grey_r as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_DarkRed(self):
-        from cad.graphics.colormap import DarkRed as cmap
+        from caid.graphics.colormap import DarkRed as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_DarkGreen(self):
-        from cad.graphics.colormap import DarkGreen as cmap
+        from caid.graphics.colormap import DarkGreen as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_DarkBlue(self):
-        from cad.graphics.colormap import DarkBlue as cmap
+        from caid.graphics.colormap import DarkBlue as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_LightRed(self):
-        from cad.graphics.colormap import LightRed as cmap
+        from caid.graphics.colormap import LightRed as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_LightGreen(self):
-        from cad.graphics.colormap import LightGreen as cmap
+        from caid.graphics.colormap import LightGreen as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
     def menu_colormap_LightBlue(self):
-        from cad.graphics.colormap import LightBlue as cmap
+        from caid.graphics.colormap import LightBlue as cmap
         self.update(colormap=cmap, force=True)
         self.Refresh()
 
@@ -436,7 +436,7 @@ class viewer(basic_viewer):
         self._resolution = n
 
     def set_side_colorbar(self, side, nvalues=10):
-        from cad.graphics.colorbar import colorbar as cbar
+        from caid.graphics.colorbar import colorbar as cbar
         # Create a colorbar array...
         C = np.linspace(self.vmin,self.vmax,nvalues).astype(np.float32)
         colorbar = cbar(C, colormap=self.colormap, side=side)
@@ -464,7 +464,7 @@ class viewer(basic_viewer):
 
         if self.show_colorbar:
             if self.colorbar is None:
-                from cad.graphics.colorbar import colorbar as cbar
+                from caid.graphics.colorbar import colorbar as cbar
                 # Create a colorbar array...
                 nvalues = 10
                 C = np.linspace(self.vmin,self.vmax,nvalues).astype(np.float32)
@@ -551,7 +551,7 @@ if __name__ == "__main__":
     F.Show(True)
     F.set_surface(False)
 
-    from cad.graphics.colormap import *
+    from caid.graphics.colormap import *
     list_cmap = [  IceAndFire, Ice, Fire \
                  , Hot, Grey, Grey_r \
                  , DarkRed, DarkGreen, DarkBlue \

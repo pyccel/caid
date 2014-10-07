@@ -2,7 +2,7 @@
 import sys
 import numpy as np
 from numpy import array, linspace, zeros, zeros_like
-from cad.cad_geometry import cad_geometry
+from caid.cad_geometry import cad_geometry
 #from igakit.graphics import glFreeType
 
 try:

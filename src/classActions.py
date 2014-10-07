@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import wx
 from geometry import geometry
-from cad.cad_geometry import cad_geometry
+from caid.cad_geometry import cad_geometry
 from viewer import Viewer
 from numpy import pi, linspace
 import numpy as np

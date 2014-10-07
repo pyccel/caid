@@ -1272,7 +1272,7 @@ class cad_nurbs(cad_object, NURBS):
 
         Import the circle curve, compute points position and their derivatives:
 
-        >>> from cad.cad_geometry import circle
+        >>> from caid.cad_geometry import circle
         >>> geo = circle()
         >>> nrb = geo[0].extract(1,0.)
 
@@ -1296,7 +1296,7 @@ class cad_nurbs(cad_object, NURBS):
         the computation of points and their derivatives. Finally, we plot the
         jacobian of the mapping:
 
-        >>> from cad.cad_geometry import circle as domain
+        >>> from caid.cad_geometry import circle as domain
         >>> nrb = domain()[0]
 
         >>> nx = 100
@@ -1583,7 +1583,7 @@ class cad_op_nurbs(opNURBS, cad_object):
 
         Import the circle curve, compute points position and their derivatives:
 
-        >>> from cad.cad_geometry import circle
+        >>> from caid.cad_geometry import circle
         >>> geo = circle()
         >>> nrb = geo[0].extract(1,0.)
 
@@ -1607,7 +1607,7 @@ class cad_op_nurbs(opNURBS, cad_object):
         the computation of points and their derivatives. Finally, we plot the
         jacobian of the mapping:
 
-        >>> from cad.cad_geometry import circle as domain
+        >>> from caid.cad_geometry import circle as domain
         >>> nrb = domain()[0]
 
         >>> nx = 100
@@ -1762,7 +1762,7 @@ class cad_geometry(object):
 
         Import a predefined geometry
 
-        >>> from cad.cad_geometry import circle
+        >>> from caid.cad_geometry import circle
         >>> geo = circle(radius=2.)
 
         print the number of patchs
@@ -1841,7 +1841,7 @@ class cad_geometry(object):
         --------
         This example is given from the annulus cad_geometry object
 
-        >>> from cad.cad_geometry import annulus
+        >>> from caid.cad_geometry import annulus
         >>> geo.external_faces
         [[0, 0], [0, 2]]
 
@@ -1864,7 +1864,7 @@ class cad_geometry(object):
         --------
         This example is given from the annulus cad_geometry object
 
-        >>> from cad.cad_geometry import annulus
+        >>> from caid.cad_geometry import annulus
         >>> geo.connectivity
         [{'clone': [0, 3], 'original': [0, 1]}]
 
@@ -2061,7 +2061,7 @@ class cad_geometry(object):
         Examples
         --------
 
-        >>> from cad.cad_geometry import quart_circle, cad_geometry
+        >>> from caid.cad_geometry import quart_circle, cad_geometry
         >>> nrb = quart_circle()[0]
         >>> geo = cad_geometry()
         >>> geo.append(nrb)
@@ -2092,7 +2092,7 @@ class cad_geometry(object):
         Examples
         --------
 
-        >>> from cad.cad_geometry import quart_circle, cad_geometry
+        >>> from caid.cad_geometry import quart_circle, cad_geometry
         >>> nrb = quart_circle()[0]
         >>> geo = cad_geometry()
         >>> geo.append(nrb)

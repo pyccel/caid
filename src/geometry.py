@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from cad.cad_geometry import cad_geometry
+from caid.cad_geometry import cad_geometry
 from evaluator import CurveEvaluator, PatchEvaluator
 from numpy import array, asarray
 from OpenGL.GL import *
@@ -325,7 +325,7 @@ class geometry(cad_geometry):
 
 #######################################################################
 if __name__ == '__main__':
-    from cad.cad_geometry import square
+    from caid.cad_geometry import square
     import matplotlib.pyplot as plt
     s1 = square(n=[3,3])
     geo1 = geometry()
