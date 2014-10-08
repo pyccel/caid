@@ -145,6 +145,7 @@ def _indices_face_3D(nrb, ai_face, shift):
 class boundary_conditions(object):
     def __init__(self, geometry, list_Dirichlet_ind = [], list_Neumann_ind = [] \
     , list_Periodic_ind = [], list_duplicated_ind = [], list_duplicata_ind = []):
+        self._geo                   = geometry
         self.DirFaces               = [[]]*geometry.npatchs
         self.DuplicatedFaces        = []
         self.DuplicataFaces         = []
@@ -158,6 +159,150 @@ class boundary_conditions(object):
         list_empty = [[]] * li_npatch
         self.dirichlet(geometry, list_empty)
         self.duplicate(geometry, faces_base=None, faces=None)
+
+    @property
+    def geometry(self):
+        return self._geo
+
+    @property
+    def dim(self):
+        return self._geo.dim
+
+    def all_dirichlet_1d(self, list_interior_ind=[[]]):
+        """
+        bc = 10 with the old version of PyIGA
+        we must exlude interior boundaries between 2 (or more) patchs,
+        this is given in list_interior_ind
+        """
+        geometry = self.geometry
+        dim = self.dim
+
+        self.list_Dirichlet_ind = []
+
+        # computing the number of patchs
+        li_npatch = geometry.npatchs
+
+        for li_id in range(0, li_npatch):
+            lo_domain = geometry[li_id]
+
+            list_n = lo_domain.shape
+
+            list_Dirichlet_ind = []
+
+            li_i = 0
+            if [li_i] not in list_interior_ind :
+                list_Dirichlet_ind.append([li_i])
+
+            li_i = list_n[0] - 1
+            if [li_i] not in list_interior_ind :
+                list_Dirichlet_ind.append([li_i])
+
+            self.list_Dirichlet_ind.append(list_Dirichlet_ind)
+
+    def all_dirichlet_2d(self, list_interior_ind=[[]]):
+        """
+        bc = 10 with the old version of PyIGA
+        we must exlude interior boundaries between 2 (or more) patchs,
+        this is given in list_interior_ind
+        """
+        geometry = self.geometry
+        dim = self.dim
+
+        self.list_Dirichlet_ind = []
+
+        # computing the number of patchs
+        li_npatch = geometry.npatchs
+
+        for li_id in range(0, li_npatch):
+            lo_domain = geometry[li_id]
+
+            list_n = lo_domain.shape
+
+            list_Dirichlet_ind = []
+
+            for li_i in range (0, list_n[0]):
+                li_j = 0
+                if [li_i,li_j] not in list_interior_ind :
+                    list_Dirichlet_ind.append([li_i,li_j])
+
+                li_j = list_n[1] - 1
+                if [li_i,li_j] not in list_interior_ind :
+                    list_Dirichlet_ind.append([li_i,li_j])
+
+            for li_j in range (0, list_n[1]):
+                li_i = 0
+                if [li_i,li_j] not in list_interior_ind :
+                    list_Dirichlet_ind.append([li_i,li_j])
+
+                li_i = list_n[0] - 1
+                if [li_i,li_j] not in list_interior_ind :
+                    list_Dirichlet_ind.append([li_i,li_j])
+
+            self.list_Dirichlet_ind.append(list_Dirichlet_ind)
+
+            print "list_Dirichlet_ind=", list_Dirichlet_ind
+
+    def all_dirichlet_3d(self, list_interior_ind=[[]]):
+        """
+        bc = 10 with the old version of PyIGA
+        we must exlude interior boundaries between 2 (or more) patchs,
+        this is given in list_interior_ind
+        """
+        geometry = self.geometry
+        dim = self.dim
+        self.list_Dirichlet_ind = []
+
+        # computing the number of patchs
+        li_npatch = geometry.npatchs
+
+        for li_id in range(0, li_npatch):
+            lo_domain = geometry[li_id]
+
+            list_n = lo_domain.shape
+
+            list_Dirichlet_ind = []
+
+            for li_k in range (0, list_n[2]):
+                for li_j in range (0, list_n[1]):
+                    li_i = 0
+                    if [li_i,li_j,li_k] not in list_interior_ind :
+                        list_Dirichlet_ind.append([li_i,li_j,li_k])
+
+                    li_i = list_n[0] - 1
+                    if [li_i,li_j,li_k] not in list_interior_ind :
+                        list_Dirichlet_ind.append([li_i,li_j,li_k])
+
+            for li_j in range (0, list_n[1]):
+                for li_i in range (0, list_n[0]):
+                    li_k = 0
+                    if [li_i,li_j,li_k] not in list_interior_ind :
+                        list_Dirichlet_ind.append([li_i,li_j,li_k])
+
+                    li_k = list_n[2] - 1
+                    if [li_i,li_j,li_k] not in list_interior_ind :
+                        list_Dirichlet_ind.append([li_i,li_j,li_k])
+
+            for li_i in range (0, list_n[0]):
+                for li_k in range (0, list_n[2]):
+                    li_j = 0
+                    if [li_i,li_j,li_k] not in list_interior_ind :
+                        list_Dirichlet_ind.append([li_i,li_j,li_k])
+
+                    li_j = list_n[1] - 1
+                    if [li_i,li_j,li_k] not in list_interior_ind :
+                        list_Dirichlet_ind.append([li_i,li_j,li_k])
+
+            self.list_Dirichlet_ind.append(list_Dirichlet_ind)
+
+    def all_dirichlet(self, list_interior_ind=[[]]):
+        geometry = self.geometry
+        dim      = self.dim
+        if dim == 1:
+            self.all_dirichlet_1d(geometry, list_interior_ind=[[]])
+        if dim == 2:
+            self.all_dirichlet_2d(geometry, list_interior_ind=[[]])
+        if dim == 3:
+            self.all_dirichlet_3d(geometry, list_interior_ind=[[]])
 
     def dirichlet(self, geometry, faces):
         """
