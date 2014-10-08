@@ -2858,43 +2858,79 @@ class cad_geometry(object):
                 pcolor(x,y,jac,vmin=vmin,vmax=vmax)
 
     def local_matrices(self):
+        from caid.utils.extraction import BezierExtraction
+        from caid.numbering.connectivity import connectivity
+        from scipy.sparse import csr_matrix, kron
+
         geo = self
-        from numbering.connectivity import connectivity
         con = connectivity(geo)
         con.init_data_structure()
-        con.printinfo(with_LM=True, with_IEN=False, with_ID=False)
+#        con.printinfo(with_LM=True, with_IEN=False, with_ID=False)
 
-#        lmatrices = []
-#        if self.dim == 1 :
-#            nelt = self.nelts
-#            n = self.nrb.shape
-#            p = self.nrb.degree
-#            M = self.matrices[0]
-#            for i in range(p[0],n[0]):
-#                ie_bezier = i + p[0]
-#                ie_spline = i + 1
-#                print "ie_bezier, ie_spline = ", ie_bezier, ie_spline
-#                lmatrices.append(M[i:ie_bezier,i:ie_spline])
-#
-#        if self.dim == 2 :
-#            nelt = self.nelts
-#            n = self.nrb.shape
-#            p = self.nrb.degree
-#            M0 = self.matrices[0]
-#            M1 = self.matrices[1]
-#            for j in range(p[1],n[1]):
-#                je_bezier = j + p[1]
-#                je_spline = j + 1
-#                print "je_bezier, je_spline = ", je_bezier, je_spline
-#                for i in range(p[0],n[0]):
-#                    ie_bezier = i + p[0]
-#                    ie_spline = i + 1
-#                    print "ie_bezier, ie_spline = ", ie_bezier, ie_spline
-#                    lmatrices.append([M0[i:ie_bezier,i:ie_spline] \
-#                                    ,M1[j:je_bezier,j:je_spline]])
-#
-#        self._lmatrices = lmatrices
-#        return lmatrices
+        geo_ref = cad_geometry()
+        list_extractors = []
+        list_matrices = []
+        for i in range(0, geo.npatchs):
+            nrb = geo[i]
+            extractor = BezierExtraction(nrb, check=False, verbose=False)
+            list_extractors.append(extractor)
+
+            list_matrices.append(extractor.matrices)
+
+            nrb_ref = extractor.nrb_ref
+            geo_ref.append(nrb_ref)
+
+        con_ref = connectivity(geo_ref)
+        con_ref.init_data_structure()
+#        con_ref.printinfo(with_LM=True, with_IEN=False, with_ID=False)
+
+        list_lmatrices = []
+        list_i     = range(0, geo.npatchs)
+        for i in list_i:
+            nrb             = geo[i]
+            nrb_ref         = geo_ref[i]
+            local_LM        = con.LM[i]
+            local_LM_ref    = con_ref.LM[i]
+            nelts           = con.list_nel[i]
+            nelts_ref       = con_ref.list_nel[i]
+            matrices        = list_matrices[i]
+
+            assert(nelts==nelts_ref)
+
+            lmatrices = []
+            for elt in range(0, nelts):
+                # shif values because LM are 1 based indices
+                list_iloc       = np.asarray(local_LM[elt]) - 1
+                list_iloc_ref   = np.asarray(local_LM_ref[elt]) - 1
+
+                print ">>>> element ", elt
+                print list_iloc
+                print list_iloc_ref
+
+                if geo.dim == 1:
+                    M = matrices[0]
+
+                if geo.dim == 2:
+                    M1 = matrices[0] ; M2 = matrices[1]
+                    M = csr_matrix(kron(M2,M1))
+
+                if geo.dim == 3:
+                    M1 = matrices[0] ; M2 = matrices[1] ; M3 = matrices[2]
+                    M21 = csr_matrix(kron(M2,M1))
+                    M = csr_matrix(kron(M3,M21))
+
+                Mloc = np.zeros((len(list_iloc_ref), len(list_iloc)))
+                for j_num, j in enumerate(list_iloc):
+                    for j_ref_num, j_ref in enumerate(list_iloc_ref):
+                        Mloc[j_ref_num, j_num] = M[j_ref, j]
+
+                lmatrices.append(Mloc)
+
+#            print lmatrices
+#            print [M.shape for M in lmatrices]
+            list_lmatrices.append(lmatrices)
+
+        return list_lmatrices
 
     def to_bezier_jorek(self, patch_id, filename=None):
         """

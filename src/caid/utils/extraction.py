@@ -155,17 +155,19 @@ class BezierExtraction():
             print "== shape before ", nrb.shape
             print nrb.knots
 
+        list_t = []
         for axis in range(0, nrb.dim):
             brk, mult = nrb.breaks(axis=axis, mults=True)
             nbrk = len(mult)
             mult = np.asarray(mult)
             times = nrb.degree[axis] * np.ones(nbrk, dtype=np.int) - mult
-            print ">> spans ", nrb.spans(axis=axis)
+#            print ">> spans ", nrb.spans(axis=axis)
 
             list_r = []
             for t,k in zip(brk, times):
                 for i in range(0, k):
                     list_r.append(t)
+            list_t.append(list_r)
 
             knots   = nrb.knots[0]
             n       = nrb.shape[0]
@@ -174,9 +176,6 @@ class BezierExtraction():
             dim     = P.shape[1]
 
             M = spl.construct(list_r, p, n, knots)
-            if nrb.dim == 1:
-                geo.refine(id=0, list_t=[list_r])
-                self._nrb_ref = geo[0]
 
             # ...
             if check:
@@ -198,6 +197,9 @@ class BezierExtraction():
             # ...
 
             self._matrices.append(M)
+
+        geo.refine(id=0, list_t=list_t)
+        self._nrb_ref = geo[0]
 
     @property
     def matrices(self):
