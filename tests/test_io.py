@@ -1,8 +1,9 @@
 # -*- coding: UTF-8 -*-
 import numpy as np
 import caid.cad_geometry  as cg
-from caid.cad_geometry import line, square
+from caid.cad_geometry import line, square, cad_geometry
 from caid.utils.extraction import BezierExtraction
+import matplotlib.pyplot as plt
 #from caid.utils.extraction import splineRefMat
 #
 #DIM_1D = 1
@@ -54,14 +55,25 @@ px = 3
 geo = line(n=[nx], p=[px])
 nrb = geo[0]
 extractor = BezierExtraction(nrb, check=True, verbose=True)
+nrb_ref = extractor.nrb_ref
 matrices = extractor.matrices
 M = matrices[0]
 print M.shape
-lmatrices = extractor.local_matrices()
-print len(lmatrices)
-print "******"
-for M in lmatrices:
-    print M.shape
+geo.local_matrices()
+print "//////////////////////////"
+print "//////////////////////////"
+print "//////////////////////////"
+print "//////////////////////////"
+print "//////////////////////////"
+print "//////////////////////////"
+geo_ref = cad_geometry()
+geo_ref.append(nrb_ref)
+geo_ref.local_matrices()
+
+#print len(lmatrices)
+#print "******"
+#for M in lmatrices:
+#    print M.shape
 
 #print "====== test 2  ====="
 #nx = 3 ; ny = 2

@@ -388,47 +388,51 @@ class connectivity:
             self.LM.append(np.asarray(list_LM).transpose())
 #        print "self.LM=", self.LM
 
-    def printinfo(self):
+    def printinfo(self, with_IEN=True, with_LM=True, with_ID=True):
         print "*******************************"
         print " global informations "
         print "*******************************"
         print " number of patchs :", self.npatch
         print " nnp :", self.nnp
         print "*******************************"
-        for li_id in range(0, self.npatch):
-            print "*******************************"
-            print " Current Patch-id =", li_id
-            li_nel = self.list_nel[li_id]
-            li_nen = self.list_nen[li_id]
-            li_nnp = self.list_nnp[li_id]
-            print "-- nel =", li_nel
-            print "-- nen =", li_nen
-            print "-- nnp =", li_nnp
-            print "*******************************"
+        if (with_IEN or with_LM):
+            for li_id in range(0, self.npatch):
+                print "*******************************"
+                print " Current Patch-id =", li_id
+                li_nel = self.list_nel[li_id]
+                li_nen = self.list_nen[li_id]
+                li_nnp = self.list_nnp[li_id]
+                print "-- nel =", li_nel
+                print "-- nen =", li_nen
+                print "-- nnp =", li_nnp
+                print "*******************************"
 
-            print "======"
-            print " IEN "
-            print "======"
-            for li_e in range(0, li_nel):
-                print "     elt =", li_e
-                print "          ", self.IEN[li_id][:, li_e]
-            print "======"
+                if with_IEN:
+                    print "======"
+                    print " IEN "
+                    print "======"
+                    for li_e in range(0, li_nel):
+                        print "     elt =", li_e
+                        print "          ", self.IEN[li_id][:, li_e]
+                    print "======"
 
-            print "======"
-            print " LM "
-            print "======"
-            for li_e in range(0, li_nel):
-                print "     elt =", li_e
-                print "          ", self.LM[li_id][:, li_e]
-            print "======"
+                if with_LM:
+                    print "======"
+                    print " LM "
+                    print "======"
+                    for li_e in range(0, li_nel):
+                        print "     elt =", li_e
+                        print "          ", self.LM[li_id][:, li_e]
+                    print "======"
 
-            print "*******************************"
+                print "*******************************"
 
-        print "==============================="
-        print " ID "
-        print "==============================="
-        print " ", self.ID[:]
-        print "==============================="
+        if with_ID:
+            print "==============================="
+            print " ID "
+            print "==============================="
+            print " ", self.ID[:]
+            print "==============================="
 
     def save(self, etiq="", fmt='zip', name=None):
         """

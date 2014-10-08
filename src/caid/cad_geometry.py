@@ -2857,8 +2857,44 @@ class cad_geometry(object):
                 x = xyz[0] ; y = xyz[1]
                 pcolor(x,y,jac,vmin=vmin,vmax=vmax)
 
+    def local_matrices(self):
+        geo = self
+        from numbering.connectivity import connectivity
+        con = connectivity(geo)
+        con.init_data_structure()
+        con.printinfo(with_LM=True, with_IEN=False, with_ID=False)
 
-
+#        lmatrices = []
+#        if self.dim == 1 :
+#            nelt = self.nelts
+#            n = self.nrb.shape
+#            p = self.nrb.degree
+#            M = self.matrices[0]
+#            for i in range(p[0],n[0]):
+#                ie_bezier = i + p[0]
+#                ie_spline = i + 1
+#                print "ie_bezier, ie_spline = ", ie_bezier, ie_spline
+#                lmatrices.append(M[i:ie_bezier,i:ie_spline])
+#
+#        if self.dim == 2 :
+#            nelt = self.nelts
+#            n = self.nrb.shape
+#            p = self.nrb.degree
+#            M0 = self.matrices[0]
+#            M1 = self.matrices[1]
+#            for j in range(p[1],n[1]):
+#                je_bezier = j + p[1]
+#                je_spline = j + 1
+#                print "je_bezier, je_spline = ", je_bezier, je_spline
+#                for i in range(p[0],n[0]):
+#                    ie_bezier = i + p[0]
+#                    ie_spline = i + 1
+#                    print "ie_bezier, ie_spline = ", ie_bezier, ie_spline
+#                    lmatrices.append([M0[i:ie_bezier,i:ie_spline] \
+#                                    ,M1[j:je_bezier,j:je_spline]])
+#
+#        self._lmatrices = lmatrices
+#        return lmatrices
 
     def to_bezier_jorek(self, patch_id, filename=None):
         """
