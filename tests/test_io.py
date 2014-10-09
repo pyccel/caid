@@ -8,12 +8,13 @@ print "====== test 1  ====="
 nx = 3
 px = 3
 geo = line(n=[nx], p=[px])
-#geo.append(geo[0])
+geo.append(geo[0])
 list_lmatrices = geo.local_matrices()
 
 print "====== test 2  ====="
 nx = 1 ; ny = 2
 px = 2 ; py = 3
 geo = square(n=[nx,ny], p=[px,py])
+geo.append(geo[0])
 list_lmatrices = geo.local_matrices()
 

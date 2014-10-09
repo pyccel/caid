@@ -2866,6 +2866,7 @@ class cad_geometry(object):
         con = connectivity(geo)
         con.init_data_structure()
 #        con.printinfo(with_LM=True, with_IEN=False, with_ID=False)
+        con.printinfo()
 
         geo_ref = cad_geometry()
         list_extractors = []
@@ -2889,8 +2890,12 @@ class cad_geometry(object):
         for i in list_i:
             nrb             = geo[i]
             nrb_ref         = geo_ref[i]
-            local_LM        = con.LM[i]
-            local_LM_ref    = con_ref.LM[i]
+            local_IEN       = con.IEN[i]
+            local_IEN_ref   = con_ref.IEN[i]
+#            local_LM        = con.LM[i]
+#            local_LM_ref    = con_ref.LM[i]
+#            local_ID        = con.ID_loc[i]
+#            local_ID_ref    = con_ref.ID_loc[i]
             nelts           = con.list_nel[i]
             nelts_ref       = con_ref.list_nel[i]
             matrices        = list_matrices[i]
@@ -2899,9 +2904,12 @@ class cad_geometry(object):
 
             lmatrices = []
             for elt in range(0, nelts):
-                # shif values because LM are 1 based indices
-                list_iloc       = np.asarray(local_LM[elt]) - 1
-                list_iloc_ref   = np.asarray(local_LM_ref[elt]) - 1
+#                # shif values because LM are 1 based indices
+#                list_iloc       = np.asarray(local_LM[elt]) - 1
+#                list_iloc_ref   = np.asarray(local_LM_ref[elt]) - 1
+
+                list_iloc       = np.asarray(local_IEN[elt])
+                list_iloc_ref   = np.asarray(local_IEN_ref[elt])
 
                 print ">>>> element ", elt
                 print list_iloc
