@@ -2857,7 +2857,7 @@ class cad_geometry(object):
                 x = xyz[0] ; y = xyz[1]
                 pcolor(x,y,jac,vmin=vmin,vmax=vmax)
 
-    def local_matrices(self):
+    def bezier_extract(self):
         from caid.utils.extraction import BezierExtraction
         from caid.numbering.connectivity import connectivity
         from scipy.sparse import csr_matrix, kron
@@ -2866,7 +2866,7 @@ class cad_geometry(object):
         con = connectivity(geo)
         con.init_data_structure()
 #        con.printinfo(with_LM=True, with_IEN=False, with_ID=False)
-        con.printinfo()
+#        con.printinfo()
 
         geo_ref = cad_geometry()
         list_extractors = []
@@ -2911,9 +2911,9 @@ class cad_geometry(object):
                 list_iloc       = np.asarray(local_IEN[elt])
                 list_iloc_ref   = np.asarray(local_IEN_ref[elt])
 
-                print ">>>> element ", elt
-                print list_iloc
-                print list_iloc_ref
+#                print ">>>> element ", elt
+#                print list_iloc
+#                print list_iloc_ref
 
                 if geo.dim == 1:
                     M = matrices[0]
@@ -2938,7 +2938,114 @@ class cad_geometry(object):
 #            print [M.shape for M in lmatrices]
             list_lmatrices.append(lmatrices)
 
-        return list_lmatrices
+        return geo_ref, list_lmatrices
+
+    def to_bezier_patchs_1d(self, filename=None):
+        geo_ref, list_lmatrices = self.bezier_extract()
+
+    def to_bezier_patchs_2d(self, filename=None):
+        geo_ref, list_lmatrices = self.bezier_extract()
+
+        # TODO to replace with a loop over patchs
+        nrb = geo_ref[0]
+        lmatrices = list_lmatrices[0]
+
+        # ...
+        # we loop over each element and generate the P,
+        # ...
+        # we start by matching the 1D index with the 2D one
+        lpi_n = nrb.shape
+        lpi_p = nrb.degree
+        list_Index = range(0, np.asarray(lpi_n).prod())
+        lpi_Index = np.asarray(list_Index).reshape(lpi_n[::-1])
+        lpi_Index = lpi_Index.transpose()
+
+        list_i = range(0,lpi_n[0]-1,lpi_p[0])
+        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+
+        lpi_nElt = [len(list_i), len(list_j)]
+        list_IndexElt = range(0, np.asarray(lpi_nElt).prod())
+        list_IndexElt = np.asarray(list_IndexElt).reshape(lpi_nElt[::-1])
+        list_IndexElt = list_IndexElt.transpose()
+
+        # ...
+        # sets the list of Nodes
+        # ...
+        list_indexNodes = []
+        list_nodeData = []
+
+        list_i = range(0,lpi_n[0],lpi_p[0])[:-1]
+        list_j = range(0,lpi_n[1],lpi_p[1])[:-1]
+        for enum_i, i in enumerate(list_i):
+            for enum_j, j in enumerate(list_j):
+                # compute index element index
+                i_elt = enum_i + enum_j * len(list_i)
+
+                pts_x = nrb.points[i:i+lpi_p[0]+1,j:j+lpi_p[1]+1,0]
+                pts_y = nrb.points[i:i+lpi_p[0]+1,j:j+lpi_p[1]+1,1]
+                pts_x = pts_x.reshape(pts_x.size)
+                pts_y = pts_x.reshape(pts_y.size)
+
+                # ...
+                # compute the boundary code
+                # ...
+                boundaryCode = 0
+                if j in  [0,lpi_n[1] - 1]:
+                    boundaryCode += 1
+                if i in  [0,lpi_n[0] - 1]:
+                    boundaryCode += 2
+                # ...
+
+                # ... local Bezier-extraction matrix
+                M = lmatrices[i_elt]
+                M = M.reshape(M.size)
+                # ...
+
+                nodeData = [lpi_p, pts_x, pts_y, [boundaryCode], M]
+
+                lineNodeData = []
+                for data in nodeData:
+                    for d in data:
+                        lineNodeData.append(d)
+
+                list_nodeData.append(lineNodeData)
+        # ...
+
+        if filename is not None:
+            # ...
+            # exporting files
+            # ...
+            fmt = '%.7f'
+            a = open(filename+"_nodes.txt", "w")
+            # ... write size of list_nodeData
+            a.write(str(len(list_nodeData))+' \n')
+            for L in list_nodeData:
+                line = ''.join(str(fmt % e)+', ' for e in L)[:-2]+' \n'
+                a.write(line)
+            a.close()
+#            #
+#            a = open(filename+"_elements.txt", "w")
+#            a.write(str(len(list_elementData))+' \n')
+#            for L in list_elementData:
+#                line = ''.join(str(fmt % e)+', ' for e in L)[:-2]+' \n'
+#                a.write(line)
+#            a.close()
+#            # ...
+#
+#        return list_nodeData, list_elementData
+
+
+    def to_bezier_patchs_3d(self, filename=None):
+        geo_ref, list_lmatrices = self.bezier_extract()
+
+    def to_bezier_patchs(self, filename=None):
+        geo_ref, list_lmatrices = self.bezier_extract()
+        if self.dim == 1:
+            self.to_bezier_patchs_1d(filename=filename)
+        if self.dim == 2:
+            self.to_bezier_patchs_2d(filename=filename)
+        if self.dim == 3:
+            self.to_bezier_patchs_3d(filename=filename)
 
     def to_bezier_jorek(self, patch_id, filename=None):
         """
