@@ -158,6 +158,9 @@ class BezierExtraction():
         list_t = []
         for axis in range(0, nrb.dim):
             brk, mult = nrb.breaks(axis=axis, mults=True)
+#            print ">> axis ", axis
+#            print brk
+#            print mult
             nbrk = len(mult)
             mult = np.asarray(mult)
             times = nrb.degree[axis] * np.ones(nbrk, dtype=np.int) - mult
@@ -169,11 +172,17 @@ class BezierExtraction():
                     list_r.append(t)
             list_t.append(list_r)
 
-            knots   = nrb.knots[0]
-            n       = nrb.shape[0]
-            p       = nrb.degree[0]
+            knots   = nrb.knots[axis]
+            n       = nrb.shape[axis]
+            p       = nrb.degree[axis]
             P       = nrb.points
             dim     = P.shape[1]
+#            print "%%%%%%%%%%%%"
+#            print list_r
+#            print p
+#            print n
+#            print knots
+#            print "%%%%%%%%%%%%"
 
             M = spl.construct(list_r, p, n, knots)
 

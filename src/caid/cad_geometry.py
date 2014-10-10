@@ -2881,6 +2881,16 @@ class cad_geometry(object):
             nrb_ref = extractor.nrb_ref
             geo_ref.append(nrb_ref)
 
+#            print "**********"
+#            print "knots[0] ",nrb.knots[0]
+#            print "knots[1] ",nrb.knots[1]
+#            print "**********"
+#
+#            print "**********"
+#            print "knots-ref[0] ",nrb_ref.knots[0]
+#            print "knots-ref[1] ",nrb_ref.knots[1]
+#            print "**********"
+
         con_ref = connectivity(geo_ref)
         con_ref.init_data_structure()
 #        con_ref.printinfo(with_LM=True, with_IEN=False, with_ID=False)
@@ -2892,8 +2902,8 @@ class cad_geometry(object):
             nrb_ref         = geo_ref[i]
             local_IEN       = con.IEN[i]
             local_IEN_ref   = con_ref.IEN[i]
-#            local_LM        = con.LM[i]
-#            local_LM_ref    = con_ref.LM[i]
+            local_LM        = con.LM[i]
+            local_LM_ref    = con_ref.LM[i]
 #            local_ID        = con.ID_loc[i]
 #            local_ID_ref    = con_ref.ID_loc[i]
             nelts           = con.list_nel[i]
@@ -2904,16 +2914,17 @@ class cad_geometry(object):
 
             lmatrices = []
             for elt in range(0, nelts):
-#                # shif values because LM are 1 based indices
-#                list_iloc       = np.asarray(local_LM[elt]) - 1
-#                list_iloc_ref   = np.asarray(local_LM_ref[elt]) - 1
+                # shif values because LM are 1 based indices
+                list_iloc       = np.asarray(local_LM[:,elt]) - 1
+                list_iloc_ref   = np.asarray(local_LM_ref[:,elt]) - 1
 
-                list_iloc       = np.asarray(local_IEN[elt])
-                list_iloc_ref   = np.asarray(local_IEN_ref[elt])
+#                list_iloc       = np.asarray(local_IEN[:,elt])
+#                list_iloc_ref   = np.asarray(local_IEN_ref[:,elt])
 
+#                print "======================="
 #                print ">>>> element ", elt
-#                print list_iloc
-#                print list_iloc_ref
+#                print "list_iloc     ", list_iloc
+#                print "list_iloc_ref ", list_iloc_ref
 
                 if geo.dim == 1:
                     M = matrices[0]
@@ -2921,16 +2932,22 @@ class cad_geometry(object):
                 if geo.dim == 2:
                     M1 = matrices[0] ; M2 = matrices[1]
                     M = csr_matrix(kron(M2,M1))
+#                    print M.shape, M1.shape, M2.shape
 
                 if geo.dim == 3:
                     M1 = matrices[0] ; M2 = matrices[1] ; M3 = matrices[2]
                     M21 = csr_matrix(kron(M2,M1))
                     M = csr_matrix(kron(M3,M21))
 
+
                 Mloc = np.zeros((len(list_iloc_ref), len(list_iloc)))
                 for j_num, j in enumerate(list_iloc):
+#                    print "----"
                     for j_ref_num, j_ref in enumerate(list_iloc_ref):
+#                        print j, j_ref, j_num, j_ref_num
                         Mloc[j_ref_num, j_num] = M[j_ref, j]
+#                print Mloc.shape
+#                print "======================="
 
                 lmatrices.append(Mloc)
 
@@ -2944,11 +2961,17 @@ class cad_geometry(object):
         geo_ref, list_lmatrices = self.bezier_extract()
 
     def to_bezier_patchs_2d(self, filename=None):
+        from caid.numbering.connectivity import connectivity
+        con = connectivity(self)
+        con.init_data_structure()
+
         geo_ref, list_lmatrices = self.bezier_extract()
 
         # TODO to replace with a loop over patchs
         nrb = geo_ref[0]
         lmatrices = list_lmatrices[0]
+        local_LM = con.LM[0]
+        # ...
 
         # ...
         # we loop over each element and generate the P,
@@ -2968,23 +2991,19 @@ class cad_geometry(object):
         list_IndexElt = np.asarray(list_IndexElt).reshape(lpi_nElt[::-1])
         list_IndexElt = list_IndexElt.transpose()
 
-        # ...
-        # sets the list of Nodes
-        # ...
+        # ... sets the list of Node
         list_indexNodes = []
         list_nodeData = []
 
-        list_i = range(0,lpi_n[0],lpi_p[0])[:-1]
-        list_j = range(0,lpi_n[1],lpi_p[1])[:-1]
+        list_i = range(0,lpi_n[0],lpi_p[0])
+        list_j = range(0,lpi_n[1],lpi_p[1])
         for enum_i, i in enumerate(list_i):
             for enum_j, j in enumerate(list_j):
                 # compute index element index
                 i_elt = enum_i + enum_j * len(list_i)
 
-                pts_x = nrb.points[i:i+lpi_p[0]+1,j:j+lpi_p[1]+1,0]
-                pts_y = nrb.points[i:i+lpi_p[0]+1,j:j+lpi_p[1]+1,1]
-                pts_x = pts_x.reshape(pts_x.size)
-                pts_y = pts_x.reshape(pts_y.size)
+                pts_x = nrb.points[i,j,0]
+                pts_y = nrb.points[i,j,1]
 
                 # ...
                 # compute the boundary code
@@ -2996,12 +3015,7 @@ class cad_geometry(object):
                     boundaryCode += 2
                 # ...
 
-                # ... local Bezier-extraction matrix
-                M = lmatrices[i_elt]
-                M = M.reshape(M.size)
-                # ...
-
-                nodeData = [lpi_p, pts_x, pts_y, [boundaryCode], M]
+                nodeData = [[boundaryCode], [pts_x, pts_y]]
 
                 lineNodeData = []
                 for data in nodeData:
@@ -3011,28 +3025,145 @@ class cad_geometry(object):
                 list_nodeData.append(lineNodeData)
         # ...
 
+        # ... sets the list of Elements
+        list_elementData = []
+        list_i = range(0,lpi_n[0]-1,lpi_p[0])
+        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        for enum_j, j in enumerate(list_j):
+            for enum_i, i in enumerate(list_i):
+                # compute index element index
+                i_elt = enum_i + enum_j * len(list_i)
+
+                # TODO for each element, we must compute its neighbours
+                neighbours  = [-1, -1, -1, -1]
+
+                pts_x = nrb.points[i:i+lpi_p[0]+1,j:j+lpi_p[1]+1,0]
+                pts_y = nrb.points[i:i+lpi_p[0]+1,j:j+lpi_p[1]+1,1]
+                pts_x = pts_x.reshape(pts_x.size)
+                pts_y = pts_x.reshape(pts_y.size)
+
+                elementData = [[i_elt+1], lpi_p, pts_x, pts_y \
+                , neighbours]
+
+                lineElementData = []
+                for data in elementData:
+                    for d in data:
+                        lineElementData.append(d)
+
+                list_elementData.append(lineElementData)
+        # ...
+
+        # ... sets the list of Basis
+        list_basisData = []
+        list_i = range(0,lpi_n[0]-1,lpi_p[0])
+        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        for enum_j, j in enumerate(list_j):
+            for enum_i, i in enumerate(list_i):
+                # compute index element index
+                i_elt = enum_i + enum_j * len(list_i)
+
+                # ... local Bezier-extraction matrix
+                M = lmatrices[i_elt]
+#                print M.shape
+#                print "========= ELT ", str(i_elt+1) , " ============"
+#                for iM in range(0, M.shape[0]):
+#                    for jM in range(0, M.shape[1]):
+#                        print '%.15f' % M[iM,jM]
+#                print "====================="
+                M = np.ravel(M, order='F')
+                # ...
+
+                basisData = [[i_elt+1], M]
+
+                lineBasisData = []
+                for data in basisData:
+                    for d in data:
+                        lineBasisData.append(d)
+
+                list_basisData.append(lineBasisData)
+        # ...
+
+        # ... sets the list of connectivities
+        list_connectivityData = []
+        list_i = range(0,lpi_n[0]-1,lpi_p[0])
+        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        for enum_i, i in enumerate(list_i):
+            for enum_j, j in enumerate(list_j):
+                # compute index element index
+                i_elt = enum_i + enum_j * len(list_i)
+
+                # ... local Bezier-extraction matrix
+                M = local_LM[:,i_elt]
+                M = M.reshape(M.size)
+                # ...
+
+                connectivityData = [M]
+
+                lineConnectivityData = []
+                for data in connectivityData:
+                    for d in data:
+                        lineConnectivityData.append(d)
+
+                list_connectivityData.append(lineConnectivityData)
+        # ...
+
         if filename is not None:
             # ...
             # exporting files
             # ...
-            fmt = '%.7f'
+            fmt = '%.15f'
+            fmt_int = '%d'
+            fmt_nodes = '%d, %.15f, %.15f'
             a = open(filename+"_nodes.txt", "w")
             # ... write size of list_nodeData
             a.write(str(len(list_nodeData))+' \n')
+
             for L in list_nodeData:
-                line = ''.join(str(fmt % e)+', ' for e in L)[:-2]+' \n'
+#                line = ''.join(str(fmt % e)+', ' for e in L)[:-2]+' \n'
+                line = fmt_nodes % tuple(L) +' \n'
                 a.write(line)
             a.close()
-#            #
-#            a = open(filename+"_elements.txt", "w")
-#            a.write(str(len(list_elementData))+' \n')
-#            for L in list_elementData:
-#                line = ''.join(str(fmt % e)+', ' for e in L)[:-2]+' \n'
-#                a.write(line)
-#            a.close()
-#            # ...
-#
-#        return list_nodeData, list_elementData
+            #
+            a = open(filename+"_elements.txt", "w")
+            # ... write size of list_elementData
+            a.write(str(len(list_elementData))+' \n')
+            # ... write maximum of spline degrees
+            maxDegree = np.max(np.asarray([np.max(np.asarray(nrb.degree)) for nrb in self]))
+            a.write(str(maxDegree)+' \n')
+            for L in list_elementData:
+                # ... element id
+                line = str(L[0]) + ' \n'
+                a.write(line)
+                # ... spline degree
+                lpi_p = L[1:3]
+                line = str(lpi_p[0]) + ', ' + str(lpi_p[1]) + ' \n'
+                a.write(line)
+                # ...
+                line = ''.join(str(fmt % e)+', ' for e in L[3:])[:-2]+' \n'
+                a.write(line)
+            a.close()
+            #
+            a = open(filename+"_basis.txt", "w")
+            # ... write size of list_basisData
+            a.write(str(len(list_basisData))+' \n')
+            for L in list_basisData:
+                # ... element id
+                line = str(L[0]) + ' \n'
+                a.write(line)
+                line = ''.join(str(fmt % e)+', ' for e in L[1:])[:-2]+' \n'
+                a.write(line)
+            a.close()
+            #
+            a = open(filename+"_connectivity.txt", "w")
+            # ... write size of list_connectivityData
+            a.write(str(len(list_connectivityData))+' \n')
+            for L in list_connectivityData:
+                line = ''.join(str(fmt_int % e)+', ' for e in L)[:-2]+' \n'
+                a.write(line)
+            a.close()
+            # ...
+
+        return list_nodeData, list_elementData
 
 
     def to_bezier_patchs_3d(self, filename=None):
