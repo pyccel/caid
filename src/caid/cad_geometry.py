@@ -3097,7 +3097,11 @@ class cad_geometry(object):
                 M = M.reshape(M.size)
                 # ...
 
-                connectivityData = [M]
+                # ... number of non vanishing basis per element
+                nen = (lpi_p[0] + 1) * (lpi_p[1] + 1)
+                # ...
+
+                connectivityData = [[i_elt+1], [nen], M]
 
                 lineConnectivityData = []
                 for data in connectivityData:
@@ -3158,7 +3162,14 @@ class cad_geometry(object):
             # ... write size of list_connectivityData
             a.write(str(len(list_connectivityData))+' \n')
             for L in list_connectivityData:
-                line = ''.join(str(fmt_int % e)+', ' for e in L)[:-2]+' \n'
+                # ... element id
+                line = str(L[0]) + ' \n'
+                a.write(line)
+                # ... number of non vanishing basis per element
+                line = str(L[1]) + ' \n'
+                a.write(line)
+                # ... local LM
+                line = ''.join(str(fmt_int % e)+', ' for e in L)[2:-2]+' \n'
                 a.write(line)
             a.close()
             # ...
