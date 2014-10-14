@@ -4,6 +4,9 @@ from igakit.nurbs import NURBS
 from op_nurbs import opNURBS
 from io import XML, TXT
 import sys
+from caid.core import bspline as bsplinelib
+
+_bsp = bsplinelib.bsp
 
 from numpy import pi, sqrt, array, zeros
 
@@ -1434,6 +1437,155 @@ class cad_nurbs(cad_object, NURBS):
                          label='Face '+str(face),scale=1.e-1, width='0.00001')
             plt.legend()
 
+    def evaluate_deriv(self, u=None, v=None, w=None \
+                       , fields=None, nderiv=1, rationalize=0):
+        """
+        Evaluate the NURBS object at the given parametric values.
+
+        Parameters
+        ----------
+        u, v, w : float or array_like
+        fields : bool or array_like, optional
+
+        Examples
+        --------
+
+        >>> C = [[-1,0],[0,1],[1,0]]
+        >>> U = [0,0,0,1,1,1]
+        >>> crv = NURBS([U], C)
+        >>> crv.evaluate(0.5).tolist()
+        [0.0, 0.5, 0.0]
+        >>> crv.evaluate([0.5]).tolist()
+        [[0.0, 0.5, 0.0]]
+        >>> crv.evaluate([0,1]).tolist()
+        [[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]
+
+        """
+        def Arg(p, U, u):
+            u = np.asarray(u, dtype='d')
+            assert u.min() >= U[p]
+            assert u.max() <= U[-p-1]
+            return u
+        #
+        dim = self.dim
+        nderivatives = nderiv
+        if dim == 1:
+            if nderiv == 1:
+                nderivatives = 1
+            if nderiv == 2:
+                nderivatives = 1+1
+        if dim == 2:
+            if nderiv == 1:
+                nderivatives = 2
+            if nderiv == 2:
+                nderivatives = 2+3
+        if dim == 3:
+            if nderiv == 1:
+                nderivatives = 3
+            if nderiv == 2:
+                nderivatives = 3+6
+
+        uvw = [u,v,w][:dim]
+        for i, a in enumerate(uvw):
+            if a is None:
+                uvw[i] = self.breaks(i)
+            else:
+                U = self.knots[i]
+                p = self.degree[i]
+                uvw[i] = Arg(p, U, a)
+        #
+
+        #
+        if fields is None or isinstance(fields, bool):
+            F = None
+        else:
+            F = np.asarray(fields, dtype='d')
+            shape = self.shape
+            if F.shape == shape:
+                F = F[...,np.newaxis]
+            else:
+                assert F.ndim-1 == len(shape)
+                assert F.shape[:-1] == shape
+            fields = True
+        #
+        if F is not None:
+            Cw = self.control
+            w = Cw[...,3,np.newaxis]
+            CwF = np.concatenate([Cw, F*w], axis=-1)
+            array = np.ascontiguousarray(CwF)
+        else:
+            array = self.array
+        arglist = [nderiv, nderivatives, rationalize]
+        for p, U in zip(self.degree, self.knots):
+            arglist.extend([p, U])
+        arglist.append(array)
+        arglist.extend(uvw)
+        #
+        Evaluate = getattr(_bsp, 'EvaluateDeriv%d' % self.dim)
+        CwF = Evaluate(*arglist)
+        return CwF[...,:3]
+
+    def grad(self, u=None, v=None, w=None):
+        ndim = len(self.shape)
+        Dw = self.evaluate_deriv(u=u, v=v, w=w)
+
+        xyz_arrays = []
+        du  = Dw[1,...,:]
+        xyz_arrays.append(du)
+
+        if ndim > 1:
+            dv  = Dw[2,...,:]
+            xyz_arrays.append(dv)
+
+        if ndim > 2:
+            dt  = Dw[3,...,:]
+            xyz_arrays.append(dt)
+
+        return xyz_arrays
+
+    def second_deriv(self, u=None, v=None, w=None):
+        ndim = len(self.shape)
+        Dw = self.evaluate_deriv(u=u, v=v, w=w, nderiv=2)
+
+        if ndim == 1:
+            nb = 2
+            ne = 3
+        if ndim == 2:
+            nb = 3
+            ne = 6
+        if ndim == 3:
+            nb = 4
+            ne = 10
+
+        xyz_arrays = []
+        for i in range(nb,ne):
+            du = Dw[i,...,:]
+            xyz_arrays.append(du)
+
+        return xyz_arrays
+
+    def tangent(self, u=None, v=None, w=None, unit=True):
+        Dw = self.evaluate_deriv(u=u, v=v, w=w)
+
+        dx = Dw[1,:,0]
+        dy = Dw[1,:,1]
+        if unit:
+            d = np.sqrt(dx**2 + dy**2)
+            dx = dx/d
+            dy = dy/d
+        return dx, dy
+
+    def normal(self, u=None, v=None, w=None, unit=True):
+        Dw = self.evaluate_deriv(u=u, v=v, w=w)
+
+        dx = Dw[1,:,0]
+        dy = Dw[1,:,1]
+        if unit:
+            d = np.sqrt(dx**2 + dy**2)
+            dx = dx/d
+            dy = dy/d
+        return -dy, dx
+    #
 
 
 class cad_op_nurbs(opNURBS, cad_object):
@@ -3042,8 +3194,15 @@ class cad_geometry(object):
                 pts_x = pts_x.reshape(pts_x.size)
                 pts_y = pts_x.reshape(pts_y.size)
 
+                list_indices = []
+                ind = 0
+                for _i in range(i, i+lpi_p[0]+1):
+                    for _j in range(j, j+lpi_p[1]+1):
+                        ind += 1
+                        list_indices.append(ind)
+
                 elementData = [[i_elt+1], lpi_p, pts_x, pts_y \
-                , neighbours]
+                , neighbours, list_indices]
 
                 lineElementData = []
                 for data in elementData:

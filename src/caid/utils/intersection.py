@@ -1,6 +1,8 @@
 import numpy as np
 from igakit.nurbs import NURBS
 from igakit.transform import transform
+from caid.core import bspline as bsplinelib
+_bsp = bsplinelib.bsp
 
 # -----
 def intersect_crv(C1, C2, npts=50):
@@ -12,8 +14,6 @@ def intersect_crv(C1, C2, npts=50):
     """
 
     # ...
-    from igakit import igalib as _igalib
-    _bsp = _igalib.bsp
 
     Greville = _bsp.Greville
     # ...

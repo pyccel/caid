@@ -1,5 +1,8 @@
 # -*- coding: UTF-8 -*-
 #! /usr/bin/python
+import sys
+from numpy.distutils.core import setup
+from numpy.distutils.core import Extension
 
 NAME    = 'caid'
 VERSION = '0.2'
@@ -27,21 +30,34 @@ packages=[  'caid' \
           , 'caid.graphics' \
           , 'caid.numbering' \
           , 'caid.utils' \
+          , 'caid.core' \
          ]
 package_dir={  'caid': 'src/caid'\
               ,'caid.graphics': 'src/caid/graphics' \
               ,'caid.numbering':  'src/caid/numbering' \
               ,'caid.utils':  'src/caid/utils' \
+              ,'caid.core':  'src/caid/core' \
               ,}
 
+ext_modules  = [ \
+                # ... bsplines extension
+                 Extension('caid.core.bspline', \
+                           sources = ['src/caid/core/bspline.pyf', \
+                                      'src/caid/core/bspline.F90'], \
+                           f2py_options = ['--quiet'], \
+                           define_macros = [ \
+                                            #('F2PY_REPORT_ATEXIT', 0),
+                                            ('F2PY_REPORT_ON_ARRAY_COPY', 0)] \
+                          ) \
+                # ...
+                ,]
+
 def setup_package():
-    import sys
-    from numpy.distutils.core import setup
-    from numpy.distutils.core import Extension
     if 'setuptools' in sys.modules:
         setup_args['install_requires'] = ['numpy']
     setup(  packages = packages \
-          , package_dir=package_dir
+          , package_dir=package_dir \
+          , ext_modules=ext_modules \
           , **setup_args)
 
 if __name__ == "__main__":
