@@ -3113,6 +3113,7 @@ class cad_geometry(object):
         geo_ref, list_lmatrices = self.bezier_extract()
 
     def to_bezier_patchs_2d(self, filename=None):
+        geo = self
         from caid.numbering.connectivity import connectivity
         con = connectivity(self)
         con.init_data_structure()
@@ -3120,7 +3121,9 @@ class cad_geometry(object):
         geo_ref, list_lmatrices = self.bezier_extract()
 
         # TODO to replace with a loop over patchs
-        nrb = geo_ref[0]
+        # MUST BE DONE USING geo AND NOT geo_ref
+#        nrb = geo_ref[0]
+        nrb = geo[0]
         lmatrices = list_lmatrices[0]
         local_LM = con.LM[0]
         # ...
@@ -3147,8 +3150,10 @@ class cad_geometry(object):
         list_indexNodes = []
         list_nodeData = []
 
-        list_i = range(0,lpi_n[0],lpi_p[0])
-        list_j = range(0,lpi_n[1],lpi_p[1])
+#        list_i = range(0,lpi_n[0],lpi_p[0])
+#        list_j = range(0,lpi_n[1],lpi_p[1])
+        list_i = range(0,lpi_n[0])
+        list_j = range(0,lpi_n[1])
         for enum_i, i in enumerate(list_i):
             for enum_j, j in enumerate(list_j):
                 # compute index element index
@@ -3178,6 +3183,8 @@ class cad_geometry(object):
         # ...
 
         # ... sets the list of Elements
+        # MUST BE DONE USING geo_ref AND NOT geo
+        nrb = geo_ref[0]
         list_elementData = []
         list_i = range(0,lpi_n[0]-1,lpi_p[0])
         list_j = range(0,lpi_n[1]-1,lpi_p[1])
@@ -3201,8 +3208,10 @@ class cad_geometry(object):
                         ind += 1
                         list_indices.append(ind)
 
+                ux = nrb.knots[0] ; uy = nrb.knots[1]
+                scale2D = ( ux[i+lpi_p[0]] - ux[i] ) * ( uy[j+lpi_p[1]] - uy[j] )
                 elementData = [[i_elt+1], lpi_p, pts_x, pts_y \
-                , neighbours, list_indices]
+                , [scale2D], neighbours, list_indices]
 
                 lineElementData = []
                 for data in elementData:
