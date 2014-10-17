@@ -3146,6 +3146,7 @@ class cad_geometry(object):
         list_IndexElt = np.asarray(list_IndexElt).reshape(lpi_nElt[::-1])
         list_IndexElt = list_IndexElt.transpose()
 
+        # .................................................
         # ... sets the list of Node
         list_indexNodes = []
         list_nodeData = []
@@ -3181,7 +3182,9 @@ class cad_geometry(object):
 
                 list_nodeData.append(lineNodeData)
         # ...
+        # .................................................
 
+        # .................................................
         # ... sets the list of Elements
         # MUST BE DONE USING geo_ref AND NOT geo
         nrb = geo_ref[0]
@@ -3201,15 +3204,17 @@ class cad_geometry(object):
                 pts_x = pts_x.reshape(pts_x.size)
                 pts_y = pts_x.reshape(pts_y.size)
 
+                # ... vertex indices
                 list_indices = []
                 ind = 0
                 for _i in range(i, i+lpi_p[0]+1):
                     for _j in range(j, j+lpi_p[1]+1):
                         ind += 1
                         list_indices.append(ind)
+                # ...
 
                 ux = nrb.knots[0] ; uy = nrb.knots[1]
-                scale2D = ( ux[i+lpi_p[0]] - ux[i] ) * ( uy[j+lpi_p[1]] - uy[j] )
+                scale2D = ( ux[i+lpi_p[0]+1] - ux[i] ) * ( uy[j+lpi_p[1]+1] - uy[j] )
                 elementData = [[i_elt+1], lpi_p, pts_x, pts_y \
                 , [scale2D], neighbours, list_indices]
 
@@ -3220,7 +3225,9 @@ class cad_geometry(object):
 
                 list_elementData.append(lineElementData)
         # ...
+        # .................................................
 
+        # .................................................
         # ... sets the list of Basis
         list_basisData = []
         list_i = range(0,lpi_n[0]-1,lpi_p[0])
@@ -3250,7 +3257,9 @@ class cad_geometry(object):
 
                 list_basisData.append(lineBasisData)
         # ...
+        # .................................................
 
+        # .................................................
         # ... sets the list of connectivities
         list_connectivityData = []
         list_i = range(0,lpi_n[0]-1,lpi_p[0])
@@ -3262,7 +3271,8 @@ class cad_geometry(object):
 
                 # ... local Bezier-extraction matrix
                 M = local_LM[:,i_elt]
-                M = M.reshape(M.size)
+                M = np.ravel(M, order='F')
+#                M = M.reshape(M.size)
                 # ...
 
                 # ... number of non vanishing basis per element
@@ -3278,14 +3288,68 @@ class cad_geometry(object):
 
                 list_connectivityData.append(lineConnectivityData)
         # ...
+        # .................................................
+
+        # .................................................
+        # ... sets the list of Dirichlet Basis functions for each Element
+        #     All external faces are set to Dirichlet
+        list_DirFaces = []
+        for i in range(0, geo.npatchs):
+            list_DirFaces.append([])
+
+        list_extFaces = geo.external_faces
+        for extFaces in list_extFaces:
+            patch_id    = extFaces[0]
+            face_id     = extFaces[1]
+            list_DirFaces[patch_id].append(face_id)
+        # ...
+
+        # ... compute the corresponding connectivity
+        from caid.numbering.boundary_conditions import boundary_conditions
+        con_dir = connectivity(geo)
+        bc = boundary_conditions(geo)
+        bc.dirichlet(geo, list_DirFaces)
+        con_dir.init_data_structure(bc)
+        # ...
+
+        nrb = geo_ref[0]
+        local_LM = con_dir.LM[0]
+
+        list_dirichletData = []
+        list_i = range(0,lpi_n[0]-1,lpi_p[0])
+        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        for enum_j, j in enumerate(list_j):
+            for enum_i, i in enumerate(list_i):
+                # compute index element index
+                i_elt = enum_i + enum_j * len(list_i)
+
+                nen = (lpi_p[0]+1) * (lpi_p[1]+1)
+                list_Dirichlet = np.zeros(nen, dtype=np.int)
+                for enum_lm, lm in enumerate(local_LM[:, i_elt]):
+                    if lm == 0:
+                        list_Dirichlet[enum_lm] = 1
+
+
+                dirichletData = [[i_elt+1], [nen], list_Dirichlet]
+
+                lineDirichletData = []
+                for data in dirichletData:
+                    for d in data:
+                        lineDirichletData.append(d)
+
+                list_dirichletData.append(lineDirichletData)
+        # ...
+        # .................................................
 
         if filename is not None:
-            # ...
-            # exporting files
-            # ...
+            # .................................................
+            # ... exporting files
             fmt = '%.15f'
             fmt_int = '%d'
             fmt_nodes = '%d, %.15f, %.15f'
+            # .................................................
+
+            # .................................................
             a = open(filename+"_nodes.txt", "w")
             # ... write size of list_nodeData
             a.write(str(len(list_nodeData))+' \n')
@@ -3295,7 +3359,9 @@ class cad_geometry(object):
                 line = fmt_nodes % tuple(L) +' \n'
                 a.write(line)
             a.close()
-            #
+            # .................................................
+
+            # .................................................
             a = open(filename+"_elements.txt", "w")
             # ... write size of list_elementData
             a.write(str(len(list_elementData))+' \n')
@@ -3314,7 +3380,9 @@ class cad_geometry(object):
                 line = ''.join(str(fmt % e)+', ' for e in L[3:])[:-2]+' \n'
                 a.write(line)
             a.close()
-            #
+            # .................................................
+
+            # .................................................
             a = open(filename+"_basis.txt", "w")
             # ... write size of list_basisData
             a.write(str(len(list_basisData))+' \n')
@@ -3325,7 +3393,9 @@ class cad_geometry(object):
                 line = ''.join(str(fmt % e)+', ' for e in L[1:])[:-2]+' \n'
                 a.write(line)
             a.close()
-            #
+            # .................................................
+
+            # .................................................
             a = open(filename+"_connectivity.txt", "w")
             # ... write size of list_connectivityData
             a.write(str(len(list_connectivityData))+' \n')
@@ -3337,6 +3407,23 @@ class cad_geometry(object):
                 line = str(L[1]) + ' \n'
                 a.write(line)
                 # ... local LM
+                line = ''.join(str(fmt_int % e)+', ' for e in L)[2:-2]+' \n'
+                a.write(line)
+            a.close()
+            # ...
+
+            # .................................................
+            a = open(filename+"_dirichlet.txt", "w")
+            # ... write size of list_connectivityData
+            a.write(str(len(list_dirichletData))+' \n')
+            for L in list_dirichletData:
+                # ... element id
+                line = str(L[0]) + ' \n'
+                a.write(line)
+                # ... number of non vanishing basis per element
+                line = str(L[1]) + ' \n'
+                a.write(line)
+                # ... dirichlet nodes
                 line = ''.join(str(fmt_int % e)+', ' for e in L)[2:-2]+' \n'
                 a.write(line)
             a.close()
