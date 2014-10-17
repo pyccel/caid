@@ -3147,7 +3147,7 @@ class cad_geometry(object):
         list_IndexElt = list_IndexElt.transpose()
 
         # .................................................
-        # ... sets the list of Node
+        # ... sets the list of Nodes
         list_indexNodes = []
         list_nodeData = []
 
@@ -3155,8 +3155,8 @@ class cad_geometry(object):
 #        list_j = range(0,lpi_n[1],lpi_p[1])
         list_i = range(0,lpi_n[0])
         list_j = range(0,lpi_n[1])
-        for enum_i, i in enumerate(list_i):
-            for enum_j, j in enumerate(list_j):
+        for enum_j, j in enumerate(list_j):
+            for enum_i, i in enumerate(list_i):
                 # compute index element index
                 i_elt = enum_i + enum_j * len(list_i)
 
@@ -3264,8 +3264,8 @@ class cad_geometry(object):
         list_connectivityData = []
         list_i = range(0,lpi_n[0]-1,lpi_p[0])
         list_j = range(0,lpi_n[1]-1,lpi_p[1])
-        for enum_i, i in enumerate(list_i):
-            for enum_j, j in enumerate(list_j):
+        for enum_j, j in enumerate(list_j):
+            for enum_i, i in enumerate(list_i):
                 # compute index element index
                 i_elt = enum_i + enum_j * len(list_i)
 
@@ -3338,6 +3338,57 @@ class cad_geometry(object):
                         lineDirichletData.append(d)
 
                 list_dirichletData.append(lineDirichletData)
+        # ...
+        # .................................................
+
+        # .................................................
+        # ... sets the B-net
+        nrb = geo[0]
+        lpi_n = nrb.shape
+        lpi_p = nrb.degree
+
+        list_BnetData = []
+        list_nBnet    = []
+
+        list_i = range(0,lpi_n[0]-lpi_p[0])
+        list_j = range(0,lpi_n[1]-lpi_p[1])
+        for enum_j, j in enumerate(list_j):
+            for enum_i, i in enumerate(list_i):
+                # compute index element index
+                i_elt = enum_i + enum_j * len(list_i)
+
+                # ... vertex indices
+                list_indices = []
+                for _j in range(j, j+lpi_p[1]):
+                    for _i in range(i, i+lpi_p[0]):
+                        _i1 = _i + 1
+                        _j1 = _j + 1
+
+                        # P00 = [i,j]
+                        I_00 = _i + _j * lpi_n[0]
+                        # P10 = [i+1,j]
+                        I_10 = _i1 + _j * lpi_n[0]
+                        # P01 = [i,j+1]
+                        I_01 = _i + _j1 * lpi_n[0]
+                        # P11 = [i+1,j+1]
+                        I_11 = _i1 + _j1 * lpi_n[0]
+
+                        indices = [I_00 + 1, I_10 + 1, I_11 + 1, I_01 + 1]
+                        list_indices.append(indices)
+                # ...
+
+                nBnet = len(list_indices)
+
+                list_nBnet.append(nBnet)
+
+                BnetData = [[i_elt+1], [nBnet], list_indices]
+
+                lineBnetData = []
+                for data in BnetData:
+                    for d in data:
+                        lineBnetData.append(d)
+
+                list_BnetData.append(lineBnetData)
         # ...
         # .................................................
 
@@ -3429,6 +3480,26 @@ class cad_geometry(object):
             a.close()
             # ...
 
+            # .................................................
+            a = open(filename+"_bnet.txt", "w")
+            # ... write size of list_connectivityData
+            a.write(str(len(list_BnetData))+' \n')
+            # ... write max of n-Bnet per element
+            max_nbnet = np.max(np.asarray(list_nBnet))
+            a.write(str(max_nbnet)+' \n')
+            for L in list_BnetData:
+                # ... element id
+                line = str(L[0]) + ' \n'
+                a.write(line)
+                # ... nBnet
+                line = str(L[1]) + ' \n'
+                a.write(line)
+                # ... B-net nodes indices
+                for data in L[2:]:
+                    line = ''.join(str(fmt_int % e)+', ' for e in data)[:-2]+' \n'
+                    a.write(line)
+            a.close()
+            # ...
         return list_nodeData, list_elementData
 
 
