@@ -14,6 +14,7 @@ class tesselation:
         Args:
             mat : list of vectors. mat.shape = [n,3]
             times: multiplicity for each vector. times.shape = [n,1]
+            limiter: a function that returns True if x+iv is also inside the domain
         """
         list_pts = [x0]
         n,d = mat.shape
@@ -31,35 +32,82 @@ class tesselation:
         for i in range(0,n):
             points[i,:] = list_pts[i][:]
         self._points = points
+        self.limiter = None
+
+        print "=== done ==="
 
     @property
     def points(self):
         return self._points
 
+    def set_limiter(self, limiter):
+        self.limiter = limiter
+
     def plot(self):
-        points = self.points
-        plt.plot(points[:,0], points[:,1], 'ob')
+        list_pts_in = [] ; list_pts_out = []
+        for p in self.points:
+            if self.limiter(p):
+                list_pts_in.append(p)
+            else:
+                list_pts_out.append(p)
+
+        list_pts = list_pts_in
+        n = len(list_pts)
+        points = np.zeros((n,3))
+        for i in range(0,n):
+            points[i,:] = list_pts[i][:]
+        points_in = points
+
+        list_pts = list_pts_out
+        n = len(list_pts)
+        points = np.zeros((n,3))
+        for i in range(0,n):
+            points[i,:] = list_pts[i][:]
+        points_out = points
+
+        plt.plot(points_in[:,0], points_in[:,1], 'ob')
+        plt.plot(points_out[:,0], points_out[:,1], 'or')
         plt.show()
 
 
 
 if __name__ == "__main__":
-    r1 = [ 1.0, 0.0, 0. ]
-    r2 = [ 0.0, 1.0, 0. ]
-    r3 = [ 1.0, 1.0, 0. ]
-#    r4 = [-1.0, 1.0, 0. ]
+    h = 0.2
+    r1 = h * np.array([ 1.0, 0.0, 0. ])
+    r2 = h * np.array([ 0.0, 1.0, 0. ])
+    r3 = h * np.array([ 1.0, 1.0, 0. ])
+    r4 = h * np.array([-1.0, 1.0, 0. ])
 
-    list_pts = [r1, r2, r3]
-#    list_pts = [r1, r2, r3, r4]
+#    list_pts = [r1, r2, r3]
+#    times = [4, 4, 4]
+#    times = [8, 8, 8]
+#    times = [10, 10, 10]
+    list_pts = [r1, r2, r3, r4]
+    times = [4, 4, 4, 4]
+#    times = [40, 40, 40, 40]
+
     n = len(list_pts)
     mat = np.zeros((n,3))
     for i in range(0,n):
         mat[i,:] = list_pts[i][:]
 
-    origin = np.asarray([0.,0.,0.])
-    times = [4, 4, 4, 4]
+    origin = np.asarray([-0.,-2.,0.])
+
+    def limiter(x):
+        if (x[0]-0.)**2 + (x[1]-0.)**2 <= 1.:
+            return True
+        else:
+            return False
+
+    def boundary(x):
+        return (x[0]-0.)**2 + (x[1]-0.)**2
 
     tess = tesselation(origin, mat, times)
+    tess.set_limiter(limiter)
+
+    t = np.linspace(0.,2*np.pi, 100)
+    R = [np.cos(t), np.sin(t)]
+    plt.plot(R[0], R[1],'-g')
     tess.plot()
 
 
