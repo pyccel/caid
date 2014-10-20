@@ -4,6 +4,10 @@ from numpy import cos, sin, pi
 import numpy.linalg as la
 import matplotlib.tri as mtri
 import matplotlib.pyplot as plt
+from scipy.spatial import ConvexHull
+from matplotlib.patches import Circle, Wedge, Polygon
+from matplotlib.collections import PatchCollection
+import matplotlib
 
 class tesselation:
     def __init__(self, origin, mat):
@@ -86,6 +90,17 @@ class tesselation:
         plt.plot(points_in[:,0], points_in[:,1], 'o'+color)
         plt.plot(points_out[:,0], points_out[:,1], 'or')
 
+    @property
+    def polygon(self):
+        points = self.control[:,:2]
+        hull = ConvexHull(points)
+        points = points[hull.vertices,:2]
+        return Polygon(points, True)
+
+    def scale(self, h):
+        self._control *= h
+        self._origin  *= h
+
     def __str__(self):
         message = "origin " + str(self.origin) + " \n " + \
                 "vectors " + str(self.vectors)
@@ -93,19 +108,37 @@ class tesselation:
 
 
 if __name__ == "__main__":
+    R = 4.
     n = 1
     h = 0.25
-    r1 = h * np.array([ 1.0, 0.0, 0. ])
-    r2 = h * np.array([ 0.0, 1.0, 0. ])
-    r3 = h * np.array([ 1.0, 1.0, 0. ])
-    r4 = h * np.array([-1.0, 1.0, 0. ])
+    r1 = np.array([ 1.0, 0.0, 0. ])
+    r2 = np.array([ 0.0, 1.0, 0. ])
+    r3 = np.array([ 1.0, 1.0, 0. ])
+    r4 = np.array([-1.0, 1.0, 0. ])
 
-#    list_pts = [r1, r2, r3]
-#    times = [4, 4, 4]
-#    times = [8, 8, 8]
-#    times = [10, 10, 10]
-    list_pts = [r1, r2, r3, r4]
-    times = [[-n,n+2], [-n,n+2], [-n,n+2], [-n,n+2]]
+    e1 = np.array([ np.sqrt(3)/2., 0.5, 0. ])
+    e2 = np.array([-np.sqrt(3)/2., 0.5, 0. ])
+    e3 = np.array([0., 1.0, 0. ])
+
+    def test1():
+        list_pts = [r1, r2, r1, r2, r3]
+        list_t   = range(-6,4)
+        return list_pts, list_t
+
+    def test2():
+        list_pts = [r1, r2, r3, r4]
+        list_t   = range(-6,6)
+        return list_pts, list_t
+
+    def test3():
+        list_pts = [e1, e2, e3, e1, e2, e3]
+        list_t   = range(-6,6)
+        return list_pts, list_t
+
+
+#    list_pts, list_t = test1()
+#    list_pts, list_t = test2()
+    list_pts, list_t = test3()
 
     n = len(list_pts)
     mat = np.zeros((n,3))
@@ -115,7 +148,7 @@ if __name__ == "__main__":
     origin = np.asarray([0.,0.,0.])
 
     def limiter(x):
-        if (x[0]-0.)**2 + (x[1]-0.)**2 <= 1.:
+        if (x[0]-0.)**2 + (x[1]-0.)**2 <= 1:
             return True
         else:
             return False
@@ -123,24 +156,44 @@ if __name__ == "__main__":
     def boundary(x):
         return (x[0]-0.)**2 + (x[1]-0.)**2
 
+    fig, ax = plt.subplots()
+
     tess = tesselation(origin, mat)
     tess.set_limiter(limiter)
     tess.stencil()
+    tess.scale(h)
     tess.plot()
 
-    t = range(-6,6)
-    for j in t:
-        for i in t:
-            v = np.asarray([i*h,j*h,0.])
+    patches = []
+    patches.append(tess.polygon)
+
+#    plt.colorbar(p)
+
+    for j in list_t:
+        for i in list_t:
+            v = i*tess.vectors[0,:3] + j*tess.vectors[1,:3]
             tess.translate(v-tess.origin)
             tess.stencil()
-            tess.plot()
-            if (i==0) and (j==0):
-                tess.highlight()
+            tess.scale(h)
+#            tess.plot()
+
+            if ((i == 0) and (j == 0)) or \
+               ((i == 1) and (j == 0)) or \
+               ((i == -3) and (j == -3)):
+
+#                tess.highlight()
+                patches.append(tess.polygon)
+                tess.plot()
+
+    colors = 100*np.random.rand(len(patches))
+    p = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.4)
+    p.set_array(np.array(colors))
+    ax.add_collection(p)
 
     t = np.linspace(0.,2*np.pi, 100)
-    R = [np.cos(t), np.sin(t)]
-    plt.plot(R[0], R[1],'-k')
+    r = [np.cos(t), np.sin(t)]
+    plt.plot(r[0], r[1],'-k')
+
     plt.show()
 
 
