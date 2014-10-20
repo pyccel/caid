@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import numpy as np
 from numpy import cos, sin, pi
 import numpy.linalg as la
@@ -12,12 +11,38 @@ import matplotlib
 def limiter_default(x):
     return True
 
+class mesh(object):
+    def __init__(self, points, mat):
+        """
+        Creates a mesh which nodes are defined by points
+        which were generated using the matrix mat
+        Args:
+            points : list of points' coordinates. points.shape = [N,2]
+            mat    : list of vectors. mat.shape = [n,3]
+        """
+        self._points  = np.copy(points)
+        # self._vectors = np.copy(mat)
+        n,d = mat.shape
+        self._vectors = np.zeros((n,4))
+        self._vectors[...,:3] = mat[:,:3]
+
+
+    @property
+    def points(self):
+        return self._points
+
+    @property
+    def vectors(self):
+        return self._vectors
+
+
+
 class stencil(object):
     def __init__(self, origin, mat, limiter=None):
         """
-        creates the box-splines tesselation using mat.
+        creates the box-splines support using mat.
         Args:
-            mat : list of vectors. mat.shape = [n,3]
+            mat : list of vectors. mat.shape = [n,dimension]
         """
         self._origin = origin
         self._control= []
@@ -249,6 +274,33 @@ class tesselation:
                 new_sten.translate(v-new_sten.origin)
                 self.append(new_sten)
 
+
+#     def __init__(self, mesh, limiter=None):
+#         self._list = []
+#         self._currentElt = -1
+# #        self._list_i = list_i
+# #        self._list_j = list_j
+# #        self._origin = origin
+
+#         n,d = mesh.vectors.shape
+#         self._vectors = np.zeros((n,4))
+#         self._vectors[...,:3] = mesh.vectors[:,:3]
+
+#         if limiter is None:
+#             self.limiter = limiter_default
+#         else:
+#             self.limiter = limiter
+
+#         sten = stencil(origin, mat, limiter=limiter)
+#         self.append(sten)
+#         for j in list_j:
+#             for i in list_i:
+#                 new_sten = sten.copy()
+#                 v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
+#                 new_sten.translate(v-new_sten.origin)
+#                 self.append(new_sten)
+
+
     @property
     def origin(self):
         return self._origin
@@ -373,16 +425,16 @@ if __name__ == "__main__":
         return list_pts, list_t
 
 
-    list_pts, list_t = test1()
+#    list_pts, list_t = test1()
 #    list_pts, list_t = test2()
-#    list_pts, list_t = test3()
+    list_pts, list_t = test3()
 
     n = len(list_pts)
     mat = np.zeros((n,3))
     for i in range(0,n):
         mat[i,:] = list_pts[i][:]
 
-    origin = np.asarray([0.,0.,0.])
+    origin = np.asarray([0.,0.,0.]) - 2.*e3
 
     def limiter(x):
         if (x[0]-0.)**2 + (x[1]-0.)**2 <= R**2:
@@ -409,14 +461,14 @@ if __name__ == "__main__":
 
     for sten in tess:
         sten.plot()
-        patches.append(sten.polygon)
+        # patches.append(sten.polygon)
 
     for sten in T:
         sten.plot()
 #        patches.append(sten.polygon)
 
-#    for i in [0,1,2]:
-#        patches.append(T.stencils[i].polygon)
+    for i in [0,1,2]:
+        patches.append(tess.stencils[i].polygon)
 
 
 #    sten = stencil(origin, mat)
@@ -453,7 +505,4 @@ if __name__ == "__main__":
     r = [R*np.cos(t), R*np.sin(t)]
     plt.plot(r[0], r[1],'-k')
 
-    plt.show()
-
-
-
+    plt.show(block = True)
