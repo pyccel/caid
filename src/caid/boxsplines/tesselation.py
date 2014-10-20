@@ -8,6 +8,7 @@ from scipy.spatial import ConvexHull
 from matplotlib.patches import Circle, Wedge, Polygon
 from matplotlib.collections import PatchCollection
 import matplotlib
+from scipy.spatial import Delaunay
 
 def limiter_default(x):
     return True
@@ -29,6 +30,8 @@ class stencil(object):
         n,d = mat.shape
         self._vectors = np.zeros((n,4))
         self._vectors[...,:3] = mat[:,:3]
+
+        self._tri = None
 
         self.update()
 
@@ -134,12 +137,66 @@ class stencil(object):
         plt.plot(points_in[:,0], points_in[:,1], 'o'+color)
         plt.plot(points_out[:,0], points_out[:,1], 'or')
 
+        points = self.control
+
+        self.triangulate()
+        plt.triplot(points[:,0], points[:,1], self.tri.simplices.copy())
+
     @property
     def polygon(self):
         points = self.control[:,:2]
         hull = ConvexHull(points)
         points = points[hull.vertices,:2]
         return Polygon(points, True)
+
+    @property
+    def boundary(self):
+        points = self.control[:,:2]
+        hull = ConvexHull(points)
+        return hull.vertices
+
+    @property
+    def tri(self):
+        return self._tri
+
+    def is_inside(self, pts):
+        """
+        returns a boolean array for each point in pts
+        pts must be array((n,d)) with d >= 2
+        """
+        list_bool = []
+        n,d = pts.shape
+        for i in range(0, n):
+            P = pts[i,:2]
+            list_bool.append(self.is_inside_single(P))
+
+        return list_bool
+
+
+    def is_inside_single(self, P):
+        """
+        returns True if P is inside the stencil
+        """
+        x = P[0] ; y = P[1]
+
+        points = self.control[self.boundary,:2]
+
+        n,d = points.shape
+        inside =False
+
+        p1x,p1y = points[0,:2]
+        for i in range(n+1):
+            p2x,p2y = points[i % n,:2]
+            if y > min(p1y,p2y):
+                if y <= max(p1y,p2y):
+                    if x <= max(p1x,p2x):
+                        if p1y != p2y:
+                            xinters = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                        if p1x == p2x or x <= xinters:
+                            inside = not inside
+            p1x,p1y = p2x,p2y
+
+        return inside
 
     def scale(self, h):
         self._control *= h
@@ -223,10 +280,49 @@ class stencil(object):
         T = tesselation(self.origin, self.vectors, list_i, list_j, limiter=self.limiter)
         return T
 
+    def triangulate(self):
+        self._tri = Delaunay(self.control[:,:2])
+
+
+class triangulation(object):
+    def __init__(self, list_stencil):
+        self._list = []
+        self._currentElt = -1
+
+        self._list_stencil = list_stencil
+
+    def __len__(self):
+        return len(self._list)
+
+    def index(self, tri):
+        return self._list.index(tri)
+
+    def next(self):
+        if len(self) == 0:
+            raise StopIteration
+        self._currentElt += 1
+        if self._currentElt >= len(self):
+            self._currentElt = -1
+            raise StopIteration
+        return self._list[self._currentElt]
+
+    def __iter__(self):
+        return self
+
+    def __getitem__(self, key):
+        return self._list[key]
+
+    def find_stencils(self, i, list_stencil):
+        """
+        find stencils covering the current triangle
+        """
+        pass
+
 class tesselation:
     def __init__(self, origin, mat, list_i, list_j, limiter=None):
         self._list = []
         self._currentElt = -1
+
         self._list_i = list_i
         self._list_j = list_j
         self._origin = origin
@@ -344,6 +440,8 @@ class tesselation:
 
 
 if __name__ == "__main__":
+    patches = []
+
     R = 4.
     n = 1
     h = 1. # 0.25
@@ -373,9 +471,9 @@ if __name__ == "__main__":
         return list_pts, list_t
 
 
-    list_pts, list_t = test1()
+#    list_pts, list_t = test1()
 #    list_pts, list_t = test2()
-#    list_pts, list_t = test3()
+    list_pts, list_t = test3()
 
     n = len(list_pts)
     mat = np.zeros((n,3))
@@ -397,22 +495,32 @@ if __name__ == "__main__":
 
     sten_ref = stencil(origin, mat, limiter=limiter)
     sten_ref.scale(h)
-    tess = sten_ref.expand(axis=0, bounds=[-7,7])
-    tess.scale(h)
-    print len(tess)
+    patches.append(sten_ref.polygon)
+    sten_ref.plot()
 
-    T = tess.expand(axis=1, bounds=[-7,7])
-    T.scale(h)
-    print len(T)
+    P = [1.,5.]
+    pts = np.zeros((3,2))
+    pts[0,0] = 1.; pts[0,1] = 1.
+    pts[1,0] = 1.5; pts[1,1] = 1.
+    pts[2,0] = 1.; pts[2,1] = 2.
 
-    patches = []
+    plt.plot(pts[:,0], pts[:,1], 'og')
+    print sten_ref.is_inside(pts)
 
-    for sten in tess:
-        sten.plot()
-        patches.append(sten.polygon)
+#    tess = sten_ref.expand(axis=0, bounds=[-7,7])
+#    tess.scale(h)
+#    print len(tess)
 
-    for sten in T:
-        sten.plot()
+#    T = tess.expand(axis=1, bounds=[-7,7])
+#    T.scale(h)
+#    print len(T)
+
+#    for sten in tess:
+##        sten.plot()
+#        patches.append(sten.polygon)
+
+#    for sten in T:
+#        sten.plot()
 #        patches.append(sten.polygon)
 
 #    for i in [0,1,2]:
