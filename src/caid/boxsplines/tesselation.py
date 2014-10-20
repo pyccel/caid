@@ -9,7 +9,10 @@ from matplotlib.patches import Circle, Wedge, Polygon
 from matplotlib.collections import PatchCollection
 import matplotlib
 
-class tesselation:
+def limiter_default(x):
+    return True
+
+class stencil(object):
     def __init__(self, origin, mat):
         """
         creates the box-splines tesselation using mat.
@@ -18,11 +21,13 @@ class tesselation:
         """
         self._origin = origin
         self._control= []
-        self.limiter = None
+        self.limiter = limiter_default
 
         n,d = mat.shape
         self._vectors = np.zeros((n,4))
         self._vectors[...,:3] = mat[:,:3]
+
+        self.update()
 
     @property
     def origin(self):
@@ -39,7 +44,7 @@ class tesselation:
     def set_limiter(self, limiter):
         self.limiter = limiter
 
-    def stencil(self):
+    def update(self):
         mat = self.vectors
         n,d = mat.shape
         list_pts = [self.origin]
@@ -58,6 +63,7 @@ class tesselation:
 
     def translate(self, displ):
         self._origin = np.asarray(self._origin) + displ
+        self.update()
 
     def highlight(self):
         x = self.control[:,0]
@@ -106,6 +112,88 @@ class tesselation:
                 "vectors " + str(self.vectors)
         return message
 
+
+    def copy(self):
+        """
+        Copy a stencil object.
+
+        Returns a new instace of the stencil objects with copies of the
+        control points and knot vectors. Modifying the knot vector or
+        control points of the returned object WILL NOT affect this
+        object.
+
+        Examples
+        --------
+
+        Create a random curve, copy the curve, change the control points,
+        demonstrate that now c1 and c2 are different.
+
+        >>> C = np.random.rand(5,2)
+        >>> U = [0,0,1,2,3,4,4]
+        >>> c1 = NURBS([U], C)
+        >>> c2 = c1.copy()
+        >>> c2.control[2,:] = [1.0,1.0,0.0,1.0]
+        >>> (abs(c2.control-c1.control)).max() < 1.0e-15
+        False
+
+        """
+        sten = stencil.__new__(type(self))
+        sten._origin  = self.origin.copy()
+        sten._vectors = self.vectors.copy()
+        sten._control = self.control.copy()
+        sten.limiter  = self.limiter
+        return sten
+
+class tesselation:
+    def __init__(self, origin, mat, list_i, list_j, h=0.25):
+        self._list = []
+        self._currentElt = -1
+        sten = stencil(origin, mat)
+#        sten.scale(h)
+        self.append(sten)
+        for j in list_j:
+            for i in list_i:
+                new_sten = sten.copy()
+                v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
+                new_sten.translate(v-new_sten.origin)
+#                new_sten.scale(h)
+                self.append(new_sten)
+
+    def plot(self):
+        for sten in self:
+            sten.plot()
+
+    def scale(self, h):
+        for sten in self:
+            sten.scale(h)
+
+    @property
+    def stencils(self):
+        return self._list
+
+    def append(self, sten):
+        self._list.append(sten)
+
+    def __len__(self):
+        return len(self._list)
+
+    def index(self, sten):
+        return self._list.index(sten)
+
+    def next(self):
+        if len(self) == 0:
+            raise StopIteration
+        self._currentElt += 1
+        if self._currentElt >= len(self):
+            self._currentElt = -1
+            raise StopIteration
+        return self._list[self._currentElt]
+
+    def __iter__(self):
+        return self
+
+    def __getitem__(self, key):
+        return self._list[key]
 
 if __name__ == "__main__":
     R = 4.
@@ -158,32 +246,43 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
 
-    tess = tesselation(origin, mat)
-    tess.set_limiter(limiter)
-    tess.stencil()
-    tess.scale(h)
-    tess.plot()
+    list_i = list_t
+    list_j = list_t
+    T = tesselation(origin, mat, list_i, list_j)
+    T.scale(h)
+    print len(T)
 
     patches = []
-    patches.append(tess.polygon)
+#    for i in [3]:
+    for i in [0,3,4]:
+        patches.append(T.stencils[i].polygon)
+        T.stencils[i].plot()
 
-#    plt.colorbar(p)
 
-    for j in list_t:
-        for i in list_t:
-            v = i*tess.vectors[0,:3] + j*tess.vectors[1,:3]
-            tess.translate(v-tess.origin)
-            tess.stencil()
-            tess.scale(h)
-#            tess.plot()
-
-            if ((i == 0) and (j == 0)) or \
-               ((i == 1) and (j == 0)) or \
-               ((i == -3) and (j == -3)):
-
-#                tess.highlight()
-                patches.append(tess.polygon)
-                tess.plot()
+#    sten = stencil(origin, mat)
+#    sten.set_limiter(limiter)
+#    sten.scale(h)
+#    sten.plot()
+#
+#    patches = []
+#    patches.append(sten.polygon)
+#
+##    plt.colorbar(p)
+#
+#    for j in list_t:
+#        for i in list_t:
+#            v = i*sten.vectors[0,:3] + j*sten.vectors[1,:3]
+#            sten.translate(v-sten.origin)
+#            sten.scale(h)
+##            sten.plot()
+#
+#            if ((i == 0) and (j == 0)) or \
+#               ((i == 1) and (j == 0)) or \
+#               ((i == -3) and (j == -3)):
+#
+##                sten.highlight()
+#                patches.append(sten.polygon)
+#                sten.plot()
 
     colors = 100*np.random.rand(len(patches))
     p = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.4)
