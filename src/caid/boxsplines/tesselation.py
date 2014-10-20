@@ -13,7 +13,7 @@ def limiter_default(x):
     return True
 
 class stencil(object):
-    def __init__(self, origin, mat):
+    def __init__(self, origin, mat, limiter=None):
         """
         creates the box-splines tesselation using mat.
         Args:
@@ -21,7 +21,10 @@ class stencil(object):
         """
         self._origin = origin
         self._control= []
-        self.limiter = limiter_default
+        if limiter is None:
+            self.limiter = limiter_default
+        else:
+            self.limiter = limiter
 
         n,d = mat.shape
         self._vectors = np.zeros((n,4))
@@ -71,13 +74,15 @@ class stencil(object):
         z = np.ones_like(x)
         plt.pcolor(x,y,z)
 
-    def plot(self, color='b'):
+    def filter(self):
         list_pts_in = [] ; list_pts_out = []
-        for p in self.control:
-            if self.limiter(p):
-                list_pts_in.append(p)
+        n,d = self.control.shape
+        for i in range(0,n):
+            P = self.control[i,:3]
+            if self.limiter(P):
+                list_pts_in.append(P)
             else:
-                list_pts_out.append(p)
+                list_pts_out.append(P)
 
         list_pts = list_pts_in
         n = len(list_pts)
@@ -92,6 +97,11 @@ class stencil(object):
         for i in range(0,n):
             points[i,:] = list_pts[i][:]
         points_out = points
+
+        return points_in, points_out
+
+    def plot(self, color='b'):
+        points_in, points_out = self.filter()
 
         plt.plot(points_in[:,0], points_in[:,1], 'o'+color)
         plt.plot(points_out[:,0], points_out[:,1], 'or')
@@ -144,19 +154,51 @@ class stencil(object):
         sten.limiter  = self.limiter
         return sten
 
+    def bounds(self, axis=0):
+        i = 0
+        ll_condition = True
+        while ll_condition and (i<10):
+            sten = self.copy()
+            v = i*self.vectors[axis,:3]
+            sten.translate(v-self.origin)
+            points_in, points_out = sten.filter()
+            print ">>> ", i, points_in.shape[0]
+            if points_in.shape[0] == 0:
+                ll_condition = False
+            i += 1
+        M = i
+
+        i = 0
+        ll_condition = True
+        while ll_condition and (i>-10):
+            sten = self.copy()
+            v = i*sten.vectors[axis,:3]
+            sten.translate(v-sten.origin)
+            points_in, points_out = sten.filter()
+            print "<<< ", i, points_in.shape[0]
+            if points_in.shape[0] == 0:
+                ll_condition = False
+            i -= 1
+        m = i
+        return m, M
+
 class tesselation:
-    def __init__(self, origin, mat, list_i, list_j, h=0.25):
+    def __init__(self, origin, mat, list_i, list_j, limiter=None):
         self._list = []
         self._currentElt = -1
-        sten = stencil(origin, mat)
-#        sten.scale(h)
+
+        if limiter is None:
+            self.limiter = limiter_default
+        else:
+            self.limiter = limiter
+
+        sten = stencil(origin, mat, limiter=limiter)
         self.append(sten)
         for j in list_j:
             for i in list_i:
                 new_sten = sten.copy()
                 v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
                 new_sten.translate(v-new_sten.origin)
-#                new_sten.scale(h)
                 self.append(new_sten)
 
     def plot(self):
@@ -221,6 +263,7 @@ if __name__ == "__main__":
     def test3():
         list_pts = [e1, e2, e3, e1, e2, e3]
         list_t   = range(-6,6)
+#        list_t   = range(-2,2)
         return list_pts, list_t
 
 
@@ -246,17 +289,25 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
 
-    list_i = list_t
-    list_j = list_t
-    T = tesselation(origin, mat, list_i, list_j)
+    sten_ref = stencil(origin, mat, limiter=limiter)
+    sten_ref.scale(h)
+    m0, M0 = sten_ref.bounds(axis=0)
+    m1, M1 = sten_ref.bounds(axis=1)
+    print "m0, M0 ", m0, M0
+    print "m1, M1 ", m1, M1
+
+    list_i = range(m0,M0+1)
+    list_j = range(m1,M1+1)
+    T = tesselation(origin, mat, list_i, list_j, limiter=limiter)
     T.scale(h)
     print len(T)
 
     patches = []
-#    for i in [3]:
-    for i in [0,3,4]:
+    for sten in T:
+        sten.plot()
+
+    for i in [0,1,2]:
         patches.append(T.stencils[i].polygon)
-        T.stencils[i].plot()
 
 
 #    sten = stencil(origin, mat)
