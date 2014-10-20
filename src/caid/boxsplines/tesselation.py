@@ -55,8 +55,36 @@ class stencil(object):
             V = mat[i,:]
             points = []
             for x in list_pts:
-                points.append(x+V[:3])
+                ll_found = False
+                for y in list_pts:
+                    ll_found = ( np.linalg.norm(x+V[:3]-y) < 1.e-7 )
+                if not ll_found:
+                    points.append(x+V[:3])
             list_pts += points
+
+        n = len(list_pts)
+        points = np.zeros((n,3))
+        for i in range(0,n):
+            points[i,:] = list_pts[i][:]
+        self._control= points
+
+        self.clean_control()
+
+    def clean_control(self):
+        points = self.control
+        n,d = points.shape
+        list_isoccur = np.zeros(n, dtype=np.int)
+        for i in range(0,n):
+            x = points[i,:]
+            for j in range(i+1,n):
+                y = points[j,:]
+                if (np.linalg.norm(x-y) < 1.e-7):
+                    list_isoccur[j] = 1
+
+        list_pts = []
+        for i in range(0,n):
+            if list_isoccur[i] == 0:
+                list_pts.append(points[i,:])
 
         n = len(list_pts)
         points = np.zeros((n,3))
@@ -160,32 +188,52 @@ class stencil(object):
         while ll_condition and (i<10):
             sten = self.copy()
             v = i*self.vectors[axis,:3]
-            sten.translate(v-self.origin)
+            sten.translate(v)
             points_in, points_out = sten.filter()
-            print ">>> ", i, points_in.shape[0]
             if points_in.shape[0] == 0:
                 ll_condition = False
+            M = i
             i += 1
-        M = i
 
-        i = 0
+        i = -1
         ll_condition = True
         while ll_condition and (i>-10):
             sten = self.copy()
             v = i*sten.vectors[axis,:3]
-            sten.translate(v-sten.origin)
+            sten.translate(v)
             points_in, points_out = sten.filter()
-            print "<<< ", i, points_in.shape[0]
             if points_in.shape[0] == 0:
                 ll_condition = False
+            m = i
             i -= 1
-        m = i
-        return m, M
+        return m+1, M
+
+    def expand(self, axis=0, bounds= None):
+        if bounds is None:
+            m, M = self.bounds(axis=axis)
+        else:
+            m = bounds[0] ; M = bounds[1]
+
+        if axis ==0:
+            list_i = range(m,M)
+            list_j = range(0,1)
+        if axis ==1:
+            list_i = range(0,1)
+            list_j = range(m,M)
+        T = tesselation(self.origin, self.vectors, list_i, list_j, limiter=self.limiter)
+        return T
 
 class tesselation:
     def __init__(self, origin, mat, list_i, list_j, limiter=None):
         self._list = []
         self._currentElt = -1
+        self._list_i = list_i
+        self._list_j = list_j
+        self._origin = origin
+
+        n,d = mat.shape
+        self._vectors = np.zeros((n,4))
+        self._vectors[...,:3] = mat[:,:3]
 
         if limiter is None:
             self.limiter = limiter_default
@@ -200,6 +248,14 @@ class tesselation:
                 v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
                 new_sten.translate(v-new_sten.origin)
                 self.append(new_sten)
+
+    @property
+    def origin(self):
+        return self._origin
+
+    @property
+    def vectors(self):
+        return self._vectors
 
     def plot(self):
         for sten in self:
@@ -237,10 +293,60 @@ class tesselation:
     def __getitem__(self, key):
         return self._list[key]
 
+    def bounds(self, axis=1):
+        M = -10000
+        m =  10000
+        for stn in self:
+            i = 0
+            ll_condition = True
+            while ll_condition and (i<10):
+                sten = stn.copy()
+                v = i*stn.vectors[axis,:3]
+                sten.translate(v)
+                points_in, points_out = sten.filter()
+                if points_in.shape[0] == 0:
+                    ll_condition = False
+                _M = i
+                i += 1
+
+            i = 0
+            ll_condition = True
+            while ll_condition and (i>-10):
+                sten = stn.copy()
+                v = i*stn.vectors[axis,:3]
+                sten.translate(v)
+                points_in, points_out = sten.filter()
+                if points_in.shape[0] == 0:
+                    ll_condition = False
+                _m = i
+                i -= 1
+
+            M = max(_M,M)
+            m = min(_m,m)
+        return m+1, M
+
+    def expand(self, axis=1, bounds=None):
+        if bounds is None:
+            m, M = self.bounds(axis=axis)
+        else:
+            m = bounds[0] ; M = bounds[1]
+
+        if axis ==0:
+            ib = min(self._list_i) + m ; ie = max(self._list_i) + M + 1
+            list_i = range(ib,ie)
+            list_j = self._list_j
+        if axis ==1:
+            jb = min(self._list_j) + m ; je = max(self._list_j) + M + 1
+            list_i = self._list_i
+            list_j = range(jb,je)
+        T = tesselation(self.origin, self.vectors, list_i, list_j, limiter=self.limiter)
+        return T
+
+
 if __name__ == "__main__":
     R = 4.
     n = 1
-    h = 0.25
+    h = 1. # 0.25
     r1 = np.array([ 1.0, 0.0, 0. ])
     r2 = np.array([ 0.0, 1.0, 0. ])
     r3 = np.array([ 1.0, 1.0, 0. ])
@@ -267,9 +373,9 @@ if __name__ == "__main__":
         return list_pts, list_t
 
 
-#    list_pts, list_t = test1()
+    list_pts, list_t = test1()
 #    list_pts, list_t = test2()
-    list_pts, list_t = test3()
+#    list_pts, list_t = test3()
 
     n = len(list_pts)
     mat = np.zeros((n,3))
@@ -279,7 +385,7 @@ if __name__ == "__main__":
     origin = np.asarray([0.,0.,0.])
 
     def limiter(x):
-        if (x[0]-0.)**2 + (x[1]-0.)**2 <= 1:
+        if (x[0]-0.)**2 + (x[1]-0.)**2 <= R**2:
             return True
         else:
             return False
@@ -291,23 +397,26 @@ if __name__ == "__main__":
 
     sten_ref = stencil(origin, mat, limiter=limiter)
     sten_ref.scale(h)
-    m0, M0 = sten_ref.bounds(axis=0)
-    m1, M1 = sten_ref.bounds(axis=1)
-    print "m0, M0 ", m0, M0
-    print "m1, M1 ", m1, M1
+    tess = sten_ref.expand(axis=0, bounds=[-7,7])
+    tess.scale(h)
+    print len(tess)
 
-    list_i = range(m0,M0+1)
-    list_j = range(m1,M1+1)
-    T = tesselation(origin, mat, list_i, list_j, limiter=limiter)
+    T = tess.expand(axis=1, bounds=[-7,7])
     T.scale(h)
     print len(T)
 
     patches = []
+
+    for sten in tess:
+        sten.plot()
+        patches.append(sten.polygon)
+
     for sten in T:
         sten.plot()
+#        patches.append(sten.polygon)
 
-    for i in [0,1,2]:
-        patches.append(T.stencils[i].polygon)
+#    for i in [0,1,2]:
+#        patches.append(T.stencils[i].polygon)
 
 
 #    sten = stencil(origin, mat)
@@ -341,7 +450,7 @@ if __name__ == "__main__":
     ax.add_collection(p)
 
     t = np.linspace(0.,2*np.pi, 100)
-    r = [np.cos(t), np.sin(t)]
+    r = [R*np.cos(t), R*np.sin(t)]
     plt.plot(r[0], r[1],'-k')
 
     plt.show()
