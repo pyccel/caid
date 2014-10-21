@@ -36,7 +36,6 @@ class mesh(object):
         return self._vectors
 
 
-
 class stencil(object):
     def __init__(self, origin, mat, limiter=None):
         """
@@ -133,7 +132,13 @@ class stencil(object):
         for i in range(0,n):
             P = self.control[i,:3]
             if self.limiter(P):
-                list_pts_in.append(P)
+                norm = np.apply_along_axis(la.norm, 1, np.asarray(list_pts_in) - P)
+                if ((norm == 0).any()):
+                    list_pts_in.append(P)
+                if ((P != self.origin).all()) :
+                    new_sten = stencil(P, self.mat, limiter = self.limiter)
+                    list_extended_in, list_extended_out = new_sten.filter()
+                    list_pts_in.append(list_extended_in)
             else:
                 list_pts_out.append(P)
 
@@ -249,11 +254,25 @@ class stencil(object):
         return T
 
 class tesselation:
-    def __init__(self, origin, mat, list_i, list_j, limiter=None):
+    def __init__(self, origin, mat, list_i=None, list_j=None, mesh=None, limiter=None):
         self._list = []
         self._currentElt = -1
-        self._list_i = list_i
-        self._list_j = list_j
+
+        if list_i is None :
+            try :
+                n,d = mesh.vectors.shape
+                self.list_i = np.range(n)
+            except Exception as e:
+                print "Error in tesselation initializer: " + \
+                    "   Either mesh or list_i should be passed as a parameter"
+        else :
+            self._list_i = list_i
+
+        if list_j is None :
+            self.list_j = [0]
+        else :
+            self._list_j = list_j
+
         self._origin = origin
 
         n,d = mat.shape
@@ -265,40 +284,45 @@ class tesselation:
         else:
             self.limiter = limiter
 
-        sten = stencil(origin, mat, limiter=limiter)
-        self.append(sten)
-        for j in list_j:
-            for i in list_i:
-                new_sten = sten.copy()
-                v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
-                new_sten.translate(v-new_sten.origin)
-                self.append(new_sten)
+        if mesh is None :
+            sten = stencil(origin, mat, limiter=limiter)
+            self.append(sten)
+            for j in list_j:
+                for i in list_i:
+                    new_sten = sten.copy()
+                    v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
+                    new_sten.translate(v-new_sten.origin)
+                    self.append(new_sten)
+        else :
+            for i in range(m):
+                origin = mesh.points[i, :]
+                sten   = stencil(origin, mat, limiter=limiter)
+                self.append(sten)
 
 
-#     def __init__(self, mesh, limiter=None):
-#         self._list = []
-#         self._currentElt = -1
-# #        self._list_i = list_i
-# #        self._list_j = list_j
-# #        self._origin = origin
+    # def __init__(self, mesh, limiter=None):
+    #     self._list = []
+    #     self._currentElt = -1
+    #     # TODO : que faire pour list_i et list_j
+    #     # self._list_i = list_i
+    #     # self._list_j = list_j
+    #     self._origin = mesh.points[0, :]
 
-#         n,d = mesh.vectors.shape
-#         self._vectors = np.zeros((n,4))
-#         self._vectors[...,:3] = mesh.vectors[:,:3]
+    #     n,d = mesh.vectors.shape
+    #     m,k = mesh.points.shape
 
-#         if limiter is None:
-#             self.limiter = limiter_default
-#         else:
-#             self.limiter = limiter
+    #     self._vectors = np.zeros((n,4))
+    #     self._vectors[...,:3] = mesh.vectors[:,:3]
 
-#         sten = stencil(origin, mat, limiter=limiter)
-#         self.append(sten)
-#         for j in list_j:
-#             for i in list_i:
-#                 new_sten = sten.copy()
-#                 v = i*new_sten.vectors[0,:3] + j*new_sten.vectors[1,:3]
-#                 new_sten.translate(v-new_sten.origin)
-#                 self.append(new_sten)
+    #     if limiter is None:
+    #         self.limiter = limiter_default
+    #     else:
+    #         self.limiter = limiter
+
+    #     for i in range(m):
+    #         origin = mesh.points[i, :]
+    #         sten   = stencil(origin, mat, limiter=limiter)
+    #         self.append(sten)
 
 
     @property
