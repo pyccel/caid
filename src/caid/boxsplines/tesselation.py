@@ -33,8 +33,10 @@ class stencil(object):
 
         self._tri = None
         self._simplices_global_id = None
+        self._neighbours = [] # list of stencils that extend the current stencil
 
         self.update()
+        self.triangulate()
 
     @property
     def origin(self):
@@ -144,7 +146,6 @@ class stencil(object):
 
         points = self.control
 
-        self.triangulate()
         plt.triplot(points[:,0], points[:,1], self.tri.simplices.copy())
 
     @property
@@ -163,6 +164,10 @@ class stencil(object):
     @property
     def tri(self):
         return self._tri
+
+    @property
+    def neighbours(self):
+        return self._neighbours
 
     def is_inside(self, pts):
         """
@@ -289,6 +294,49 @@ class stencil(object):
         self._tri = Delaunay(self.control[:,:2])
         self._simplices_global_id = -np.ones(self.tri.simplices.shape[0], dtype=np.int)
 
+    def is_valid(self, resolution=1):
+        """
+        a stencil is valid with respect to a limiter, if there intersection is
+        not reduced to empty, point, face
+        """
+        dim= 2
+        n1 = resolution
+        n2 = resolution
+        X  = np.zeros((n1,n2))
+        Y  = np.zeros((n1,n2))
+        P  = np.zeros(dim)
+
+        k1 = np.linspace(0.,1.,n1+2)[1:-1]
+        k2 = np.linspace(0.,1.,n2+2)[1:-1]
+
+        R = self.vectors[:2,:2]
+
+        for i in range(n1) :
+            for j in range(n2) :
+                k = [k1[i], k2[j]]
+                [X[i,j], Y[i,j]] = np.dot(R,k)
+                P = [X[i,j], Y[i,j]] + self.origin[:2]
+                ll_flag = self.limiter(P)
+                if ll_flag:
+                    return True
+
+        return False
+
+    def __eq__(self, other):
+        ll_condition = True
+        ll_condition = ll_condition and (np.linalg.norm(self.origin-other.origin) < 1.e-7)
+
+        return ll_condition
+
+    def extend(self, sten):
+        ll_flag = False
+        for sten_ref in self.neighbours:
+            if sten == sten_ref:
+#            if id(sten) == id(sten_ref):
+                ll_flag = True
+        if not ll_flag:
+            self._neighbours.append(sten)
+
 class triangle(object):
     def __init__(self):
         self._list = []
@@ -323,8 +371,24 @@ class triangle(object):
         for data in self:
             sten = data['stencil']
             simplex_id = data['simplex_id']
-            message +=  str(id(sten)) + "   " + str(simplex_id) + " \n"
+            message +=  str(id(sten)) + "   " + str(simplex_id) + ", "
         return message
+
+    def extend(self):
+        """
+        returns the list of stencil that are valid
+        """
+        list_flag = []
+        list_stencil = []
+        for data in self:
+            sten = data['stencil']
+            simplex_id = data['simplex_id']
+            flag = sten.is_valid()
+            list_flag.append(flag)
+            if flag:
+                list_stencil.append(sten)
+        return list_stencil
+
 
 class triangulation(object):
     def __init__(self, list_stencil):
@@ -363,12 +427,61 @@ class triangulation(object):
             simplex_id = data['simplex_id']
             sten.simplices_global_id[simplex_id] = global_id
 
+    def initialize(self):
+        """
+        """
+        nstencil = len(self._list_stencil)
+        i_sten_ref = 0
+        sten_ref = self._list_stencil[i_sten_ref]
+        for enum, simplex in enumerate(sten_ref.tri.simplices):
+            T = triangle()
+            T.append(sten_ref, enum)
+            triang.append(T)
 
-    def find_stencils(self, i, list_stencil):
-        """
-        find stencils covering the current triangle
-        """
-        pass
+        for i_sten_ref in range(0, nstencil):
+            sten_ref = self._list_stencil[i_sten_ref]
+            for i_sten in range(i_sten_ref+1, nstencil):
+                sten = self._list_stencil[i_sten]
+                list_brc = []
+                points = sten.control
+                for T in sten.tri.simplices:
+                    pts = points[T]
+                    A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
+                    b = (A+B+C) / 3.
+                    list_brc.append(b)
+                list_pts = list_brc
+                n = len(list_pts)
+                points = np.zeros((n,3))
+                for i in range(0,n):
+                    points[i,:] = list_pts[i][:]
+                list_flag = sten_ref.is_inside(points)
+
+                for i in range(0, len(sten.tri.simplices)):
+                    barycenter = list_brc[i]
+                    flag = list_flag[i]
+                    if not flag:
+                        T = triangle()
+                        T.append(sten, i)
+                        triang.append(T)
+                    else:
+                        # find the triangle and then append [sten, vertices]
+                        simplex_id = sten_ref.tri.find_simplex(barycenter[:2])
+                        global_id = sten_ref.simplices_global_id[simplex_id]
+#                        print ">>> ", global_id, simplex_id, i
+                        T = triang[global_id]
+                        T.append(sten, i)
+
+    def extend(self):
+        for T in self:
+            l_stencils = T.extend()
+
+            n = len(l_stencils)
+            for i_sten_ref in range(0,n):
+                sten_ref = l_stencils[i_sten_ref]
+                for i_sten in range(0,n):
+                    sten = l_stencils[i_sten]
+                    if (i_sten_ref != i_sten):
+                        sten_ref.extend(sten)
 
 class tesselation:
     def __init__(self, origin, mat, list_i, list_j, limiter=None):
@@ -533,7 +646,10 @@ if __name__ == "__main__":
         mat[i,:] = list_pts[i][:]
 
     origin = np.asarray([0.,0.,0.])
+    origin1 = 2 * list_pts[0]
     origin2 = list_pts[0] + list_pts[1]
+    origin3 = 2 * list_pts[1]
+    origin_far = 5 * list_pts[1]
 
     def limiter(x):
         if (x[0]-0.)**2 + (x[1]-0.)**2 <= R**2:
@@ -551,90 +667,110 @@ if __name__ == "__main__":
     patches.append(sten_ref.polygon)
     sten_ref.plot()
 
-    P = [1.,5.]
-    pts = np.zeros((3,2))
-    pts[0,0] = 1.; pts[0,1] = 1.
-    pts[1,0] = 1.5; pts[1,1] = 1.
-    pts[2,0] = 1.; pts[2,1] = 2.
+    sten1 = stencil(origin1, mat, limiter=limiter)
+    sten1.scale(h)
+    patches.append(sten1.polygon)
+    sten1.plot()
 
-    plt.plot(pts[:,0], pts[:,1], 'og')
-    print sten_ref.is_inside(pts)
+    sten2 = stencil(origin2, mat, limiter=limiter)
+    sten2.scale(h)
+    patches.append(sten2.polygon)
+    sten2.plot()
+
+    sten3 = stencil(origin3, mat, limiter=limiter)
+    sten3.scale(h)
+    patches.append(sten3.polygon)
+    sten3.plot()
+
+    sten_far = stencil(origin_far, mat, limiter=limiter)
+    sten_far.scale(h)
+    patches.append(sten_far.polygon)
+    sten_far.plot()
+
+#    print sten_ref.is_valid()
+#
+#    P = [1.,5.]
+#    pts = np.zeros((3,2))
+#    pts[0,0] = 1.; pts[0,1] = 1.
+#    pts[1,0] = 1.5; pts[1,1] = 1.
+#    pts[2,0] = 1.; pts[2,1] = 2.
+#
+#    plt.plot(pts[:,0], pts[:,1], 'og')
+#    print sten_ref.is_inside(pts)
+
+#    P = [1.,5.]
+#    pts = np.zeros((3,2))
+#    pts[0,0] = 1.; pts[0,1] = 1.
+#    pts[1,0] = 1.5; pts[1,1] = 1.
+#    pts[2,0] = 1.; pts[2,1] = 2.
+#
+#    plt.plot(pts[:,0], pts[:,1], 'og')
+#    print sten.is_inside(pts)
+#
+#    tri = sten.tri
+#    list_brc = []
+#    points = sten.control
+#    for T in tri.simplices:
+#        pts = points[T]
+#        A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
+#        b = (A+B+C) / 3.
+#        list_brc.append(b)
+#
+#    list_pts = list_brc
+#    n = len(list_pts)
+#    points = np.zeros((n,3))
+#    for i in range(0,n):
+#        points[i,:] = list_pts[i][:]
+#    print sten_ref.is_inside(points)
+
+    list_stencil = [sten_ref, sten1, sten2, sten3, sten_far]
+    triang = triangulation(list_stencil)
+    triang.initialize()
+
+    triang.extend()
+
+    print len(sten_ref.neighbours)
+
+#    for enum, simplex in enumerate(sten_ref.tri.simplices):
+#        T = triangle()
+#        T.append(sten_ref, enum)
+#        triang.append(T)
+#
+#    tri = sten.tri
+#    list_brc = []
+#    points = sten.control
+#    for T in tri.simplices:
+#        pts = points[T]
+#        A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
+#        b = (A+B+C) / 3.
+#        list_brc.append(b)
+#    list_pts = list_brc
+#    n = len(list_pts)
+#    points = np.zeros((n,3))
+#    for i in range(0,n):
+#        points[i,:] = list_pts[i][:]
+#    list_flag = sten_ref.is_inside(points)
+#
+#    for i in range(0, len(sten.tri.simplices)):
+#        barycenter = list_brc[i]
+#        flag = list_flag[i]
+#        if not flag:
+#            T = triangle()
+#            T.append(sten, i)
+#            triang.append(T)
+#        else:
+#            # find the triangle and then append [sten, vertices]
+#            simplex_id = sten_ref.tri.find_simplex(barycenter[:2])
+#            global_id = sten_ref.simplices_global_id[simplex_id]
+#            print ">>> ", global_id, simplex_id, i
+#            T = triang[global_id]
+#            T.append(sten, i)
 
 
-    sten = stencil(origin2, mat, limiter=limiter)
-    sten.scale(h)
-    patches.append(sten.polygon)
-    sten.plot()
-
-    P = [1.,5.]
-    pts = np.zeros((3,2))
-    pts[0,0] = 1.; pts[0,1] = 1.
-    pts[1,0] = 1.5; pts[1,1] = 1.
-    pts[2,0] = 1.; pts[2,1] = 2.
-
-    plt.plot(pts[:,0], pts[:,1], 'og')
-    print sten.is_inside(pts)
-
-    tri = sten.tri
-    list_brc = []
-    points = sten.control
-    for T in tri.simplices:
-        pts = points[T]
-        A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
-        b = (A+B+C) / 3.
-        list_brc.append(b)
-
-    list_pts = list_brc
-    n = len(list_pts)
-    points = np.zeros((n,3))
-    for i in range(0,n):
-        points[i,:] = list_pts[i][:]
-    print sten_ref.is_inside(points)
-
-    triang = triangulation([sten_ref, sten])
-    for enum, simplex in enumerate(sten_ref.tri.simplices):
-        T = triangle()
-        T.append(sten_ref, enum)
-        triang.append(T)
-
-    tri = sten.tri
-    list_brc = []
-    points = sten.control
-    for T in tri.simplices:
-        pts = points[T]
-        A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
-        b = (A+B+C) / 3.
-        list_brc.append(b)
-    list_pts = list_brc
-    n = len(list_pts)
-    points = np.zeros((n,3))
-    for i in range(0,n):
-        points[i,:] = list_pts[i][:]
-    list_flag = sten_ref.is_inside(points)
-
-    for i in range(0, len(sten.tri.simplices)):
-        barycenter = list_brc[i]
-        flag = list_flag[i]
-        if not flag:
-            T = triangle()
-            T.append(sten, i)
-            triang.append(T)
-        else:
-            # find the triangle and then append [sten, vertices]
-            simplex_id = sten_ref.tri.find_simplex(barycenter[:2])
-            global_id = sten_ref.simplices_global_id[simplex_id]
-            print ">>> ", global_id, simplex_id, i
-            T = triang[global_id]
-            T.append(sten, i)
+#    for T in triang:
+#        print T
 
     print len(triang)
-
-    for T in triang:
-        print T
-
-
-
-
 
 #    tess = sten_ref.expand(axis=0, bounds=[-7,7])
 #    tess.scale(h)
