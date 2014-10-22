@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import numpy as np
 from numpy import cos, sin, pi, array
 import numpy.linalg as la
@@ -859,18 +860,36 @@ if __name__ == "__main__":
     r = [R*np.cos(t), R*np.sin(t)]
     plt.plot(r[0], r[1],'-k')
 
-    plt.show(block = True)
+    plt.show()
 
-
-    # CREATING A TRIANGULATION FROM A MESH -------------
-    # Creation of the mesh :
-    r1 = [ sqrt(3)/2., 0.5 ]
-    r2 = [-sqrt(3)/2., 0.5 ]
-
+    # --------- TEST WITH A MESH AS TRIANGULATION INITIALIZER
+    size = 6
+    dim = 3
+    r1 = [ np.sqrt(3)/2., 0.5, 0. ]
+    r2 = [-np.sqrt(3)/2., 0.5, 0. ]
+    r3 = [0., 1.0 ]
+    R      = np.zeros((dim, 2))
     R[:,0] = r1
     R[:,1] = r2
+    mat      = np.zeros((dim, size))
+    mat[:,0] = r1
+    mat[:,1] = r2
+
+    n1 = 257
+    n2 = 257
+    X  = np.zeros((n1,n2))
+    Y  = np.zeros((n1,n2))
+    XY = np.zeros((dim, n1*n2))
+
+    k1 = np.linspace(-1.1,2.1,n1)#np.linspace(-inf,inf,n1)#
+    k2 = np.linspace(-0.1,3.1,n2)#np.linspace(-inf,inf,n2)#
 
     for i in range(n1) :
         for j in range(n2) :
             k = [k1[i], k2[j]]
-            [X[i,j], Y[i,j]] = dot(R,k)
+            [X[i,j], Y[i,j]] = np.dot(R[:2,:2],k)
+            XY[:2, i*n2 + j ] = [X[i,j], Y[i,j]]
+
+    triang = triangulation(list_stencil)    
+
+
