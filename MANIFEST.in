@@ -1,0 +1,3 @@
+include setup*.py *.rst *.cfg 
+
+recursive-include caid *.py *.pyf *.f90
