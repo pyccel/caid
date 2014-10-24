@@ -17,6 +17,7 @@ except:
     filenames = None
     pass
 
+from mainFrame import Frame
 
 app = wx.App(redirect=False)   # Error messages go to popup window
 top = Frame("CAID", filenames=filenames)

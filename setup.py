@@ -32,18 +32,18 @@ packages=[  'caid' \
           , 'caid.utils' \
           , 'caid.core' \
          ]
-package_dir={  'caid': 'src/caid'\
-              ,'caid.graphics': 'src/caid/graphics' \
-              ,'caid.numbering':  'src/caid/numbering' \
-              ,'caid.utils':  'src/caid/utils' \
-              ,'caid.core':  'src/caid/core' \
+package_dir={  'caid': 'caid'\
+              ,'caid.graphics': 'caid/graphics' \
+              ,'caid.numbering':  'caid/numbering' \
+              ,'caid.utils':  'caid/utils' \
+              ,'caid.core':  'caid/core' \
               ,}
 
 ext_modules  = [ \
                 # ... bsplines extension
                  Extension('caid.core.bspline', \
-                           sources = ['src/caid/core/bspline.pyf', \
-                                      'src/caid/core/bspline.F90'], \
+                           sources = ['caid/core/bspline.pyf', \
+                                      'caid/core/bspline.F90'], \
                            f2py_options = ['--quiet'], \
                            define_macros = [ \
                                             #('F2PY_REPORT_ATEXIT', 0),
