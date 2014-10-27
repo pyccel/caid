@@ -1085,6 +1085,12 @@ class cad_nurbs(cad_object, NURBS):
         self.face = None
         self.set_attribut("type",self.__class__.__name__ )
 
+    def set_points(self, pts):
+        """
+        Sets the Control point grid projected into Cartesian 3D space.
+        """
+        self.array[...,:3] = pts * self.weights[...,np.newaxis]
+
     def _clone_data(self, nrb):
         # nrb can be NURBS or cad_nurbs
         self._array = nrb.array

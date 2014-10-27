@@ -121,26 +121,29 @@ class scripture(object):
 
         # ... using TextEditor
 #        edt = TextEditor(wk.parent, -1, title)
-#        last_name_saved = False
-##        if filename is None:
-##            last_name_saved = True
+        last_name_saved = False
+#        if filename is None:
+#            last_name_saved = True
 #        edt.DoOpenFile(filename=self._filename, last_name_saved=last_name_saved)
-#        # wait until the editor is closed
-#        saved = False
-#        while edt:
-#            if edt.last_name_saved:
-#                saved = True
-#                self._filename = edt.last_name_saved
-#                edt.SetTitle(self._filename)
-#            wx.MilliSleep(10)
-#            wx.GetApp().Yield()
-#        if saved:
-#            print "macro recoding has been written in " + str(self._filename)
         # ...
 
         # ... using PythonEditor
-        edt = PythonEditor(wk.parent, -1, title).Show()
+        edt = PythonEditor(wk.parent, -1, title)
+        edt.DoOpenFile(filename=self._filename, last_name_saved=last_name_saved)
+        edt.Show()
         # ...
+
+        # wait until the editor is closed
+        saved = False
+        while edt:
+            if edt.last_name_saved:
+                saved = True
+                self._filename = edt.last_name_saved
+                edt.SetTitle(self._filename)
+            wx.MilliSleep(10)
+            wx.GetApp().Yield()
+        if saved:
+            print "macro recoding has been written in " + str(self._filename)
 
 # -------------------------------------------
 if __name__ == '__main__':
