@@ -331,7 +331,7 @@ class boundary_conditions(object):
 
             self.list_Dirichlet_ind.append(list_Dirichlet_ind)
 
-    def duplicate(self, geometry, faces_base, faces, shift_base=None, shift=None):
+    def duplicate(self, geometry, faces_base, faces):
         """
         this routine is used to duplicate the basis fct
         faces_base and faces, must be of the form : list of [patch_id, face_id, shift]
@@ -386,31 +386,3 @@ class boundary_conditions(object):
                 self.list_duplicata_ind.append(list_Ind)
 #        print "self.list_duplicated_ind=", self.list_duplicated_ind
 #        print "self.list_duplicata_ind=", self.list_duplicata_ind
-
-#        # computing the number of patchs
-#        li_npatch = len(geometry)
-#
-#        for li_id in range(0, li_npatch):
-#            nrb = geometry[li_id]
-#            list_faces_base = faces_base[li_id]
-#            list_faces      = faces[li_id]
-#            if shift_base is None:
-#                list_shift_base = [0] * len(list_faces_base)
-#            else:
-#                list_shift_base = shift_base[li_id]
-#            if shift is None:
-#                list_shift = [0] * len(list_faces)
-#            else:
-#                list_shift      = shift[li_id]
-#            list_duplicata_ind  = []
-#            list_duplicated_ind = []
-#
-#            for (F_base, F, Sh_base, Sh) in zip(list_faces_base,list_faces,list_shift_base,list_shift):
-#                list_ind_base = nrb.indices_face(F_base,Sh_base)
-#                list_indices  = nrb.indices_face(F,Sh)
-#                for (Ind_base, Ind) in zip(list_ind_base, list_indices):
-#                    list_duplicated_ind.append(Ind_base)
-#                    list_duplicata_ind.append(Ind)
-#
-#            self.list_duplicata_ind.append(list_duplicata_ind)
-#            self.list_duplicated_ind.append(list_duplicated_ind)

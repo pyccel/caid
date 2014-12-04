@@ -335,14 +335,15 @@ class connectivity:
 
     def init_ID(self, bound_cond):
         list_n = self.list_n
+#        print " list_n ", list_n
 
         DirFaces = bound_cond.DirFaces
         DuplicatedFaces = bound_cond.DuplicatedFaces
         DuplicataFaces = bound_cond.DuplicataFaces
 
-#        print " DirFaces ", DirFaces
-#        print " DuplicataFaces ", DuplicataFaces
-#        print "DuplicatedFaces  ", DuplicatedFaces
+        print " DirFaces ", DirFaces
+        print " DuplicatedFaces  ", DuplicatedFaces
+        print " DuplicataFaces ", DuplicataFaces
 
         from idutils import computeLocalID, computeGlobalID
         list_id = computeLocalID(list_n, DirFaces, DuplicatedFaces, DuplicataFaces)
@@ -508,22 +509,72 @@ if __name__ == '__main__':
 
     import caid.cad_geometry  as cg
     from caid.cad_geometry import line, square, trilinear
-    import boundary_conditions as bc
+    from boundary_conditions import boundary_conditions
 
-    geo1d = line(n=[5], p=[2])
+    geo1d = line(n=[5], p=[3])
+
+    # ...
+    print ("========= connectivity on a line =========")
     con1d = connectivity(geo1d)
-
     con1d.init_data_structure()
     con1d.printinfo()
+    print ("==========================================")
+    # ...
 
-    geo2d = square(n=[5,3], p=[2,3])
-    con2d = connectivity(geo2d)
+    # ...
+    print ("========= dirichlet connectivity on a line =========")
+    con1d_dir = connectivity(geo1d)
+    bc1d_dir = boundary_conditions(geo1d)
+    list_DirFaces = [[0,1]]
+    bc1d_dir.dirichlet(geo1d, list_DirFaces)
+    con1d_dir.init_data_structure(bc1d_dir)
+    con1d_dir.printinfo()
+    print ("==========================================")
+    # ...
 
-    con2d.init_data_structure()
-    con2d.printinfo()
+    # ...
+    print ("========= periodic connectivity on a line =========")
+    con1d_per = connectivity(geo1d)
+    bc1d_per = boundary_conditions(geo1d)
+    faces_base = [[0,0,0]]
+    faces      = [[0,1,0]]
+    bc1d_per.duplicate(geo1d, faces_base, faces, shift_base=None, shift=None)
+    con1d_per.init_data_structure(bc1d_per)
+    con1d_per.printinfo()
+    print ("==========================================")
+    # ...
 
+    # ...
+    print ("========= full periodic connectivity on a line =========")
+    con1d_per = connectivity(geo1d)
+    bc1d_per = boundary_conditions(geo1d)
+#    # p = 2
+#    faces_base = [[0,0,0],[0,0,1]]
+#    faces      = [[0,1,-1],[0,1,0]]
+    # p = 3
+    faces_base = [[0,0,0] ,[0,0,1],[0,0,2]]
+    faces      = [[0,1,-2],[0,1,-1],[0,1,0]]
+
+
+    bc1d_per.duplicate(geo1d, faces_base, faces)
+    con1d_per.init_data_structure(bc1d_per)
+    con1d_per.printinfo()
+    print ("==========================================")
+    # ...
+
+    # ...
+#    geo2d = square(n=[5,3], p=[2,3])
+#    con2d = connectivity(geo2d)
+#
+#    con2d.init_data_structure()
+#    con2d.printinfo()
+    # ...
+
+    # ...
 #    geo3d = trilinear(n=[5,3,1], p=[2,3,4])
 #    con3d = connectivity(geo3d)
 #
 #    con3d.init_data_structure()
 #    con3d.printinfo()
+    # ...
+

@@ -10,7 +10,7 @@ _bsp = bsplinelib.bsp
 
 from numpy import pi, sqrt, array, zeros
 
-def line(n=None, p=None):
+def line(n=None, p=None, periodic=None):
     """Creates a unit line cad_geometry object.
 
     Kwargs:
@@ -22,7 +22,7 @@ def line(n=None, p=None):
        A cad_geometry object.
     """
     points = np.asarray([[0.,0.],[1.,0.]])
-    return linear(points=points, n=n, p=p)
+    return linear(points=points, n=n, p=p, periodic=periodic)
 
 def square(n=None, p=None):
     """Creates a unit square cad_geometry object.
@@ -74,7 +74,7 @@ def triangle(n=None, p=None, points=None, profile=0):
         points = np.asarray([[A,B],[C,D]])
     return bilinear(points=points, n=n, p=p)
 
-def linear(points=None, n=None, p=None):
+def linear(points=None, n=None, p=None, periodic=None):
     from igakit.cad import linear as nrb_linear
     """Creates a linear cad_geometry object.
 
@@ -122,6 +122,21 @@ def linear(points=None, n=None, p=None):
     geo._internal_faces = []
     geo._external_faces = [[0,0],[0,1]]
     geo._connectivity   = []
+    if periodic is not None:
+        if periodic:
+            geo[0].unclamp(0)
+
+            list_connectivity   = []
+            dict_con = {}
+            dict_con['original']    = [0,0]
+            dict_con['clone']       = [0,1]
+            dict_con['periodic']    = True
+            list_connectivity.append(dict_con)
+
+            geo._connectivity = list_connectivity
+
+            geo._internal_faces = [[0,0],[0,1]]
+            geo._external_faces = []
 
     return geo
 
