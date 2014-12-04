@@ -341,9 +341,9 @@ class connectivity:
         DuplicatedFaces = bound_cond.DuplicatedFaces
         DuplicataFaces = bound_cond.DuplicataFaces
 
-        print " DirFaces ", DirFaces
-        print " DuplicatedFaces  ", DuplicatedFaces
-        print " DuplicataFaces ", DuplicataFaces
+#        print " DirFaces ", DirFaces
+#        print " DuplicatedFaces  ", DuplicatedFaces
+#        print " DuplicataFaces ", DuplicataFaces
 
         from idutils import computeLocalID, computeGlobalID
         list_id = computeLocalID(list_n, DirFaces, DuplicatedFaces, DuplicataFaces)
