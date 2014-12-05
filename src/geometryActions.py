@@ -534,6 +534,7 @@ class GeometryActionsRefine(ClassActions):
 
         self.n  =  np.zeros(3,dtype=np.int)
         self.p  =  np.zeros(3,dtype=np.int)
+        self.m  =  np.ones(3,dtype=np.int)
 
         # ...
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -631,6 +632,54 @@ class GeometryActionsRefine(ClassActions):
         self.Box.Add(hbox, 0, wx.EXPAND, 5)
         # ...
 
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        text = wx.StaticText(parentPanel, -1, "m")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlm1Id = wx.NewId()
+        self.txtCtrlm1 = wx.TextCtrl(parentPanel, self.txtCtrlm1Id, size=(50,25))
+        self.txtCtrlm1.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlm1.SetValue(str(self.m[0]))
+        hbox.Add(self.txtCtrlm1, border=5)
+
+        self.spinm1Id = wx.NewId()
+        self.spinm1 = wx.SpinButton(parentPanel, self.spinm1Id, style=wx.SP_VERTICAL)
+        self.spinm1.Bind(wx.EVT_SPIN, self.OnSpin)
+        self.spinm1.SetRange(0, 25)
+        self.spinm1.SetValue(self.m[0])
+        hbox.Add(self.spinm1, border=5)
+
+        self.txtCtrlm2Id = wx.NewId()
+        self.txtCtrlm2 = wx.TextCtrl(parentPanel, self.txtCtrlm2Id, size=(50,25))
+        self.txtCtrlm2.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlm2.SetValue(str(self.m[1]))
+        hbox.Add(self.txtCtrlm2, border=5)
+
+        self.spinm2Id = wx.NewId()
+        self.spinm2 = wx.SpinButton(parentPanel, self.spinm2Id, style=wx.SP_VERTICAL)
+        self.spinm2.Bind(wx.EVT_SPIN, self.OnSpin)
+        self.spinm2.SetRange(0, 25)
+        self.spinm2.SetValue(self.m[1])
+        hbox.Add(self.spinm2, border=5)
+
+        self.txtCtrlm3Id = wx.NewId()
+        self.txtCtrlm3 = wx.TextCtrl(parentPanel, self.txtCtrlm3Id, size=(50,25))
+        self.txtCtrlm3.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlm3.SetValue(str(self.m[2]))
+        hbox.Add(self.txtCtrlm3, border=5)
+
+        self.spinm3Id = wx.NewId()
+        self.spinm3 = wx.SpinButton(parentPanel, self.spinm3Id, style=wx.SP_VERTICAL)
+        self.spinm3.Bind(wx.EVT_SPIN, self.OnSpin)
+        self.spinm3.SetRange(0, 25)
+        self.spinm3.SetValue(self.m[2])
+        hbox.Add(self.spinm3, border=5)
+
+        self.Box.Add(hbox, 0, wx.EXPAND, 5)
+        # ...
+
     def Show(self):
         ClassActions.Show(self)
         wk = self.parent.WorkGroup
@@ -653,6 +702,16 @@ class GeometryActionsRefine(ClassActions):
 
             self.txtCtrlp3.Hide()
             self.spinp3.Hide()
+
+            self.txtCtrlm1.Show()
+            self.spinm1.Show()
+
+            self.txtCtrlm2.Hide()
+            self.spinm2.Hide()
+
+            self.txtCtrlm3.Hide()
+            self.spinm3.Hide()
+
         if geo.dim == 2:
             self.txtCtrln1.Show()
             self.spinn1.Show()
@@ -671,6 +730,16 @@ class GeometryActionsRefine(ClassActions):
 
             self.txtCtrlp3.Hide()
             self.spinp3.Hide()
+
+            self.txtCtrlm1.Show()
+            self.spinm1.Show()
+
+            self.txtCtrlm2.Show()
+            self.spinm2.Show()
+
+            self.txtCtrlm3.Hide()
+            self.spinm3.Hide()
+
     def Hide(self):
         self.txtCtrln1.Hide()
         self.spinn1.Hide()
@@ -689,6 +758,15 @@ class GeometryActionsRefine(ClassActions):
 
         self.txtCtrlp3.Hide()
         self.spinp3.Hide()
+
+        self.txtCtrlm1.Hide()
+        self.spinm1.Hide()
+
+        self.txtCtrlm2.Hide()
+        self.spinm2.Hide()
+
+        self.txtCtrlm3.Hide()
+        self.spinm3.Hide()
 
         ClassActions.Hide(self)
 
@@ -732,7 +810,13 @@ class GeometryActionsRefine(ClassActions):
                     for axis in range(0,nrb.dim):
                         list_p.append(np.max(self.p[axis] - nrb.degree[axis], 0))
 
-                geo_t.refine(list_t=list_t, list_p=list_p)
+                list_m = None
+                if self.m.sum() > 0:
+                    list_m = []
+                    for axis in range(0,nrb.dim):
+                        list_m.append(self.m[axis])
+
+                geo_t.refine(list_t=list_t, list_p=list_p, list_m=list_m)
                 _geo.append(geo_t[0])
 
                 # macro recording
@@ -752,7 +836,8 @@ class GeometryActionsRefine(ClassActions):
                     str_list_t = [list(ts) for ts in list_t]
                     macro_script.append("\tlist_t = "+ str(str_list_t))
                     macro_script.append("\tlist_p = "+ str(list_p))
-                    macro_script.append("\tgeo_t.refine(list_t=list_t, list_p=list_p)")
+                    macro_script.append("\tlist_m = "+ str(list_m))
+                    macro_script.append("\tgeo_t.refine(list_t=list_t, list_p=list_p, list_m=list_m)")
                     macro_script.append("\t_geo.append(geo_t[0])")
                     macro_script.append("wk.add_geometry(geometry(_geo))")
                     macro_script.append("# ...")
@@ -780,6 +865,13 @@ class GeometryActionsRefine(ClassActions):
                 self.p[1] = int(event.GetString())
             if event.GetId() == self.txtCtrlp3Id:
                 self.p[2] = int(event.GetString())
+
+            if event.GetId() == self.txtCtrlm1Id:
+                self.m[0] = int(event.GetString())
+            if event.GetId() == self.txtCtrlm2Id:
+                self.m[1] = int(event.GetString())
+            if event.GetId() == self.txtCtrlm3Id:
+                self.m[2] = int(event.GetString())
         except:
             pass
 
@@ -797,3 +889,10 @@ class GeometryActionsRefine(ClassActions):
             self.txtCtrlp2.SetValue(str(event.GetPosition()))
         if event.GetId() == self.spinp3Id:
             self.txtCtrlp3.SetValue(str(event.GetPosition()))
+
+        if event.GetId() == self.spinm1Id:
+            self.txtCtrlm1.SetValue(str(event.GetPosition()))
+        if event.GetId() == self.spinm2Id:
+            self.txtCtrlm2.SetValue(str(event.GetPosition()))
+        if event.GetId() == self.spinm3Id:
+            self.txtCtrlm3.SetValue(str(event.GetPosition()))

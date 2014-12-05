@@ -2299,7 +2299,7 @@ class cad_geometry(object):
         for nrb in self:
             nrb.rotate(angle, axis=axis)
 
-    def refine(self, id=None, list_t=None, list_p=None):
+    def refine(self, id=None, list_t=None, list_p=None, list_m=None):
         """
         refine the current cad_geometry object. If id is not specified, the refinement will affect all patchs.
         Otherwise, it will refine the given patch.
@@ -2311,6 +2311,9 @@ class cad_geometry(object):
 
             list_p (list of int):
                 this is the list of the final B-spline degrees
+
+            list_m (list of int):
+                this is the list of multiplicities of inserted knots for each axis
 
         Examples
         --------
@@ -2330,7 +2333,7 @@ class cad_geometry(object):
         >>>     list_p = []
         >>>     for axis in range(0,cad_nrb.dim):
         >>>         list_p.append(p[axis] - cad_nrb.degree[axis])
-        >>> geo.refine(list_t=list_t, list_p=list_p)
+        >>> geo.refine(list_t=list_t, list_p=list_p, list_m=[1,1])
 
         """
 
@@ -2346,6 +2349,9 @@ class cad_geometry(object):
         ll_prefine = False
         if list_p is not None:
             ll_prefine = True
+
+        if list_m is None:
+            list_m = np.ones(self.dim, dtype=np.int)
 
         for id in list_id:
             patch = self._list[id]
@@ -2363,7 +2369,9 @@ class cad_geometry(object):
                 dim = P_.dim
                 for i in range(0,dim):
                     if len(list_t[i]) > 0:
-                        P_ = P_.clone().refine(i, list_t[i])
+                        m = list_m[i]
+                        for j in range(0,m):
+                            P_ = P_.clone().refine(i, list_t[i])
                 self._list[id] = P_
 
     def expand(self):
