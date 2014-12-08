@@ -15,6 +15,11 @@ def initLocalID(faces, n, base):
         return initLocalID_2D(faces, n, base)
 
 def initLocalID_1D(faces, n, base):
+#    print ">>> Enter initLocalID_1D"
+#    print "faces ", faces
+#    print "n ", n
+#    print "base ", base
+
     id =- np.ones(n, dtype=np.int)
 
     dim = len(n)
@@ -35,6 +40,8 @@ def initLocalID_1D(faces, n, base):
 
     id += 1
     base += ie - ib + 1
+#    print id
+#    print ">>> Leave initLocalID_1D"
 
     return id, base
 
@@ -137,7 +144,7 @@ def get_ij_2D(n, f):
     return list_i, list_j
 
 # ...
-def updateDuplicated_1D(n_m, n_s, list_id, p_m, f_m, p_s, f_s):
+def updateDuplicated_1D(n_m, n_s, list_id, p_m, f_m, p_s, f_s, s_m=0, s_s=0):
     """
     p_m : master patch
     f_m : master face
@@ -146,24 +153,41 @@ def updateDuplicated_1D(n_m, n_s, list_id, p_m, f_m, p_s, f_s):
     """
     list_i_m = get_ij_1D(n_m, f_m)
     list_i_s = get_ij_1D(n_s, f_s)
+#    print ">>> Enter updateDuplicated_1D"
+#    print " p_m, f_m, n_m, s_m  ", p_m, f_m, n_m, s_m
+#    print " p_s, f_s, n_s, s_s  ", p_s, f_s, n_s, s_s
+#    print " list_i_m ", list_i_m
+#    print " list_i_s ", list_i_s
 
     for (i_m,i_s) in zip(list_i_m, list_i_s):
         id_s = list_id[p_s]
         id_m = list_id[p_m]
+#        print " id_s ", id_s
+#        print " id_m ", id_m
+#        print " i_s ", i_s
+#        print " i_m ", i_m
 
-        id_s[i_s] = id_m[i_m]
-
+        id_s[i_s+s_s] = id_m[i_m+s_m]
+#    print list_id
+#    print ">>> Leave updateDuplicated_1D"
     return list_id
 
-def updateDuplicated_2D(n_m, n_s, list_id, p_m, f_m, p_s, f_s):
+def updateDuplicated_2D(n_m, n_s, list_id, p_m, f_m, p_s, f_s, s_m=0, s_s=0):
     """
     p_m : master patch
     f_m : master face
     p_s : slave patch
     f_s : slave face
+    s_m : master shift
+    s_s : slave shift
     """
     list_i_m, list_j_m = get_ij_2D(n_m, f_m)
     list_i_s, list_j_s = get_ij_2D(n_s, f_s)
+
+#    print " list_i_m ", list_i_m
+#    print " list_j_m ", list_j_m
+#    print " list_i_s ", list_i_s
+#    print " list_j_s ", list_j_s
 
     for (i_m,j_m,i_s,j_s) in zip(list_i_m, list_j_m, list_i_s, list_j_s):
         id_s = list_id[p_s]
@@ -176,12 +200,12 @@ def updateDuplicated_2D(n_m, n_s, list_id, p_m, f_m, p_s, f_s):
 
     return list_id
 
-def updateDuplicated(n_m, n_s, list_id, p_m, f_m, p_s, f_s):
+def updateDuplicated(n_m, n_s, list_id, p_m, f_m, p_s, f_s, s_m=0, s_s=0):
     dim = len(n_m)
     if dim == 1:
-        return updateDuplicated_1D(n_m, n_s, list_id, p_m, f_m, p_s, f_s)
+        return updateDuplicated_1D(n_m, n_s, list_id, p_m, f_m, p_s, f_s, s_m=s_m, s_s=s_s)
     if dim == 2:
-        return updateDuplicated_2D(n_m, n_s, list_id, p_m, f_m, p_s, f_s)
+        return updateDuplicated_2D(n_m, n_s, list_id, p_m, f_m, p_s, f_s, s_m=s_m, s_s=s_s)
 # ...
 
 # ...
@@ -215,12 +239,26 @@ def computeLocalID(list_n, DirFaces, DuplicatedFaces, DuplicataFaces):
 #    for i,id in enumerate(list_id):
 #        print "...... patch id : ", i, " ......"
 #        print_id(id)
+#
+#    print " DuplicatedFaces ", DuplicatedFaces
+#    print " DuplicataFaces ", DuplicataFaces
 
     for data_m, data_s in zip(DuplicatedFaces, DuplicataFaces):
         p_m = data_m[0]   ; f_m = data_m[1]
+        try:
+            s_m = data_m[2]
+        except:
+            s_m = 0
         p_s = data_s[0]   ; f_s = data_s[1]
+        try:
+            s_s = data_s[2]
+        except:
+            s_s = 0
         n_m = list_n[p_m] ; n_s = list_n[p_s]
-        list_id = updateDuplicated(n_m, n_s, list_id, p_m, f_m, p_s, f_s)
+        list_id = updateDuplicated(n_m, n_s, list_id \
+                                   , p_m, f_m \
+                                   , p_s, f_s \
+                                   , s_m=s_m, s_s=s_s)
 
     return list_id
 # ...
