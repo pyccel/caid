@@ -1,6 +1,7 @@
 import numpy as np
 from igakit.nurbs import NURBS
 from igakit.transform import transform
+from igakit.cad import compat, ruled, bilinear
 
 
 
