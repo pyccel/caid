@@ -26,77 +26,9 @@ def boxspline(x,y,n):
                     aux=abs(v-L-u+K);
                     aux2=(u-K+v-L-aux)/2;
                     aux2[where(aux2<0)]=0;
-                    val = val + coeff*binom(n-1+d,d)/factorial(2*n-1+d)/factorial(n-1-d)*aux**(n-1-d)*aux2**(2*n-1+d);
-
-    return val
-
-
-def boxspline_gen(x1,x2,n,r1,r2):
-    print x1[5,5], x2[5,5]
-
-    det = r1[0]*r2[1]-r1[1]*r2[0]
-    x1 = -abs(x1); x2 = abs(x2);
-    u = 1./det*( r2[1]*x1 - r2[0]*x2)
-    v = 1./det*(-r1[1]*x1 + r1[0]*x2)
-
-    ind = where(v>0)
-    v[ind] = -v[ind]
-    u[ind]=u[ind]+v[ind]
-
-    ind = where(v>u/2)
-    v[ind]=u[ind]-v[ind]
-
-    print u[5,5], v[5,5]
-
-    val=np.zeros(np.shape(x1))
-    for K in range(-n,n+1) :#mceil(u.max())):
-        for L in range(-n,n+1) :#mceil(v.max())) :
-            for i in range(0,min(n+K, n+L)+1):
-                coeff=(-1.)**(K+L+i)*binom(n,i-K)*binom(n,i-L)*binom(n,i)
-                for d in range (0,n) :
-                    aux=abs(2./sqrt(3.)*(r1[1]*u+r2[1]*v)+K-L)
-                    aux2=(2.*(r1[0]*u+r2[0]*v)-K-L-aux)/2
-                    aux2[where(aux2<0)]=0
-                    val = val + coeff*binom(n-1+d,d)/factorial(2*n-1+d)/factorial(n-1-d)\
-                        * aux**(n-1-d)\
-                        * aux2**(2*n-1+d)
-
-
-    print val[4:7,4:7]
-    return val
-
-
-def boxspline2(x1,x2,r1,r2):
-    det = r1[0]*r2[1]-r1[1]*r2[0]
-    x1 = -abs(x1)
-    x2 =  abs(x2)
-    u = 1./det*( r2[1]*x1 - r2[0]*x2)
-    v = 1./det*(-r1[1]*x1 + r1[0]*x2)
-
-    ind = where(u<0)
-    u[ind] = -u[ind]
-    v[ind] =  u[ind]+v[ind]
-
-    ind = where(2*u<v)
-    u[ind]=v[ind]-u[ind]
-
-    val=np.zeros(np.shape(x1))
-
-    g = u-v/2.0
-
-    ind = where(v>2.0)
-    val[ind] = 0.0
-
-    ind = where(v<1.0)
-    val[ind] = 0.5 + ((5/3. - v[ind]/8.0)*v[ind]-3.0)*v[ind]*v[ind]/4.0 +\
-        ((1.-v[ind]/4.)*v[ind]+g[ind]*g[ind]/6.-1.)*g[ind]*g[ind]
-
-    ind = where((u>1.0) & (v<=2.) & (v>=1.))
-    val[ind] = (v[ind]-2.)*(v[ind]-2.)*(v[ind]-2.)*(g[ind]-1.)/6.0
-
-    ind = where((u<=1.0) & (v<=2.) & (v>=1.))
-    val[ind] = 5./6. + ((1.+(1./3.-v[ind]/8.0)*v[ind])*v[ind]/4.0-1.0)*v[ind] +\
-        ((1-v[ind]/4.)*v[ind]+g[ind]*g[ind]/6.0-1.)*g[ind]*g[ind]
+                    auxis  = aux**(n-1-d)*aux2**(2*n-1+d);
+                    factos = factorial(2*n-1+d)*factorial(n-1-d)
+                    val = val + coeff*binom(n-1+d,d)/factos*auxis
 
     return val
 
@@ -180,11 +112,11 @@ def boxspline2(x1,x2,r1,r2):
 # Scaled mesh
 # here
 
-a = -1.5
-b = 1.5
+a = -2.5
+b = 2.5
 radius = b
-n1 = 21#b - a + 1
-n2 = 21#b - a + 1
+n1 = 51#b - a + 1
+n2 = 51#b - a + 1
 inf = (n1-1)/2
 k1 = linspace(-inf,inf,n1)
 k2 = linspace(-inf,inf,n2)

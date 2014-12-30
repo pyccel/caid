@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import numpy as np
 from numpy import cos, sin, pi, array
 import numpy.linalg as la
@@ -13,10 +12,39 @@ from scipy.spatial import Delaunay
 def limiter_default(x):
     return True
 
+class mesh(object):
+    def __init__(self, points, mat):
+        """
+        Creates a mesh which nodes are defined by points
+        which were generated using the matrix mat
+        Args:
+            points : list of points' coordinates. points.shape = [N,2]
+            mat    : list of vectors. mat.shape = [n,3]
+        """
+        self._points  = np.copy(points)
+        # self._vectors = np.copy(mat)
+        n,d = mat.shape
+        self._vectors = np.zeros((n,4))
+        self._vectors[...,:3] = mat[:,:3]
+
+
+    @property
+    def points(self):
+        return self._points
+
+    @property
+    def shape(self):
+        return self._points.shape
+
+    @property
+    def vectors(self):
+        return self._vectors
+
+
 class stencil(object):
     def __init__(self, origin, mat, limiter=None):
         """
-        creates the box-splines tesselation using mat.
+        creates the box-splines support using mat.
         Args:
             mat : list of vectors. mat.shape = [n,3]
         """
@@ -391,11 +419,22 @@ class triangle(object):
 
 
 class triangulation(object):
-    def __init__(self, list_stencil):
+    def __init__(self, list_stencil=None, mesh=None):
         self._list = []
         self._currentElt = -1
 
-        self._list_stencil = list_stencil
+        if mesh is None :
+            if list_stencil is None :
+                raise Exception("Impossible to initiate a triangulation with no arguments")
+            else :
+                self._list_stencil = list_stencil
+        else :
+            self._list_stencil = []
+            n,d = mesh.shape
+            for i in range(n):
+                origin = mesh.points[i, :3]
+                sten   = stencil(origin, mesh.vectors, limiter=limiter)
+                self._list_stencil.append(sten)
 
     def __len__(self):
         return len(self._list)
@@ -687,135 +726,13 @@ if __name__ == "__main__":
     patches.append(sten_far.polygon)
     sten_far.plot()
 
-#    print sten_ref.is_valid()
-#
-#    P = [1.,5.]
-#    pts = np.zeros((3,2))
-#    pts[0,0] = 1.; pts[0,1] = 1.
-#    pts[1,0] = 1.5; pts[1,1] = 1.
-#    pts[2,0] = 1.; pts[2,1] = 2.
-#
-#    plt.plot(pts[:,0], pts[:,1], 'og')
-#    print sten_ref.is_inside(pts)
-
-#    P = [1.,5.]
-#    pts = np.zeros((3,2))
-#    pts[0,0] = 1.; pts[0,1] = 1.
-#    pts[1,0] = 1.5; pts[1,1] = 1.
-#    pts[2,0] = 1.; pts[2,1] = 2.
-#
-#    plt.plot(pts[:,0], pts[:,1], 'og')
-#    print sten.is_inside(pts)
-#
-#    tri = sten.tri
-#    list_brc = []
-#    points = sten.control
-#    for T in tri.simplices:
-#        pts = points[T]
-#        A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
-#        b = (A+B+C) / 3.
-#        list_brc.append(b)
-#
-#    list_pts = list_brc
-#    n = len(list_pts)
-#    points = np.zeros((n,3))
-#    for i in range(0,n):
-#        points[i,:] = list_pts[i][:]
-#    print sten_ref.is_inside(points)
-
     list_stencil = [sten_ref, sten1, sten2, sten3, sten_far]
-    triang = triangulation(list_stencil)
+    triang = triangulation(list_stencil=list_stencil)
     triang.initialize()
 
     triang.extend()
 
     print len(sten_ref.neighbours)
-
-#    for enum, simplex in enumerate(sten_ref.tri.simplices):
-#        T = triangle()
-#        T.append(sten_ref, enum)
-#        triang.append(T)
-#
-#    tri = sten.tri
-#    list_brc = []
-#    points = sten.control
-#    for T in tri.simplices:
-#        pts = points[T]
-#        A = array(pts[0,:]) ; B = array(pts[1,:]) ; C = array(pts[2,:])
-#        b = (A+B+C) / 3.
-#        list_brc.append(b)
-#    list_pts = list_brc
-#    n = len(list_pts)
-#    points = np.zeros((n,3))
-#    for i in range(0,n):
-#        points[i,:] = list_pts[i][:]
-#    list_flag = sten_ref.is_inside(points)
-#
-#    for i in range(0, len(sten.tri.simplices)):
-#        barycenter = list_brc[i]
-#        flag = list_flag[i]
-#        if not flag:
-#            T = triangle()
-#            T.append(sten, i)
-#            triang.append(T)
-#        else:
-#            # find the triangle and then append [sten, vertices]
-#            simplex_id = sten_ref.tri.find_simplex(barycenter[:2])
-#            global_id = sten_ref.simplices_global_id[simplex_id]
-#            print ">>> ", global_id, simplex_id, i
-#            T = triang[global_id]
-#            T.append(sten, i)
-
-
-#    for T in triang:
-#        print T
-
-    print len(triang)
-
-#    tess = sten_ref.expand(axis=0, bounds=[-7,7])
-#    tess.scale(h)
-#    print len(tess)
-
-#    T = tess.expand(axis=1, bounds=[-7,7])
-#    T.scale(h)
-#    print len(T)
-
-#    for sten in tess:
-##        sten.plot()
-#        patches.append(sten.polygon)
-
-#    for sten in T:
-#        sten.plot()
-#        patches.append(sten.polygon)
-
-#    for i in [0,1,2]:
-#        patches.append(T.stencils[i].polygon)
-
-
-#    sten = stencil(origin, mat)
-#    sten.set_limiter(limiter)
-#    sten.scale(h)
-#    sten.plot()
-#
-#    patches = []
-#    patches.append(sten.polygon)
-#
-##    plt.colorbar(p)
-#
-#    for j in list_t:
-#        for i in list_t:
-#            v = i*sten.vectors[0,:3] + j*sten.vectors[1,:3]
-#            sten.translate(v-sten.origin)
-#            sten.scale(h)
-##            sten.plot()
-#
-#            if ((i == 0) and (j == 0)) or \
-#               ((i == 1) and (j == 0)) or \
-#               ((i == -3) and (j == -3)):
-#
-##                sten.highlight()
-#                patches.append(sten.polygon)
-#                sten.plot()
 
     colors = 100*np.random.rand(len(patches))
     p = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.4)
@@ -828,5 +745,69 @@ if __name__ == "__main__":
 
     plt.show()
 
+    # --------- TEST WITH A MESH AS TRIANGULATION INITIALIZER
+    patches = []
+    size = 2
+    dim = 3
+    r1 = [ np.sqrt(3)/2., 0.5, 0. ]
+    r2 = [-np.sqrt(3)/2., 0.5, 0. ]
+    r3 = [0., 1.0 ]
+    vecs      = np.zeros((dim, 2))
+    vecs[:,0] = r1
+    vecs[:,1] = r2
+    # mat      = np.zeros((dim, size))
+    # mat[:,0] = r1
+    # mat[:,1] = r2
+
+    n1 = 3
+    n2 = 3
+    X  = np.zeros((n1,n2))
+    Y  = np.zeros((n1,n2))
+    XY = np.zeros((dim, n1*n2))
+
+    k1 = np.linspace(-4.,4.,n1)#np.linspace(-inf,inf,n1)#
+    k2 = np.linspace(-4.,4.,n2)#np.linspace(-inf,inf,n2)#
+
+    for i in range(n1) :
+        for j in range(n2) :
+            k = [k1[i], k2[j]]
+            [X[i,j], Y[i,j]] = np.dot(vecs[:2,:2],k)
+            XY[:2, i*n2 + j ] = [X[i,j], Y[i,j]]
+
+    print "--- creating mesh"
+    mesh = mesh(XY.transpose(), mat)
+    print "done"
+    print "--- creating triangulation"
+    triang = triangulation(mesh = mesh)
+    print "done"
+    print "--- initializing triangulation"
+    triang.initialize()
+    print "done"
+    print "--- extending triangulation"
+    triang.extend()
+    print "done"
+
+    fig, ax = plt.subplots()
+
+    for T in triang:
+        sten_ref = T[0]['stencil']
+        sten_ref.scale(h)
+        if (patches.count(sten_ref.polygon) == 0) :
+            patches.append(sten_ref.polygon)
+        else :
+            print "OK we saved a couple of ones"
+        #sten_ref.plot()
 
 
+    colors = 100*np.random.rand(len(patches))
+    p = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.4)
+    p.set_array(np.array(colors))
+    ax.add_collection(p)
+
+    t = np.linspace(0.,2*np.pi, 100)
+    r = [R*np.cos(t), R*np.sin(t)]
+    plt.plot(r[0], r[1],'-k')
+
+    plt.scatter(X,Y, color = "green")
+    plt.axis('equal')
+    plt.show(block = True)
