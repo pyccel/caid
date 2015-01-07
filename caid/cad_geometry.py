@@ -2070,6 +2070,9 @@ class cad_geometry(object):
             Rd = 0
         return Rd
 
+    def __len__(self):
+        return len(self._list)
+
     @property
     def npatchs(self):
         """
@@ -3039,15 +3042,25 @@ class cad_geometry(object):
                 pcolor(x,y,jac,vmin=vmin,vmax=vmax)
 
     def bezier_extract(self):
+        # TODO to be optimized.
+        # construction of local matrices must be done in Fortran or c
         from caid.utils.extraction import BezierExtraction
         from caid.numbering.connectivity import connectivity
         from scipy.sparse import csr_matrix, kron
+        from time import time
+
+#        t_begin = time()
 
         geo = self
         con = connectivity(geo)
         con.init_data_structure()
 #        con.printinfo(with_LM=True, with_IEN=False, with_ID=False)
 #        con.printinfo()
+
+#        t_end = time()
+#        print ">> time for init data structure ", t_end-t_begin
+#
+#        t_begin = time()
 
         geo_ref = cad_geometry()
         list_extractors = []
@@ -3072,9 +3085,14 @@ class cad_geometry(object):
 #            print "knots-ref[1] ",nrb_ref.knots[1]
 #            print "**********"
 
+#        t_end = time()
+#        print ">> time for extraction ", t_end-t_begin
+
         con_ref = connectivity(geo_ref)
         con_ref.init_data_structure()
 #        con_ref.printinfo(with_LM=True, with_IEN=False, with_ID=False)
+
+#        t_begin = time()
 
         list_lmatrices = []
         list_i     = range(0, geo.npatchs)
@@ -3093,8 +3111,12 @@ class cad_geometry(object):
 
             assert(nelts==nelts_ref)
 
+#            t_mean = []
+
             lmatrices = []
             for elt in range(0, nelts):
+#                t_elt_begin = time()
+
                 # shif values because LM are 1 based indices
                 list_iloc       = np.asarray(local_LM[:,elt]) - 1
                 list_iloc_ref   = np.asarray(local_LM_ref[:,elt]) - 1
@@ -3132,9 +3154,17 @@ class cad_geometry(object):
 
                 lmatrices.append(Mloc)
 
+#                t_elt_end = time()
+#                t_mean.append(t_elt_end-t_elt_begin)
+#
+#            print ">>> mean time for an element " \
+#                    , np.asarray(t_mean).sum()/nelts
+
 #            print lmatrices
 #            print [M.shape for M in lmatrices]
             list_lmatrices.append(lmatrices)
+#        t_end = time()
+#        print ">> time for local matrices ", t_end-t_begin
 
         return geo_ref, list_lmatrices
 

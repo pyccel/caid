@@ -33,6 +33,7 @@ packages=[  'caid' \
           , 'caid.core' \
          ]
 package_dir={  'caid': 'caid'\
+              ,'caid.quadrangles': 'caid/quadrangles' \
               ,'caid.graphics': 'caid/graphics' \
               ,'caid.numbering':  'caid/numbering' \
               ,'caid.utils':  'caid/utils' \
