@@ -7,6 +7,33 @@ For more details, please read [**CAID**](http://ratnani.org/caid_doc/)
 Requierements
 =============
 
+**numpy**
+---------
+
+[**NumPy**](http://www.numpy.org/) is the fundamental package for scientific computing with Python
+
+Installation can be done using
+
+   `sudo apt-get install python-numpy`
+
+**scipy**
+---------
+
+[**SciPy**](http://www.scipy.org/) is a Python-based ecosystem of open-source software for mathematics, science, and engineering.
+
+Installation can be done using
+
+   `sudo apt-get install python-scipy`
+
+You can install both **numpy** and **scipy** using 
+
+    `sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose`
+
+**igakit**
+----------
+
+[**igakit**](http://bitbucket.org/dalcinl/igakit) is a package that implements many of the NURBS routines from Piegl's book using Fortran and Python.
+
 **wxPython**
 ------------
 
@@ -16,18 +43,17 @@ Install *wxGTK 2.8* with the command
 
 Verify that everything is OK
 
-   `import wx`
+    import wx
+    import wxversion
 
-   `import wxversion`
+**PyOpenGL**
+------------
 
-* **PyOpenGL**
+[**PyOpenGL**](http://pyopengl.sourceforge.net/) is the most common cross platform Python binding to OpenGL and related APIs.
 
-* **scipy**
+Installation can be done using [**pip**](https://pypi.python.org/pypi/pip)
 
-* **numpy**
-
-* **igakit**
-
+   `sudo pip install PyOpenGL PyOpenGL_accelerate`
 
 CAID
 ====
