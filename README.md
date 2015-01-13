@@ -27,7 +27,7 @@ Installation can be done using
 
 You can install both **numpy** and **scipy** using 
 
-    `sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose`
+    sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
 
 **igakit**
 ----------
