@@ -76,19 +76,19 @@ Runing **CAID** can be done in different ways.
 
 * without any argument
 
-    caid
+   `caid`
 
 * with a given *workgroup* session
 
-    caid session.wkl
+   `caid session.wkl`
 
 * with given domains files session
 
-    caid domain1.xml domain2.xml domain3.xml
+   `caid domain1.xml domain2.xml domain3.xml`
 
 * with a given field file
 
-    caid U.pfl
+   `caid U.pfl`
 
 
 
