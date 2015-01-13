@@ -74,6 +74,10 @@ Usage
 
 Runing **CAID** can be done in different ways.
 
+* without any argument
+
+    caid
+
 * with a given *workgroup* session
 
     caid session.wkl
