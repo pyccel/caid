@@ -55,19 +55,32 @@ Installation can be done using [**pip**](https://pypi.python.org/pypi/pip)
 
    `sudo pip install PyOpenGL PyOpenGL_accelerate`
 
-CAID
-====
+Installation
+============
 
-**CAID** is a full *Python* software. No need for a specific installation, once you have filled the previous requierements. If you want to run **CAID** as the following
+Installation can be done by runing the following command
 
-Usage
------
+    python setup.py install --prefix=PATH_FOR_INSTALLATION 
 
-    caid session.wkl
-
-In this case, please add the following lines in your *.bashrc/.bash_profile*
+Add the following lines in your *.bashrc/.bash_profile*
 
     # CAID 
     export CAID_DIR=/home/ratnani/Projects/pigasus/trunk/caid
     alias caid="python $CAID_DIR/src/caid.py"
     #
+
+Usage
+=====
+
+Runing **CAID** can be done in different ways.
+
+* with a given *workgroup* session
+
+    caid session.wkl
+
+* with a given *workgroup* session
+
+    caid session.wkl
+
+
+
