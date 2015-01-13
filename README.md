@@ -58,14 +58,14 @@ Installation can be done using [**pip**](https://pypi.python.org/pypi/pip)
 Installation
 ============
 
-Installation can be done by runing the following command
+Installation can be done by runing the following command, giving **PATH_FOR_INSTALLATION**
 
     python setup.py install --prefix=PATH_FOR_INSTALLATION 
 
-Add the following lines in your *.bashrc/.bash_profile*
+Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_CAID_SRC**
 
     # CAID 
-    export CAID_DIR=/home/ratnani/Projects/pigasus/trunk/caid
+    export CAID_DIR=PATH_TO_CAID_SRC/caid
     alias caid="python $CAID_DIR/src/caid.py"
     #
 
@@ -78,9 +78,13 @@ Runing **CAID** can be done in different ways.
 
     caid session.wkl
 
-* with a given *workgroup* session
+* with given domains files session
 
-    caid session.wkl
+    caid domain1.xml domain2.xml domain3.xml
+
+* with a given field file
+
+    caid U.pfl
 
 
 
