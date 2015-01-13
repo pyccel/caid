@@ -77,11 +77,11 @@ class MenuCAIDTools(wx.Menu):
         self.shell = py.PyShell(self.parent)
 
     def OnEditParameters(self, event):
-        print "OnEditParameters TODO"
+        print("OnEditParameters TODO")
 
 
     def OnCustomize(self, event):
-        print "Customize TODO"
+        print("Customize TODO")
 
     def OnMacroRecording(self, event):
         wk = self.parent.tree.currentWorkGroup
@@ -130,16 +130,16 @@ class MenuCAIDTools(wx.Menu):
         # ...
 
     def OnMacroMetric(self, event):
-        print "OnMacroMetric TODO"
+        print("OnMacroMetric TODO")
 
     def OnMacroConnectivity(self, event):
-        print "OnMacroConnectivity TODO"
+        print("OnMacroConnectivity TODO")
 
     def OnExecuteEditor(self, event):
-        print "OnExecuteEditor TODO"
+        print("OnExecuteEditor TODO")
 
     def OnMacroTokaMesh(self, event):
-        print "OnMacroTokaMesh TODO"
+        print("OnMacroTokaMesh TODO")
         from tokamesh_interface import PreferencesDialog
 
         wk = self.parent.tree.currentWorkGroup

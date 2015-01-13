@@ -75,7 +75,7 @@ class PageDefaultExport(wx.Panel):
             lo_geo.save(ls_file)
         # The user did not select anything
         else:
-            print 'Nothing was selected.'
+            print('Nothing was selected.')
         # Destroy the dialog
         dialog.Destroy()
 
@@ -157,7 +157,7 @@ class PageBezierFormat(wx.Panel):
 
         # The user did not select anything
         else:
-            print 'Nothing was selected.'
+            print('Nothing was selected.')
         # Destroy the dialog
         dialog.Destroy()
 

@@ -138,7 +138,7 @@ class MenuCAIDEdit(wx.Menu):
         # ...
 
     def OnUndo( self, event ):
-        print "OnUndo: Begin"
+        print("OnUndo: Begin")
 
         wk = self.parent.tree.currentWorkGroup
         if wk is None:
@@ -154,10 +154,10 @@ class MenuCAIDEdit(wx.Menu):
         wk.stockRedo.append( a )
 #        self.toolbar1.EnableTool( 809, True )
 
-        print "done."
+        print("done.")
 
     def OnRedo( self, event ):
-        print "OnRedo: Begin"
+        print("OnRedo: Begin")
 
         wk = self.parent.tree.currentWorkGroup
         if wk is None:
@@ -173,19 +173,19 @@ class MenuCAIDEdit(wx.Menu):
         wk.stockUndo.append( a )
 #        self.toolbar1.EnableTool( 808, True )
 
-        print "done."
+        print("done.")
 
     def OnClosePage(self, event):
-        print "OnClosePage TODO"
+        print("OnClosePage TODO")
 
     def OnCut(self, event):
-        print "OnCut TODO"
+        print("OnCut TODO")
 
     def OnCopy(self, event):
-        print "OnCopy TODO"
+        print("OnCopy TODO")
 
     def OnPaste(self, event):
-        print "OnPaste TODO"
+        print("OnPaste TODO")
 
     def OnRefresh(self, event):
         wk = self.parent.tree.currentWorkGroup
@@ -195,19 +195,19 @@ class MenuCAIDEdit(wx.Menu):
         wk.Refresh(inspector=True)
 
     def OnSelectAll(self, event):
-        print "OnSelectAll"
+        print("OnSelectAll")
 #        OnSelectAll(self.parent.editor)
 
     def OnDelete(self, event):
-        print "OnDelete "
+        print("OnDelete ")
 #        OnErase(self.parent.editor)
 
     def OnDuplicate(self, event):
-        print "OnDuplicate"
+        print("OnDuplicate")
 #        OnDuplicate(self.parent.editor)
 
     def OnPreferences(self, event):
-        print "OnPreferences TODO"
+        print("OnPreferences TODO")
 #        dlg = PreferencesDialog(self.parent, title="Preferences")
 #        dlg.ShowModal()
 #        dlg.Destroy()
@@ -229,8 +229,8 @@ class MenuCAIDEdit(wx.Menu):
                 filename = dialog.GetPath()
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
-                print 'current filename : ', filename
+                print('Nothing was selected.')
+                print(('current filename : ', filename))
             # Destroy the dialog
             dialog.Destroy()
             wk.viewer.theme.load(filename=filename)
@@ -247,8 +247,8 @@ class MenuCAIDEdit(wx.Menu):
                 filename = dialog.GetPath()
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
-                print 'current filename : ', filename
+                print('Nothing was selected.')
+                print(('current filename : ', filename))
             # Destroy the dialog
             dialog.Destroy()
             wk.viewer.theme.save(filename=filename)

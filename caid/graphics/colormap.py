@@ -18,7 +18,7 @@
                       (1., (1.,1.,1.,1.)))
 '''
 import numpy
-from color import Color
+from .color import Color
 
 class Colormap:
     ''' '''
@@ -224,6 +224,6 @@ if __name__ == '__main__':
     Zi = numpy.multiply(Zi, 1-numpy.isnan(Z))
 
     I = LUT.take(Zi,mode='clip').view((numpy.ubyte,4))
-    print I
+    print(I)
 
 

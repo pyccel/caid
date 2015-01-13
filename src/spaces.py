@@ -7,7 +7,7 @@ from caid.cad_geometry import cad_geometry
 from viewer import Viewer
 from numpy import pi, linspace
 import numpy as np
-import cPickle as pickle
+import pickle as pickle
 from objectActions import *
 from geometryActions import *
 from patchActions import *
@@ -169,7 +169,7 @@ class spacesTree(wx.TreeCtrl):
         wk = self.inspector.WorkGroup
         ### 2. Launcher creates wxMenu. ###
         menu = wx.Menu()
-        for (id,title) in self.connectivity_menu_title_by_id.items():
+        for (id,title) in list(self.connectivity_menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
             if toAppend:
@@ -203,7 +203,7 @@ class spacesTree(wx.TreeCtrl):
                 if ext=="zip":
                     con.save(name=name, fmt=ext)
                 else:
-                    print "Wrong Extension"
+                    print("Wrong Extension")
 #        # Refresh the viewer
 #        self.inspector.WorkGroup.Refresh()
 
@@ -308,12 +308,12 @@ class Inspector(wx.Frame):
         self.tree.Refresh()
 
     def OnScroll(self, evt):
-        print "Left"
+        print("Left")
 #        y = evt.GetPosition()
 #        self.st.SetLabel(str(y))
 
     def OnClick(self, event):
-        print "OnClick"
+        print("OnClick")
         ID = event.GetId()
         if ID == GEO_TRS_ID:
             self.OnTranslateSpace(event)

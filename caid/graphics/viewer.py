@@ -11,7 +11,7 @@ try:
     from OpenGL.GLUT import *
     from OpenGL.GLU import *
 except:
-    print '''ERROR: PyOpenGL not installed properly.'''
+    print('''ERROR: PyOpenGL not installed properly.''')
 
 
 
@@ -24,7 +24,7 @@ def compile_shader(source, shader_type):
     if not status:
         print_log(shader)
         glDeleteShader(shader)
-        raise ValueError, 'Shader compilation failed'
+        raise ValueError('Shader compilation failed')
     return shader
 
 def compile_program(vertex_source, fragment_source):
@@ -53,7 +53,7 @@ def print_log(shader):
 
     if length > 0:
         log = glGetShaderInfoLog(shader, length)
-        print log
+        print(log)
 
 def display_text( value, x,y,  windowHeight, windowWidth, step = 18, color=[1.,0.,0.] ):
     """
@@ -286,7 +286,7 @@ class viewer(object):
             elif self.zoom < 1.1:
                 self.zoom = 1.1
         else:
-            print("unknown action\n", self.action)
+            print(("unknown action\n", self.action))
         self.xStart = x
         self.yStart = y
         glutPostRedisplay()
@@ -426,7 +426,7 @@ class Menu(object):
     def npages(self):
         return len(self._list)
 
-    def next(self):
+    def __next__(self):
         if self.npages == 0:
             raise StopIteration
         self._currentElt += 1
@@ -525,11 +525,11 @@ if __name__ == "__main__":
 
     # ------------------------------------------
     def menu_action1(a, b=10):
-        print "menu_action1"
+        print("menu_action1")
     def menu_action2(c=23):
-        print "menu_action2"
+        print("menu_action2")
     def menu_action3():
-        print "menu_action3"
+        print("menu_action3")
 
     action1_1 = Action(menu_action1, "action1")
     action1_2 = Action(menu_action2, "action2")

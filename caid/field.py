@@ -10,7 +10,7 @@ try:
     from OpenGL.GLUT import *
     from OpenGL.GLU import *
 except:
-    print '''ERROR: PyOpenGL not installed properly.'''
+    print('''ERROR: PyOpenGL not installed properly.''')
 
 class field(object):
     def __init__(self, geometry=None, values=None, type='scalar'):
@@ -125,7 +125,7 @@ class field(object):
             f.write(s)
             f.close()
         else:
-            print "No file was specified"
+            print("No file was specified")
 
     def view(self, colormap=None, colorbar=None, n=None):
         V = viewer()
@@ -310,10 +310,10 @@ class viewer(basic_viewer):
         self.Refresh()
 
     def menu_save(self):
-        print "Save TODO"
+        print("Save TODO")
 
     def menu_resolution(self):
-        print "Resolution TODO"
+        print("Resolution TODO")
 
     def menu_reset(self):
         self.resetView()
@@ -459,7 +459,7 @@ class viewer(basic_viewer):
             self._field = field
             force = True
 
-        print "show_colorbar ", self.show_colorbar
+        print("show_colorbar ", self.show_colorbar)
         self.updateVertexBuffer(colormap=colormap, field=field, n=n, force=force)
 
         if self.show_colorbar:
@@ -477,7 +477,7 @@ class viewer(basic_viewer):
                                , zmax = self.zmax \
                                )
                 self._colorbar = colorbar
-            print ">>> Enter colorbar VB"
+            print(">>> Enter colorbar VB")
             self.updateVertexBuffer(  colormap=colormap \
                                     , field=self.colorbar \
                                     , n=[10,10] \
@@ -492,7 +492,7 @@ class viewer(basic_viewer):
         if field is None:
             field = self.field
 
-        print "force ", force
+        print("force ", force)
 
         if not force:
             return

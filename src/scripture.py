@@ -143,7 +143,7 @@ class scripture(object):
             wx.MilliSleep(10)
             wx.GetApp().Yield()
         if saved:
-            print "macro recoding has been written in " + str(self._filename)
+            print(("macro recoding has been written in " + str(self._filename)))
 
 # -------------------------------------------
 if __name__ == '__main__':

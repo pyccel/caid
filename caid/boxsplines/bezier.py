@@ -22,7 +22,7 @@ for d in range(0,degree+1):
     allBinom.append(values)
 
 for d in range(0, degree+1):
-    print len(allBinom[d])
+    print(len(allBinom[d]))
 
 def binom(n,i):
     return allBinom[n][i]
@@ -105,6 +105,6 @@ tri = tess
 
 # ...
 v = bezier(targets[0,0], targets[0,1], 1, 1, degree)
-print v
+print(v)
 # ...
 

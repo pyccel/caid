@@ -39,8 +39,8 @@ def run(patch, method, nx, px, alpha, nsteps, ub=None, ue=None):
         from pigasus.fit.curfit import compute_uk
 
         #-----------------------------------
-        print "Approximation using " + method + " knots"
-        print "n " + str(nx) + " p ", str(px)
+        print(("Approximation using " + method + " knots"))
+        print(("n " + str(nx) + " p ", str(px)))
         #-----------------------------------
 
         #-----------------------------------
@@ -49,7 +49,7 @@ def run(patch, method, nx, px, alpha, nsteps, ub=None, ue=None):
         # ...
 
         # ...
-        list_Q = zip(list_x, list_y)
+        list_Q = list(zip(list_x, list_y))
         uk = compute_uk(list_Q, method=method)
         U1       = []
         U1      += list(uk)

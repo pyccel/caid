@@ -77,14 +77,14 @@ class Color(object):
                     r, g, b, a = color[:2], color[2:4], color[4:6], color[6:],
                     r, g, b, a = [int(n,16)/255. for n in (r, g, b, a)]
                 else:
-                    raise ValueError, "%s does not correspond to a known color" % color
-            elif color in self._colors.keys():
+                    raise ValueError("%s does not correspond to a known color" % color)
+            elif color in list(self._colors.keys()):
                 c = self._colors[color][1:]
                 r, g, b = c[:2], c[2:4], c[4:]
                 r, g, b = [int(n, 16)/255. for n in (r, g, b)]
                 a = 1.0
             else:
-                raise ValueError, "%s does not correspond to a known color" % color
+                raise ValueError("%s does not correspond to a known color" % color)
         elif type(color) in[tuple, list]:
             if len(color) == 1:
                 if type(color[0]) == int:
@@ -133,7 +133,7 @@ class Color(object):
                 else:
                     a = color[3]
         else:
-            raise ValueError, "%s does not correspond to a known  color" % color
+            raise ValueError("%s does not correspond to a known  color" % color)
         if 'alpha' in kwargs:
             a = kwargs['alpha']
         self.color = [float(r),float(g),float(b),float(a)]
@@ -268,7 +268,7 @@ class Color(object):
         return repr(self.RGBA)
 
     def name(self):
-        for color in self._colors.keys():
+        for color in list(self._colors.keys()):
             if Color(color) == self:
                 return "Color('%s')" % color
         else:
@@ -439,5 +439,5 @@ if __name__ == '__main__':
               "Color('white')"]         # Normalized web color name
     for color in colors:
         c = eval(color)
-        print '%s : %s' %(color, c.rgba)
-    print 'Color(1.) = %s ' % Color(1.).name()
+        print('%s : %s' %(color, c.rgba))
+    print('Color(1.) = %s ' % Color(1.).name())

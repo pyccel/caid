@@ -77,8 +77,8 @@ class Beziers(object):
         list_lmatrices = list_lmatrices[0]
         npatchs = len(list_lmatrices)
         shape = list(list_lmatrices[0].shape)
-        print npatchs
-        print shape
+        print(npatchs)
+        print(shape)
         shape = [npatchs] + [3+1+1] + shape
         self._array = np.zeros(shape)
         for patch_id in range(0, npatchs):
@@ -133,7 +133,7 @@ class Bezier_Patchs(object):
     def __getitem__(self, key):
         return self._list[key]
 
-    def next(self):
+    def __next__(self):
         if len(self) == 0:
             raise StopIteration
         self._currentElt += 1

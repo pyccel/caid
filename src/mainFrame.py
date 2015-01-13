@@ -130,7 +130,7 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_KEY_UP     , self.onKeyPressUp)
 
         # open a workgroup if filename is given
-        print "filenames=", filenames
+        print(("filenames=", filenames))
         if len(filenames) == 0:
             wk = self.tree.createWorkGroup(empty=False)
         else:
@@ -141,7 +141,7 @@ class Frame(wx.Frame):
         for filename in filenames:
             if filename is not None:
                 ext = filename.split('.')[-1]
-                print "Extension ", ext
+                print(("Extension ", ext))
                 if ext == "pfl":
                     wk.viewer.Show(False)
                     wk.inspector.Show(False)
@@ -154,15 +154,16 @@ class Frame(wx.Frame):
     #                V.Show(True)
 
                 if ext == "xml":
-                    print filename
-                    print os.path.isfile(filename)
+                    print(filename)
+                    print((os.path.isfile(filename)))
                     if os.path.isfile(filename):
                         geo = cad_geometry(filename)
                         _geo = geometry(geo)
                         _geo.load_attributs()
                         wk.add_geometry(_geo)
                     else:
-                        raise("Invalid filename : "+filename)
+                        print("Invalid filename : ")
+                        raise
 
                 if ext == "wkl":
                     wk.open(filename=filename)
@@ -177,7 +178,7 @@ class Frame(wx.Frame):
                             directories.append(name)
 
                     for dname in directories:
-                        print ">> dname ", dname
+                        print((">> dname ", dname))
                         files = glob(dname+"/*")
                         files.sort()
                         for f in files:
@@ -185,7 +186,7 @@ class Frame(wx.Frame):
                             ext = os.path.splitext(fname)[-1]
                             if ext == ".xml":
                                 _file = os.path.join(dname, fname)
-                                print "reading ", _file
+                                print(("reading ", _file))
                                 geo = cad_geometry(_file)
                                 _geo = geometry(geo)
                                 _geo.load_attributs()

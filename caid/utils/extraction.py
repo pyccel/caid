@@ -42,7 +42,7 @@ class splineRefMat(object):
             return M
 
         if self.dim ==3:
-            print "Not done yet"
+            print("Not done yet")
             import sys; sys.exit(1)
 
     # ...
@@ -152,8 +152,8 @@ class BezierExtraction():
         geo.append(nrb)
 
         if verbose:
-            print "== shape before ", nrb.shape
-            print nrb.knots
+            print("== shape before ", nrb.shape)
+            print(nrb.knots)
 
         list_t = []
         for axis in range(0, nrb.dim):
@@ -190,19 +190,19 @@ class BezierExtraction():
             if check:
                 if nrb.dim == 1:
                     if verbose:
-                        print "matrix shape ", M.shape
+                        print("matrix shape ", M.shape)
                     R = M.dot(nrb.points[:,0])
 
 #                    geo.refine(id=0, list_t=[list_r])
                     nrb     = geo[0]
                     if verbose:
-                        print "== shape after ", nrb.shape
-                        print nrb.knots
+                        print("== shape after ", nrb.shape)
+                        print(nrb.knots)
 
                     P = np.asarray(nrb.points[:,0])
                     assert(np.allclose(P,R))
                     if verbose:
-                        print "check: OK"
+                        print("check: OK")
             # ...
 
             self._matrices.append(M)
@@ -267,7 +267,7 @@ if __name__ == '__main__':
             assert(np.allclose(P,Q))
             assert(np.allclose(P,R))
 
-        print "test1D1: OK"
+        print("test1D1: OK")
     # ...
 
     # ...
@@ -297,7 +297,7 @@ if __name__ == '__main__':
         P = np.asarray(nrb.points[:,0])
 
         assert(np.allclose(P,R))
-        print "test1D2: OK"
+        print("test1D2: OK")
     # ...
 
     # ...
@@ -341,7 +341,7 @@ if __name__ == '__main__':
 
             assert(np.allclose(tV, Q))
 
-        print "test2D1: OK"
+        print("test2D1: OK")
     # ...
 
     # ...
@@ -388,7 +388,7 @@ if __name__ == '__main__':
 
             assert(np.allclose(P, Q))
 
-        print "test2D2: OK"
+        print("test2D2: OK")
     # ...
 
     # ...
@@ -418,7 +418,7 @@ if __name__ == '__main__':
         assert(np.allclose(np.array(H1.shape), np.array((44,24))))
         assert(np.allclose(np.array(H2.shape), np.array((54,34))))
 
-        print "test2D3: OK"
+        print("test2D3: OK")
     # ...
 
     test1D1()

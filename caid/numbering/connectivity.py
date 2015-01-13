@@ -317,7 +317,7 @@ class connectivity:
         geometry = self.geometry
         dim = self.dim
         if bound_cond is None:
-            import boundary_conditions as bc
+            from . import boundary_conditions as bc
             bound_cond = bc.boundary_conditions(geometry)
         self._boundary_condition = bound_cond
         if dim == 1:
@@ -345,7 +345,7 @@ class connectivity:
 #        print " DuplicatedFaces  ", DuplicatedFaces
 #        print " DuplicataFaces ", DuplicataFaces
 
-        from idutils import computeLocalID, computeGlobalID
+        from .idutils import computeLocalID, computeGlobalID
         list_id = computeLocalID(list_n, DirFaces, DuplicatedFaces, DuplicataFaces)
         ID = computeGlobalID(list_id)
 
@@ -390,50 +390,50 @@ class connectivity:
 #        print "self.LM=", self.LM
 
     def printinfo(self, with_IEN=True, with_LM=True, with_ID=True):
-        print "*******************************"
-        print " global informations "
-        print "*******************************"
-        print " number of patchs :", self.npatch
-        print " nnp :", self.nnp
-        print "*******************************"
+        print("*******************************")
+        print(" global informations ")
+        print("*******************************")
+        print(" number of patchs :", self.npatch)
+        print(" nnp :", self.nnp)
+        print("*******************************")
         if (with_IEN or with_LM):
             for li_id in range(0, self.npatch):
-                print "*******************************"
-                print " Current Patch-id =", li_id
+                print("*******************************")
+                print(" Current Patch-id =", li_id)
                 li_nel = self.list_nel[li_id]
                 li_nen = self.list_nen[li_id]
                 li_nnp = self.list_nnp[li_id]
-                print "-- nel =", li_nel
-                print "-- nen =", li_nen
-                print "-- nnp =", li_nnp
-                print "*******************************"
+                print("-- nel =", li_nel)
+                print("-- nen =", li_nen)
+                print("-- nnp =", li_nnp)
+                print("*******************************")
 
                 if with_IEN:
-                    print "======"
-                    print " IEN "
-                    print "======"
+                    print("======")
+                    print(" IEN ")
+                    print("======")
                     for li_e in range(0, li_nel):
-                        print "     elt =", li_e
-                        print "          ", self.IEN[li_id][:, li_e]
-                    print "======"
+                        print("     elt =", li_e)
+                        print("          ", self.IEN[li_id][:, li_e])
+                    print("======")
 
                 if with_LM:
-                    print "======"
-                    print " LM "
-                    print "======"
+                    print("======")
+                    print(" LM ")
+                    print("======")
                     for li_e in range(0, li_nel):
-                        print "     elt =", li_e
-                        print "          ", self.LM[li_id][:, li_e]
-                    print "======"
+                        print("     elt =", li_e)
+                        print("          ", self.LM[li_id][:, li_e])
+                    print("======")
 
-                print "*******************************"
+                print("*******************************")
 
         if with_ID:
-            print "==============================="
-            print " ID "
-            print "==============================="
-            print " ", self.ID[:]
-            print "==============================="
+            print("===============================")
+            print(" ID ")
+            print("===============================")
+            print(" ", self.ID[:])
+            print("===============================")
 
     def save(self, etiq="", fmt='zip', name=None):
         """
@@ -509,7 +509,7 @@ if __name__ == '__main__':
 
     import caid.cad_geometry  as cg
     from caid.cad_geometry import line, square, trilinear
-    from boundary_conditions import boundary_conditions
+    from .boundary_conditions import boundary_conditions
 
     geo1d = line(n=[5], p=[3])
 

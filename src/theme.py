@@ -156,11 +156,11 @@ class theme():
         """
 
         if (doc is None) and (filename is None):
-            print "doc and filename can not be both None"
+            print("doc and filename can not be both None")
             raise
 
         if (doc is not None) and (filename is not None):
-            print "doc and filename can not be both specified"
+            print("doc and filename can not be both specified")
             raise
 
         if filename is not None:
@@ -251,11 +251,11 @@ class theme():
         """
 
         if (rootElt is None) and (filename is None):
-            print "rootElt and filename can not be both None"
+            print("rootElt and filename can not be both None")
             raise
 
         if (rootElt is not None) and (filename is not None):
-            print "rootElt and filename can not be both specified"
+            print("rootElt and filename can not be both specified")
             raise
 
         if filename is not None:

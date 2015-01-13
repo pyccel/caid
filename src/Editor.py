@@ -190,11 +190,11 @@ class Editor(wx.Frame):
             self.statusbar.SetStatusText('', 1)
             self.modify = False
 
-        except IOError, error:
+        except IOError as error:
             dlg = wx.MessageDialog(self, 'Error opening file\n' + str(error))
             dlg.ShowModal()
 
-        except UnicodeDecodeError, error:
+        except UnicodeDecodeError as error:
             dlg = wx.MessageDialog(self, 'Error opening file\n' + str(error))
             dlg.ShowModal()
 
@@ -225,11 +225,11 @@ class Editor(wx.Frame):
             self.modify = False
             return filename
 
-        except IOError, error:
+        except IOError as error:
             dlg = wx.MessageDialog(self, 'Error opening file\n' + str(error))
             dlg.ShowModal()
 
-        except UnicodeDecodeError, error:
+        except UnicodeDecodeError as error:
             dlg = wx.MessageDialog(self, 'Error opening file\n' + str(error))
             dlg.ShowModal()
 
@@ -246,7 +246,7 @@ class Editor(wx.Frame):
                 self.modify = False
                 self.statusbar.SetStatusText('', 1)
 
-            except IOError, error:
+            except IOError as error:
                 dlg = wx.MessageDialog(self, 'Error saving file\n' + str(error))
                 dlg.ShowModal()
         else:
@@ -270,7 +270,7 @@ class Editor(wx.Frame):
                 self.modify = False
                 self.statusbar.SetStatusText('', 1)
 
-            except IOError, error:
+            except IOError as error:
                 dlg = wx.MessageDialog(self, 'Error saving file\n' + str(error))
                 dlg.ShowModal()
         save_dlg.Destroy()

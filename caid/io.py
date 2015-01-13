@@ -20,7 +20,7 @@ class formatter(object):
             if dim == 3:
                 return self.to_nparray_vol(list_points, list_n, Rd)
         except:
-            print "Problem occurs while converting the numpy array to xml-list"
+            print("Problem occurs while converting the numpy array to xml-list")
             return None
 
     def to_nparray_crv(self, list_points, list_n, Rd):
@@ -30,7 +30,7 @@ class formatter(object):
             C[:] = np.asarray(list_points).reshape(list_n)
 
         if Rd > 1:
-            list_C = zip(* list_points)
+            list_C = list(zip(* list_points))
             C = np.zeros((list_n[0],Rd))
             for i in range(0,Rd):
                 C[:,i] = np.asarray(list_C[i]).reshape(list_n)
@@ -44,7 +44,7 @@ class formatter(object):
             C[:,:] = np.asarray(list_points).reshape(list_n[::-1]).transpose()
 
         if Rd > 1:
-            list_C = zip(* list_points)
+            list_C = list(zip(* list_points))
             C = np.zeros((list_n[0], list_n[1],Rd))
             for i in range(0,Rd):
                 C[:,:,i] = np.asarray(list_C[i]).reshape(list_n[::-1]).transpose()
@@ -52,14 +52,14 @@ class formatter(object):
         return C
 
     def to_nparray_vol(self, list_points, list_n, Rd):
-        print "to_nparray_vol: TODO transpose()"
+        print("to_nparray_vol: TODO transpose()")
         C = None
         if Rd == 1:
             C = np.zeros((list_n[0], list_n[1], list_n[2]))
             C[:,:,:] = np.asarray(list_points).reshape(list_n)
 
         if Rd > 1:
-            list_C = zip(* list_points)
+            list_C = list(zip(* list_points))
             C = np.zeros((list_n[0], list_n[1], list_n[2],Rd))
             for i in range(0,Rd):
                 C[:,:,:,i] = np.asarray(list_C[i]).reshape(list_n)
@@ -79,37 +79,37 @@ class formatter(object):
         if Rd == 1:
             return C[:].reshape(n)
         if Rd == 2:
-            return zip(  C[:,0].reshape(n) \
-                       , C[:,1].reshape(n))
+            return list(zip(  C[:,0].reshape(n) \
+                       , C[:,1].reshape(n)))
         if Rd == 3:
-            return zip(  C[:,0].reshape(n) \
+            return list(zip(  C[:,0].reshape(n) \
                        , C[:,1].reshape(n) \
-                       , C[:,2].reshape(n))
+                       , C[:,2].reshape(n)))
 
     def to_list_srf(self, C, list_n, Rd):
         n = np.asarray(list_n).prod()
         if Rd == 1:
             return C[:,:].transpose().reshape(n)
         if Rd == 2:
-            return zip(  C[:,:,0].transpose().reshape(n) \
-                       , C[:,:,1].transpose().reshape(n))
+            return list(zip(  C[:,:,0].transpose().reshape(n) \
+                       , C[:,:,1].transpose().reshape(n)))
         if Rd == 3:
-            return zip(  C[:,:,0].transpose().reshape(n) \
+            return list(zip(  C[:,:,0].transpose().reshape(n) \
                        , C[:,:,1].transpose().reshape(n) \
-                       , C[:,:,2].transpose().reshape(n))
+                       , C[:,:,2].transpose().reshape(n)))
 
     def to_list_vol(self, C, list_n, Rd):
-        print "to_list_vol: TODO transpose()"
+        print("to_list_vol: TODO transpose()")
         n = np.asarray(list_n).prod()
         if Rd == 1:
             return C[:,:,:].reshape(n)
         if Rd == 2:
-            return zip(  C[:,:,:,0].reshape(n) \
-                       , C[:,:,:,1].reshape(n))
+            return list(zip(  C[:,:,:,0].reshape(n) \
+                       , C[:,:,:,1].reshape(n)))
         if Rd == 3:
-            return zip(  C[:,:,:,0].reshape(n) \
+            return list(zip(  C[:,:,:,0].reshape(n) \
                        , C[:,:,:,1].reshape(n) \
-                       , C[:,:,:,2].reshape(n))
+                       , C[:,:,:,2].reshape(n)))
 
 
 class XML(object):
@@ -195,7 +195,7 @@ class XML(object):
             return data
         except:
             if TAG not in ["orientation"]:
-                print"Exception _get_data, invalid tag : ", TAG
+                print("Exception _get_data, invalid tag : ", TAG)
             return None
 
     def read(self, filename, geo):
@@ -211,7 +211,7 @@ class XML(object):
 
         geo_attributs       = {}
         # ... geometry attributs
-        for TAG in rootElt.attributes.keys():
+        for TAG in list(rootElt.attributes.keys()):
             txt = rootElt.attributes[TAG].value
             if txt == "True":
                 txt = True
@@ -226,7 +226,7 @@ class XML(object):
 
             attributs       = {}
             # ... patch attributs
-            for TAG in datas.attributes.keys():
+            for TAG in list(datas.attributes.keys()):
                 txt = datas.attributes[TAG].value
                 if txt is not None:
                     attributs[TAG]   = txt
@@ -275,7 +275,7 @@ class XML(object):
                         else:
                             rational = False
                     except:
-                        print "XML.read: Exception while reading rational arg"
+                        print("XML.read: Exception while reading rational arg")
                         rational = False
                     # ...
 
@@ -305,19 +305,20 @@ class XML(object):
                                 _nrb = NURBS(list_knots, C, weights=W)
                                 grad_nrb = grad(_nrb)
                                 nrb = cad_op_nurbs(grad_nrb)
-                                print "Warning: creates a cad_op_nurbs instead of cad_grad_nurbs"
+                                print("Warning: creates a cad_op_nurbs instead of cad_grad_nurbs")
                             else:
-                                raise "Operator not yet implemented"
+                                print("Operator not yet implemented")
+                                raise
 
                         nrb.set_attributs(attributs)
                         nrb.set_orientation(list_sgn)
                         nrb.set_rational(rational)
                     except:
-                        print "XML.read: Exception while creating the corresponding cad_nurbs"
+                        print("XML.read: Exception while creating the corresponding cad_nurbs")
 
                 except:
                     nrb = None
-                    print 'Un des TAGS suivant est manquants'
+                    print('Un des TAGS suivant est manquants')
 
                 geo.append(nrb)
 
@@ -369,7 +370,7 @@ class XML(object):
         generates xml doc from cad_geometry object
         """
         # ... sets geometry attributs
-        for TAG, txt in geo.attributs.iteritems():
+        for TAG, txt in geo.attributs.items():
             if txt is not None:
                 rootElt.setAttribute(TAG, str(txt))
         # ...
@@ -463,7 +464,7 @@ class XML(object):
             Text = doc.createTextNode(txt)
             Elt.appendChild(Text)
         except:
-            print "Warning: wrong or bad values for ", TAG
+            print("Warning: wrong or bad values for ", TAG)
 #        print TAG, txt
         # ...
 
@@ -479,7 +480,7 @@ class XML(object):
             rootElt.appendChild(maincard)
 
             # ... patch attributs
-            for TAG, txt in nrb.attributs.iteritems():
+            for TAG, txt in nrb.attributs.items():
                 if txt is not None:
                     maincard.setAttribute(TAG, txt)
             # ...
@@ -670,7 +671,7 @@ class TXT(object):
             fo.write("# connectivity")
             fo.write("\n")
             for dic in geo.connectivity:
-                for key, data in dic.iteritems():
+                for key, data in dic.items():
                     label = key
                     fo.write(label)
                     fo.write("\n")

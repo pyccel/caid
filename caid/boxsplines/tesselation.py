@@ -281,11 +281,11 @@ class stencil(object):
             m = bounds[0] ; M = bounds[1]
 
         if axis ==0:
-            list_i = range(m,M)
-            list_j = range(0,1)
+            list_i = list(range(m,M))
+            list_j = list(range(0,1))
         if axis ==1:
-            list_i = range(0,1)
-            list_j = range(m,M)
+            list_i = list(range(0,1))
+            list_j = list(range(m,M))
         T = tesselation(self.origin, self.vectors, list_i, list_j, limiter=self.limiter)
         return T
 
@@ -347,7 +347,7 @@ class triangle(object):
     def index(self, tri):
         return self._list.index(tri)
 
-    def next(self):
+    def __next__(self):
         if len(self) == 0:
             raise StopIteration
         self._currentElt += 1
@@ -402,7 +402,7 @@ class triangulation(object):
     def index(self, tri):
         return self._list.index(tri)
 
-    def next(self):
+    def __next__(self):
         if len(self) == 0:
             raise StopIteration
         self._currentElt += 1
@@ -538,7 +538,7 @@ class tesselation:
     def index(self, sten):
         return self._list.index(sten)
 
-    def next(self):
+    def __next__(self):
         if len(self) == 0:
             raise StopIteration
         self._currentElt += 1
@@ -593,12 +593,12 @@ class tesselation:
 
         if axis ==0:
             ib = min(self._list_i) + m ; ie = max(self._list_i) + M + 1
-            list_i = range(ib,ie)
+            list_i = list(range(ib,ie))
             list_j = self._list_j
         if axis ==1:
             jb = min(self._list_j) + m ; je = max(self._list_j) + M + 1
             list_i = self._list_i
-            list_j = range(jb,je)
+            list_j = list(range(jb,je))
         T = tesselation(self.origin, self.vectors, list_i, list_j, limiter=self.limiter)
         return T
 
@@ -620,17 +620,17 @@ if __name__ == "__main__":
 
     def test1():
         list_pts = [r1, r2, r1, r2, r3]
-        list_t   = range(-6,4)
+        list_t   = list(range(-6,4))
         return list_pts, list_t
 
     def test2():
         list_pts = [r1, r2, r3, r4]
-        list_t   = range(-6,6)
+        list_t   = list(range(-6,6))
         return list_pts, list_t
 
     def test3():
         list_pts = [e1, e2, e3, e1, e2, e3]
-        list_t   = range(-6,6)
+        list_t   = list(range(-6,6))
 #        list_t   = range(-2,2)
         return list_pts, list_t
 
@@ -728,7 +728,7 @@ if __name__ == "__main__":
 
     triang.extend()
 
-    print len(sten_ref.neighbours)
+    print(len(sten_ref.neighbours))
 
 #    for enum, simplex in enumerate(sten_ref.tri.simplices):
 #        T = triangle()
@@ -769,7 +769,7 @@ if __name__ == "__main__":
 #    for T in triang:
 #        print T
 
-    print len(triang)
+    print(len(triang))
 
 #    tess = sten_ref.expand(axis=0, bounds=[-7,7])
 #    tess.scale(h)

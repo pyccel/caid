@@ -69,6 +69,6 @@ class Interpreter(object):
 
         self._locals["__main__"] = __main__
         # make all __main__.__dict__ variables visible
-        for key, value in __main__.__dict__.iteritems():
+        for key, value in list(__main__.__dict__.items()):
             pretext = str(key) + " = __main__.__dict__[\"" + str(key) + "\"]"
             self._shell.runsource(pretext)

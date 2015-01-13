@@ -31,8 +31,8 @@ DIM_PROJECT = 0
 try:
     CAID_DIR = os.environ['CAID_DIR']
 except:
-    print "Before running CAID, you must define the path to it, using the environement variable CAID_DIR"
-    import sys; sys.exit(0)
+    print ("Before running CAID, you must define the path to it, using the environement variable CAID_DIR")
+    raise
 
 DATA_DIRECTORY       = CAID_DIR+"/data"
 MODELS_DIRECTORY     = CAID_DIR+"/models"
@@ -50,21 +50,21 @@ N_RECENT_FILES = 5
 def strtoArray(txt):
 #    print ">> strtoArray. Input :" + txt
     if txt == "None":
-        return None #[0.1,0.3,0.2]
+        return None
     if txt is None:
-        return None #[0.1,0.3,0.2]
+        return None
 
+    # remove '(' and ')'
     if len(txt.split(',')) > 1:
-        # remove '(' and ')'
         _txt = txt[1:-1]
         tab = _txt.split(',')
+    # remove '(' and ')'
     elif len(txt.split(' ')) > 1:
-        # remove '(' and ')'
         _txt = txt[1:-1]
         tab = _txt.split(' ')
     else:
-        print "Erro with " + str(tab)
-        raise()
+        print(("Erro with " + str(tab)))
+        raise
     _tab = [x for x in tab if len(x)>=1]
     tab = [float(x) for x in _tab]
     return tab

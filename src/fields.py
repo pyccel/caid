@@ -163,7 +163,7 @@ class fieldsTree(wx.TreeCtrl):
     def OnRightMouseClickField(self, event, field):
         ### 2. Launcher creates wxMenu. ###
         menu = wx.Menu()
-        for (id,title) in self.menu_title_by_id.items():
+        for (id,title) in list(self.menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
             if field.show and (title=="Show"):
@@ -321,12 +321,12 @@ class Inspector(wx.Frame):
         self.tree.Refresh()
 
     def OnScroll(self, evt):
-        print "Left"
+        print("Left")
 #        y = evt.GetPosition()
 #        self.st.SetLabel(str(y))
 
     def OnClick(self, event):
-        print "OnClick"
+        print("OnClick")
         ID = event.GetId()
 
     def onKeyPressUp(self, event):

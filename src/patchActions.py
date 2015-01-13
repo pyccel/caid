@@ -100,7 +100,7 @@ class PatchActions(ClassActions):
             import matplotlib.pyplot as plt
             geo = cad_geometry()
             geo.append(patch)
-            print "TODO: Enter the Mesh-Resolution"
+            print("TODO: Enter the Mesh-Resolution")
             geo.plotJacobians(MeshResolution=50)
             plt.colorbar()
             plt.show()
@@ -111,7 +111,7 @@ class PatchActions(ClassActions):
             import matplotlib.pyplot as plt
             geo = cad_geometry()
             geo.append(patch)
-            print "TODO: Enter the Mesh-Resolution"
+            print("TODO: Enter the Mesh-Resolution")
             geo.plotMesh(MeshResolution=50)
             plt.show()
         if ID == self.REF_ID:
@@ -195,11 +195,11 @@ class PatchActions(ClassActions):
             for item in wk.inspector.tree.selectionsItems:
                 patch = wk.inspector.tree.GetPyData(item)
                 if patch.dim > 1:
-                    print "Coons algorithm only works with curves"
+                    print("Coons algorithm only works with curves")
                     return
                 list_patchs.append(patch)
             if len(list_patchs) > 4:
-                print "Coons algorithm needs 4 curves, but ", len(list_patchs), " curves was given"
+                print(("Coons algorithm needs 4 curves, but ", len(list_patchs), " curves was given"))
                 return
 
             from caid.utils.coons import coons, coonsInitialize
@@ -260,12 +260,12 @@ class PatchActions(ClassActions):
             for item in wk.inspector.tree.selectionsItems:
                 patch = wk.inspector.tree.GetPyData(item)
                 if patch.dim > 1:
-                    print "Intersection algorithm only works with curves"
+                    print("Intersection algorithm only works with curves")
                     return
                 list_patchs.append(patch)
             if len(list_patchs) > 2:
-                print "Intersection algorithm needs 2 curves, but "\
-                        , len(list_patchs), " curves were given"
+                print(("Intersection algorithm needs 2 curves, but "\
+                        , len(list_patchs), " curves were given"))
                 return
 
             from caid.utils.intersection import intersect_crv
@@ -352,12 +352,12 @@ class PatchActions(ClassActions):
             for item in wk.inspector.tree.selectionsItems:
                 patch = wk.inspector.tree.GetPyData(item)
                 if patch.dim > 2:
-                    print "Ruled algorithm only works with 2 curves or 2 surfaces"
+                    print("Ruled algorithm only works with 2 curves or 2 surfaces")
                     return
                 list_patchs.append(patch)
             if len(list_patchs) > 2:
-                print "Intersection algorithm needs 2 curves/surfaces, but "\
-                        , len(list_patchs), " curves/surfaces were given"
+                print(("Intersection algorithm needs 2 curves/surfaces, but "\
+                        , len(list_patchs), " curves/surfaces were given"))
                 return
 
             from igakit.cad import ruled
@@ -409,12 +409,12 @@ class PatchActions(ClassActions):
             for item in wk.inspector.tree.selectionsItems:
                 patch = wk.inspector.tree.GetPyData(item)
                 if patch.dim > 2:
-                    print "Sweep algorithm only works with curves and surfaces"
+                    print("Sweep algorithm only works with curves and surfaces")
                     return
                 list_patchs.append(patch)
             if len(list_patchs) > 2:
-                print "Sweep algorithm needs 2 curves/surfaces, but "\
-                        , len(list_patchs), " curves/surfaces were given"
+                print(("Sweep algorithm needs 2 curves/surfaces, but "\
+                        , len(list_patchs), " curves/surfaces were given"))
                 return
 
             from igakit.cad import sweep
@@ -584,11 +584,11 @@ class PatchActionsTCoons(ClassActions):
             for item in wk.inspector.tree.selectionsItems:
                 patch = wk.inspector.tree.GetPyData(item)
                 if patch.dim > 1:
-                    print "TCoons algorithm only works with curves"
+                    print("TCoons algorithm only works with curves")
                     return
                 list_patchs.append(patch)
             if len(list_patchs) > 3:
-                print "TCoons algorithm needs 3 curves, but ", len(list_patchs), " curves was given"
+                print(("TCoons algorithm needs 3 curves, but ", len(list_patchs), " curves was given"))
                 return
 
             from caid.cad_geometry import tcoons
@@ -1758,7 +1758,7 @@ class PatchActionsStickC1(ClassActions):
                 list_patchs.append(patch)
                 list_faces.append(face_id)
             if len(list_patchs) > 2:
-                print "Stick-C1 algorithm needs 2 nurbs, but ", len(list_patchs), " were given"
+                print(("Stick-C1 algorithm needs 2 nurbs, but ", len(list_patchs), " were given"))
                 return
 
             from caid.utlis.stick import stickC1

@@ -55,7 +55,7 @@ class MenuCAIDFile(wx.Menu):
             filename = dialog.GetPath()
         # The user did not select anything
         else:
-            print 'Nothing was selected.'
+            print('Nothing was selected.')
         # Destroy the dialog
         dialog.Destroy()
 
@@ -68,10 +68,10 @@ class MenuCAIDFile(wx.Menu):
         wk.save()
 
     def OnRecentFiles(self, event):
-        print "OnRecentFiles"
+        print("OnRecentFiles")
 
     def UpdateRecentFiles(self):
-        print "UpdateRecentFiles"
+        print("UpdateRecentFiles")
 #        if self.currentFile not in self.recentFiles:
 #            if len(self.recentFiles) == self.nRecentFiles :
 #                self.recentFiles.pop(0)

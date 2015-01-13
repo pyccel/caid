@@ -43,37 +43,37 @@ class MenuCAIDViewer(wx.Menu):
         # ...
 
     def OnZoom(self, event):
-        print "OnZoom"
+        print("OnZoom")
 #        import common_obj as _com
 #        com = _com.common_obj()
 #        com.designer.OnZoom(event)
 
     def OnhGrid(self, event):
-        print "OnhGrid"
+        print("OnhGrid")
 #        import common_obj as _com
 #        com = _com.common_obj()
 #        com.designer.OnhGrid(event)
 
     def OnTranslate(self, event):
-        print "OnTranslate"
+        print("OnTranslate")
 #        import common_obj as _com
 #        com = _com.common_obj()
 #        com.designer.OnTranslate(event)
 
     def OnRotate(self, event):
-        print "OnRotate"
+        print("OnRotate")
 #        import common_obj as _com
 #        com = _com.common_obj()
 #        com.designer.OnRotate(event)
 
     def OnCleanMarkSelectedPts(self, event):
-        print "OnCleanMarkSelectedPts"
+        print("OnCleanMarkSelectedPts")
 #        import common_obj as _com
 #        com = _com.common_obj()
 #        com.designer.ClearMarkedSelection ()
 
     def OnCleanMarkerPts(self, event):
-        print "OnCleanMarkerPts"
+        print("OnCleanMarkerPts")
 #        import common_obj as _com
 #        com = _com.common_obj()
 #        com.designer.CleanMarkerPoints ()

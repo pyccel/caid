@@ -41,7 +41,7 @@ class directActions(object):
         wk = self.workGroup
         list_P = wk.viewer.MarkerPoints
         if len(list_P) != 3 :
-            print "You have to specify 3 markers."
+            print("You have to specify 3 markers.")
             return
 
         dlg = edtTxtDialog(None, title="Edit Angle")
@@ -79,7 +79,7 @@ class directActions(object):
         wk = self.workGroup
         list_P = wk.viewer.MarkerPoints
         if len(list_P) != 4 :
-            print "You have to specify 4 markers."
+            print("You have to specify 4 markers.")
             return
 
         A = list_P[0]
@@ -146,12 +146,12 @@ class directActions(object):
             for item in wk.inspector.tree.selectionsItems:
                 patch = wk.inspector.tree.GetPyData(item)
                 if patch.dim > 1:
-                    print "cut curves algorithm only works with curves"
+                    print("cut curves algorithm only works with curves")
                     return
                 list_patchs.append(patch)
             if len(list_patchs) > 1:
-                print "cut curves algorithm needs 1 curve, but "\
-                        , len(list_patchs), " curves were given"
+                print(("cut curves algorithm needs 1 curve, but "\
+                        , len(list_patchs), " curves were given"))
                 return
 
             from caid.utils.intersect import intersect_crv
@@ -161,7 +161,7 @@ class directActions(object):
 
             freq = wk.viewer.cutCurveFreq
             list_P = wk.viewer.CutCurvePoints[::freq]
-            x,y,z = zip(*list_P)
+            x,y,z = list(zip(*list_P))
             x = np.asarray(x)
             y = np.asarray(y)
             z = np.asarray(z)

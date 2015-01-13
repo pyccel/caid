@@ -316,7 +316,7 @@ class Viewer (GLCanvas):
         if alpha is None:
             alpha = self.alpha
         if color is None:
-            print "Warning Selected Points Color is None"
+            print("Warning Selected Points Color is None")
         else:
             if len(color) == 3:
                 color.append(alpha)
@@ -332,7 +332,7 @@ class Viewer (GLCanvas):
         if alpha is None:
             alpha = self.alpha
         if color is None:
-            print "Warning Marker Points Color is None"
+            print("Warning Marker Points Color is None")
         else:
             if len(color) == 3:
                 color.append(alpha)
@@ -721,7 +721,7 @@ class Viewer (GLCanvas):
     def onKeyPressUp(self, event):
         wk = self.WorkGroup
         keycode = event.GetKeyCode()
-        print "key ", keycode
+        print(("key ", keycode))
         if keycode == wx.WXK_SHIFT:
             self.SetEnabledSelectionMode(False)
         if keycode == wx.WXK_CONTROL:
@@ -754,7 +754,7 @@ class Viewer (GLCanvas):
 
     def OnMouseWheel(self, evt):
         if self.GetEnabledLookAtMode():
-            print "Look at mode activated: OnMouseWheel"
+            print("Look at mode activated: OnMouseWheel")
         else:
             wheelSensitivity = self.get_wheelSensitivity()
             xeye,yeye,zeye = self.lookAt.GetEye()
@@ -772,7 +772,7 @@ class Viewer (GLCanvas):
         self.statusbar.SetStatusText('Current position : ' + str(txt))
 
     def OnMouseLeftUp(self, evt):
-        print "OnMouseLeftUp"
+        print("OnMouseLeftUp")
 
         self.x, self.y = evt.GetPosition()
         pos = self.ToPhysicalPosition((self.x, self.y))
@@ -791,7 +791,7 @@ class Viewer (GLCanvas):
                 xmin = min([x1,x2]) ; xmax = max([x1,x2])
                 ymin = min([y1,y2]) ; ymax = max([y1,y2])
 
-                print "Enter"
+                print("Enter")
                 self.OnDrawSelectionRectangle(x1, y1, x2, y2)
                 self.OnDraw(clear=False)
 
@@ -876,7 +876,7 @@ class Viewer (GLCanvas):
     def OnRightMouseClick(self, event):
         ### 2. Launcher creates wxMenu. ###
         menu = wx.Menu()
-        for (id,title) in self.menu_title_by_id.items():
+        for (id,title) in list(self.menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
             if self.active2D \
@@ -979,7 +979,7 @@ class Viewer (GLCanvas):
                 self.AddMarkerPoint([x,y,z,w])
                 self.Refresh()
             except:
-                print "Warning: problem occured while reading values"
+                print("Warning: problem occured while reading values")
                 pass
             dlg.Destroy()
         if operation == "Import Markers":
@@ -994,7 +994,7 @@ class Viewer (GLCanvas):
                 filename = dialog.GetPath()
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
+                print('Nothing was selected.')
             # Destroy the dialog
             dialog.Destroy()
 
@@ -1024,7 +1024,7 @@ class Viewer (GLCanvas):
                 filename = dialog.GetPath()
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
+                print('Nothing was selected.')
             # Destroy the dialog
             dialog.Destroy()
 

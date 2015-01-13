@@ -630,7 +630,7 @@ class edtControlPoints(wx.Dialog):
 
         patch_old = self.patch.copy()
 
-        for key, row in self.myRowDict.iteritems():
+        for key, row in list(self.myRowDict.items()):
             x = float(row.x)
             y = float(row.y)
             z = float(row.z)
@@ -785,7 +785,7 @@ class edtControlPoints(wx.Dialog):
     def OnRightMouseClick(self, event):
         ### 2. Launcher creates wxMenu. ###
         menu = wx.Menu()
-        for (id,title) in self.menu_title_by_id.items():
+        for (id,title) in list(self.menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
             menu.Append( id, title )

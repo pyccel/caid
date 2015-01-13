@@ -25,17 +25,17 @@ e3 = np.array([0., 1.0, 0. ])
 
 def test1():
     list_pts = [r1, r2, r1, r2, r3]
-    list_t   = range(-6,4)
+    list_t   = list(range(-6,4))
     return list_pts, list_t
 
 def test2():
     list_pts = [r1, r2, r3, r4]
-    list_t   = range(-6,6)
+    list_t   = list(range(-6,6))
     return list_pts, list_t
 
 def test3():
     list_pts = [e1, e2, e3, e1, e2, e3]
-    list_t   = range(-6,6)
+    list_t   = list(range(-6,6))
     return list_pts, list_t
 
 def create_matrice(list_pts):
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     tess.scale(h)
     tess.plot()
 
-    print point_inside_polygon(0.25,0.25,tess)
+    print(point_inside_polygon(0.25,0.25,tess))
 
     patches.append(tess.polygon)
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 #        patches.append(tess.polygon)
 #        tess.plot()
 
-    print len(patches)
+    print(len(patches))
 
     colors = 100*np.random.rand(len(patches))
     p = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.4)

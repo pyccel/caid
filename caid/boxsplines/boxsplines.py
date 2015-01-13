@@ -143,8 +143,8 @@ Xi1 = boxspline(X,Y,3)
 #
 from scipy.spatial import Delaunay
 import matplotlib.tri as mtri
-print X.shape
-print X.size
+print(X.shape)
+print(X.size)
 points = np.zeros((X.size, 2))
 points[:,0] = X.reshape(X.size)
 points[:,1] = Y.reshape(Y.size)

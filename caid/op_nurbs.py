@@ -724,7 +724,7 @@ class grad(opNURBS):
         nderiv = 1
 
         if nrb.dim == 1:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
 
         if nrb.dim == 1:
@@ -797,12 +797,12 @@ class grad(opNURBS):
             return C
 
         if nrb.dim == 3:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
 
     def evalMesh(self, npts=3):
         # TODO
-        print "Not yet implemented"
+        print("Not yet implemented")
         raise
 
     def plot(self):
@@ -813,10 +813,10 @@ class grad(opNURBS):
         nrb   = self._nrb
         # TODO
         if nderiv > 1:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
         if nrb.dim == 1:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
 
         if nrb.dim == 1:
@@ -894,25 +894,25 @@ class grad(opNURBS):
             return C
 
         if nrb.dim == 3:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
 
     def grad(self, u=None, v=None, w=None):
         # TODO
-        print "Not yet implemented"
+        print("Not yet implemented")
         raise
 
     def second_deriv(self, u=None, v=None, w=None):
         # TODO
-        print "Not yet implemented"
+        print("Not yet implemented")
         raise
 
     def tangent(self, u=None, v=None, w=None, unit=True):
         # TODO
-        print "Not yet implemented"
+        print("Not yet implemented")
         raise
 
     def normal(self, u=None, v=None, w=None, unit=True):
         # TODO
-        print "Not yet implemented"
+        print("Not yet implemented")
         raise

@@ -55,7 +55,7 @@ class TabPanel(wx.Panel):
             notebook.SetSelection(self.page+1)
 
     def buttonClick(self,event):
-        print "OK"
+        print("OK")
 ########################################################################
 class InspectorActionsFrame(wx.Frame):
     """

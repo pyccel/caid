@@ -20,7 +20,7 @@ except:
 #geo.append(geo[0])
 #list_lmatrices = geo.bezier_extract()
 
-print "====== test 2 : splines patch ====="
+print("====== test 2 : splines patch =====")
 geo = square(n=[nx,ny], p=[px,py])
 geo.translate([3.,0.])
 #geo.plotMesh() ; plt.show()
@@ -28,9 +28,9 @@ geo.translate([3.,0.])
 #list_lmatrices = geo.bezier_extract()
 
 nrb = geo[0]
-print ">>> shape ", nrb.shape
-print ">>> ux    ", nrb.knots[0]
-print ">>> uy    ", nrb.knots[1]
+print(">>> shape ", nrb.shape)
+print(">>> ux    ", nrb.knots[0])
+print(">>> uy    ", nrb.knots[1])
 filename = "bezier"
 geo.to_bezier_patchs(filename)
 

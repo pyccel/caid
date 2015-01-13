@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 import numpy as np
 from igakit.nurbs import NURBS
-from op_nurbs import opNURBS
-from io import XML, TXT
+from .op_nurbs import opNURBS
+from .io import XML, TXT
 import sys
 from caid.core import bspline as bsplinelib
 
@@ -740,11 +740,11 @@ class cad_io:
 
         self.mode = mode
         if self.mode not in ["r","w"]:
-            print "cad_io : mode must be r or w"
+            print("cad_io : mode must be r or w")
             raise
 
         if self.__format__ not in ["xml","zip","txt"]:
-            print "cad_io : format must be xml, zip or txt"
+            print("cad_io : format must be xml, zip or txt")
             raise
 
     def read(self, geo):
@@ -752,15 +752,15 @@ class cad_io:
         Write the given cad_geometry to the underlying stream
         """
         if self.mode != "r":
-            print "mode file must be set to r "
+            print("mode file must be set to r ")
             raise
 
         if self.__format__=="vtk":
-            print "VTK import Not yet implemented"
+            print("VTK import Not yet implemented")
             raise
 
         if self.__format__=="hdf5":
-            print "DHF5 import Not yet implemented"
+            print("DHF5 import Not yet implemented")
             raise
 
         if self.__format__=="xml":
@@ -768,9 +768,9 @@ class cad_io:
                 rw = XML()
                 return rw.read(self.__filename__, geo)
             except IOError as e:
-                print "I/O error({0}): {1}".format(e.errno, e.strerror)
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
             except:
-                print "Unexpected error:", sys.exc_info()[0]
+                print("Unexpected error:", sys.exc_info()[0])
                 raise
 
     def write(self, geo):
@@ -778,11 +778,11 @@ class cad_io:
         Write the given cad_geometry geo
         """
         if self.mode != "w":
-            print "mode file must be set to w "
+            print("mode file must be set to w ")
             raise
 
         if self.__format__=="hdf5":
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
 
         if self.__format__=="xml":
@@ -790,9 +790,9 @@ class cad_io:
                 rw = XML()
                 rw.write(self.__filename__, geo)
             except IOError as e:
-                print "I/O error({0}): {1}".format(e.errno, e.strerror)
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
             except:
-                print "Unexpected error:", sys.exc_info()[0]
+                print("Unexpected error:", sys.exc_info()[0])
                 raise
 
         if self.__format__=="zip":
@@ -800,9 +800,9 @@ class cad_io:
                 rw = TXT()
                 rw.write(self.__filename__, geo, fmt="zip")
             except IOError as e:
-                print "I/O error({0}): {1}".format(e.errno, e.strerror)
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
             except:
-                print "Unexpected error:", sys.exc_info()[0]
+                print("Unexpected error:", sys.exc_info()[0])
                 raise
 
         if self.__format__=="txt":
@@ -810,9 +810,9 @@ class cad_io:
                 rw = TXT()
                 rw.write(self.__filename__, geo, fmt="txt")
             except IOError as e:
-                print "I/O error({0}): {1}".format(e.errno, e.strerror)
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
             except:
-                print "Unexpected error:", sys.exc_info()[0]
+                print("Unexpected error:", sys.exc_info()[0])
                 raise
 
 class cad_object(object):
@@ -932,7 +932,7 @@ class cad_object(object):
             jac = xdu * ydv - xdv * ydu
             xyz = [x,y]
         if self.dim == 3:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
         return xyz, jac
 
@@ -1269,7 +1269,7 @@ class cad_nurbs(cad_object, NURBS):
                     list_lines.append(crv(xref))
             return list_lines
         if self.dim == 3:
-            print "Not yet implemented"
+            print("Not yet implemented")
 
     def evaluate_deriv(self, *args, **kwargs):
         """
@@ -1364,7 +1364,7 @@ class cad_nurbs(cad_object, NURBS):
         """
         dim = self.dim
         if dim > 2:
-            print "extract_face : not yet implemeted"
+            print("extract_face : not yet implemeted")
             raise
 
         # ...
@@ -1824,7 +1824,7 @@ class cad_op_nurbs(opNURBS, cad_object):
         """
         dim = self.dim
         if dim > 2:
-            print "extract_face : not yet implemeted"
+            print("extract_face : not yet implemeted")
             raise
 
         # ...
@@ -2210,7 +2210,7 @@ class cad_geometry(object):
     def attributs(self):
         return self._attributs
 
-    def next(self):
+    def __next__(self):
         if self.npatchs == 0:
             raise StopIteration
         self._currentElt += 1
@@ -2247,8 +2247,8 @@ class cad_geometry(object):
         if nrb.__class__.__name__ in list_objects:
             self._list.append(nrb)
         else:
-            print "Warning: inserted object is not in ", list_objects
-            print "the current object is ", nrb.__class__.__name__
+            print("Warning: inserted object is not in ", list_objects)
+            print("the current object is ", nrb.__class__.__name__)
             cad_nrb = cad_nurbs.__new__(cad_nurbs)
             cad_nrb._array = nrb.array
             cad_nrb._knots = nrb.knots
@@ -2343,7 +2343,7 @@ class cad_geometry(object):
         if id is not None:
             list_id = [id]
         else:
-            list_id = range(0, self.npatchs)
+            list_id = list(range(0, self.npatchs))
 
         ll_hrefine = False
         if list_t is not None:
@@ -2403,7 +2403,7 @@ class cad_geometry(object):
 
         """
         if id is None:
-            list_id = range(0, self.npatchs)
+            list_id = list(range(0, self.npatchs))
         else:
             list_id = [id]
 
@@ -2612,10 +2612,10 @@ class cad_geometry(object):
                             intext_faces_m[i_m, f_m] = 1
                             intext_faces_s[i_s, f_s] = 1
                         if isInvertFace:
-                            print "Merging Error: Found uncorrect orientation. Please change the orientation of the patchs (master,slave): ("\
-                                    ,i_m,",",i_s,")."
+                            print("Merging Error: Found uncorrect orientation. Please change the orientation of the patchs (master,slave): ("\
+                                    ,i_m,",",i_s,").")
 
-                            print "Occured on the faces (master, slave): (",f_m,",",f_s,")."
+                            print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
 
 
         for intFace in geo_m._internal_faces:
@@ -2738,8 +2738,8 @@ class cad_geometry(object):
                     intext_faces_m[i_m, f_m] = 1
                     intext_faces_m[i_m, f_s] = 1
                 if isInvertFace:
-                    print "Merging Error: Found uncorrect orientation."
-                    print "Occured on the faces (master, slave): (",f_m,",",f_s,")."
+                    print("Merging Error: Found uncorrect orientation.")
+                    print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
 
 
         internalFaces = []
@@ -2859,7 +2859,7 @@ class cad_geometry(object):
                 nrb_2 = cad_nurbs([u,v_2], P_2, weights=W_2)
 
         if nrb.dim == 3:
-            print "Not yet implemented for 3D objects"
+            print("Not yet implemented for 3D objects")
             raise
 
         self.remove(nrb)
@@ -2880,7 +2880,7 @@ class cad_geometry(object):
         for i,t in enumerate(list_t):
             geo_t.split(i,t,axis)
         if nrb.dim == 1:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
         if nrb.dim == 2:
             geo_f = cad_geometry()
@@ -2898,7 +2898,7 @@ class cad_geometry(object):
                 for srf in _geo:
                     geo_f.append(srf)
         if nrb.dim == 3:
-            print "Not yet implemented"
+            print("Not yet implemented")
             raise
 
         geo_f.initialize_info()
@@ -2916,7 +2916,7 @@ class cad_geometry(object):
         description. the user must provide the internal face
         """
         if self.dim in [1,3]:
-            print "This functions is only for 2D domains"
+            print("This functions is only for 2D domains")
             raise
 
         if face in [0,2]:
@@ -2980,7 +2980,7 @@ class cad_geometry(object):
             list_Lines = geo.evalMesh(npts=MeshResolution)[patch_id]
             for Line in list_Lines:
                 npts = Line.shape[0]
-                list_iS = range(0,npts-1) ; list_iE = range(1, npts)
+                list_iS = list(range(0,npts-1)) ; list_iE = list(range(1, npts))
                 for (i,i_1) in zip(list_iS, list_iE):
                     P   = Line[i  ,:]
                     P_1 = Line[i_1,:]
@@ -3010,7 +3010,7 @@ class cad_geometry(object):
             Dw = nrb.evaluate_deriv(*list_t,nderiv=1)
 
             if self.dim in [1,3]:
-                print "Error: Not yet implemented."
+                print("Error: Not yet implemented.")
                 raise
 
             x    = Dw[0,:,:,0]
@@ -3022,13 +3022,13 @@ class cad_geometry(object):
             ydv  = Dw[2,:,:,1]
 
             jac = xdu * ydv - xdv * ydu
-            print "=== patch ",i, " ==="
-            print "jacobian[0,0] : ", jac[0,0]
-            print "jacobian[0,-1] : ", jac[0,-1]
-            print "jacobian[-1,0] : ", jac[-1,0]
-            print "jacobian[-1,-1] : ", jac[-1,-1]
-            print "min(jacobian) : ", jac.min()
-            print "max(jacobian) : ", jac.max()
+            print("=== patch ",i, " ===")
+            print("jacobian[0,0] : ", jac[0,0])
+            print("jacobian[0,-1] : ", jac[0,-1])
+            print("jacobian[-1,0] : ", jac[-1,0])
+            print("jacobian[-1,-1] : ", jac[-1,-1])
+            print("min(jacobian) : ", jac.min())
+            print("max(jacobian) : ", jac.max())
             list_jac.append(jac)
             list_xyz.append([x,y])
 
@@ -3095,7 +3095,7 @@ class cad_geometry(object):
 #        t_begin = time()
 
         list_lmatrices = []
-        list_i     = range(0, geo.npatchs)
+        list_i     = list(range(0, geo.npatchs))
         for i in list_i:
             nrb             = geo[i]
             nrb_ref         = geo_ref[i]
@@ -3193,15 +3193,15 @@ class cad_geometry(object):
         # we start by matching the 1D index with the 2D one
         lpi_n = nrb.shape
         lpi_p = nrb.degree
-        list_Index = range(0, np.asarray(lpi_n).prod())
+        list_Index = list(range(0, np.asarray(lpi_n).prod()))
         lpi_Index = np.asarray(list_Index).reshape(lpi_n[::-1])
         lpi_Index = lpi_Index.transpose()
 
-        list_i = range(0,lpi_n[0]-1,lpi_p[0])
-        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
 
         lpi_nElt = [len(list_i), len(list_j)]
-        list_IndexElt = range(0, np.asarray(lpi_nElt).prod())
+        list_IndexElt = list(range(0, np.asarray(lpi_nElt).prod()))
         list_IndexElt = np.asarray(list_IndexElt).reshape(lpi_nElt[::-1])
         list_IndexElt = list_IndexElt.transpose()
 
@@ -3212,8 +3212,8 @@ class cad_geometry(object):
 
 #        list_i = range(0,lpi_n[0],lpi_p[0])
 #        list_j = range(0,lpi_n[1],lpi_p[1])
-        list_i = range(0,lpi_n[0])
-        list_j = range(0,lpi_n[1])
+        list_i = list(range(0,lpi_n[0]))
+        list_j = list(range(0,lpi_n[1]))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3248,8 +3248,8 @@ class cad_geometry(object):
         # MUST BE DONE USING geo_ref AND NOT geo
         nrb = geo_ref[0]
         list_elementData = []
-        list_i = range(0,lpi_n[0]-1,lpi_p[0])
-        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3289,8 +3289,8 @@ class cad_geometry(object):
         # .................................................
         # ... sets the list of Basis
         list_basisData = []
-        list_i = range(0,lpi_n[0]-1,lpi_p[0])
-        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3321,8 +3321,8 @@ class cad_geometry(object):
         # .................................................
         # ... sets the list of connectivities
         list_connectivityData = []
-        list_i = range(0,lpi_n[0]-1,lpi_p[0])
-        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3375,8 +3375,8 @@ class cad_geometry(object):
         local_LM = con_dir.LM[0]
 
         list_dirichletData = []
-        list_i = range(0,lpi_n[0]-1,lpi_p[0])
-        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3409,8 +3409,8 @@ class cad_geometry(object):
         list_BnetData = []
         list_nBnet    = []
 
-        list_i = range(0,lpi_n[0]-lpi_p[0])
-        list_j = range(0,lpi_n[1]-lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-lpi_p[1]))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3581,10 +3581,10 @@ class cad_geometry(object):
         """
         nrb = self[patch_id] #.copy()
         if nrb.dim != 2 :
-            print "to_bezier_jorek : Only works for dim=2"
+            print("to_bezier_jorek : Only works for dim=2")
 
         if min(nrb.degree) > 3 :
-            print "to_bezier_jorek : Not yet implemented for splines with degree > 3"
+            print("to_bezier_jorek : Not yet implemented for splines with degree > 3")
 
         # ...
         # we elevate the spline degree to 3
@@ -3623,17 +3623,17 @@ class cad_geometry(object):
         # we start by matching the 1D index with the 2D one
         lpi_n = nrb.shape
         lpi_p = nrb.degree
-        list_Index = range(0, np.asarray(lpi_n).prod())
+        list_Index = list(range(0, np.asarray(lpi_n).prod()))
         lpi_Index = np.asarray(list_Index).reshape(lpi_n[::-1])
         lpi_Index = lpi_Index.transpose()
 
         pts = nrb.points
 
-        list_i = range(0,lpi_n[0]-1,lpi_p[0])
-        list_j = range(0,lpi_n[1]-1,lpi_p[1])
+        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
 
         lpi_nElt = [len(list_i), len(list_j)]
-        list_IndexElt = range(0, np.asarray(lpi_nElt).prod())
+        list_IndexElt = list(range(0, np.asarray(lpi_nElt).prod()))
         list_IndexElt = np.asarray(list_IndexElt).reshape(lpi_nElt[::-1])
         list_IndexElt = list_IndexElt.transpose()
 
@@ -3802,9 +3802,9 @@ class cad_geometry(object):
                 list_huhv = [hu_00,hv_00, hu_30,hv_30, hu_33,hv_33, hu_03,hv_03]
 
                 if ((hu_00-hu)**2 +(hv_00-hv)**2 > 1.e-7) :
-                    print "SERIOUS ERROR: hu_00 must be equal to hu and hv_00 to hv. But got the values"
-                    print hu_00, hu
-                    print hv_00, hv
+                    print("SERIOUS ERROR: hu_00 must be equal to hu and hv_00 to hv. But got the values")
+                    print(hu_00, hu)
+                    print(hv_00, hv)
 
                 elementData = [list_indexP \
                 , list_huhv \

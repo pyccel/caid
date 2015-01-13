@@ -138,7 +138,7 @@ class WorkGroup(wx.Frame):
             try:
                 del self.stockRedo[:]
             except:
-                print "problem occurs while deleting stockRedo"
+                print("problem occurs while deleting stockRedo")
 
     def add_geometry(self, geo, activeUndo=True):
         self.list_geo.append(geo)
@@ -216,12 +216,12 @@ class WorkGroup(wx.Frame):
             self.appendAction(undo)
 
         geo.remove_patch(patch)
-        print "%"
+        print("%")
         # delete the corresponding item from the inspector
         self.inspector.remove_patch(patchItem)
-        print "%%"
+        print("%%")
         self.inspector.reset_currentAll()
-        print "%%%"
+        print("%%%")
         # refresh the viewer
         self.Refresh()
 
@@ -236,14 +236,14 @@ class WorkGroup(wx.Frame):
 
     def get_geometry_from_patch(self, patch):
         # remove patch from the dictionary
-        print "looking for patch ", id(patch)
+        print(("looking for patch ", id(patch)))
         for geo in self.list_geo:
             for nrb in geo:
-                print id(nrb)
+                print((id(nrb)))
                 if id(nrb) == id(patch):
-                    print "found."
+                    print("found.")
                     return geo
-        print "Not found."
+        print("Not found.")
 
     def Refresh(self, inspector=False):
         if inspector:
@@ -274,7 +274,7 @@ class WorkGroup(wx.Frame):
                 self.filename = filename
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
+                print('Nothing was selected.')
             # Destroy the dialog
             dialog.Destroy()
 
@@ -319,7 +319,7 @@ class WorkGroup(wx.Frame):
             f.write(s)
             f.close()
         else:
-            print "No file was specified"
+            print("No file was specified")
 
 
     def open(self, filename=None):
@@ -336,7 +336,7 @@ class WorkGroup(wx.Frame):
                 self.filename = dialog.GetPath()
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
+                print('Nothing was selected.')
             # Destroy the dialog
             dialog.Destroy()
 
@@ -363,7 +363,7 @@ class WorkGroup(wx.Frame):
         try:
             self.viewer.theme.load(rootElt=rootElt)
         except:
-            print "Theme can not be loaded. Dark theme will be used."
+            print("Theme can not be loaded. Dark theme will be used.")
             self.viewer.theme.set_theme("dark")
         # ...
 
@@ -474,7 +474,7 @@ class WorkGroupTree(wx.TreeCtrl):
     def OnRightMouseClick(self, event):
         ### 2. Launcher creates wxMenu. ###
         menu = wx.Menu()
-        for (id,title) in self.menu_title_by_id.items():
+        for (id,title) in list(self.menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
             menu.Append( id, title )
             ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
@@ -511,7 +511,7 @@ class WorkGroupTree(wx.TreeCtrl):
                 filename = dialog.GetPath()
             # The user did not select anything
             else:
-                print 'Nothing was selected.'
+                print('Nothing was selected.')
             # Destroy the dialog
             dialog.Destroy()
 

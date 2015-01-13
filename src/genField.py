@@ -20,7 +20,7 @@ PDE.solve()
 # ...
 # ...
 normU = PDE.norm(exact=u)
-print "norm U   = ", normU
+print(("norm U   = ", normU))
 U = PDE.unknown
 u = U.tomatrix(0)
 from caid.cad_geometry import cad_nurbs
