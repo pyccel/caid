@@ -2,17 +2,16 @@ CAID is a multi-platform software that has been designed for IsoGeometric Analys
 
 The Post-Processing and advanced visualization capabilities are still under development, as well as an optimized 3D computing engine.
 
-For more details, please read **CAID** `documentation <http://ratnani.org/caid_doc/>`_
+For more details, please read **CAID** "http://ratnani.org/caid_doc/"
 
 Requierements
 =============
 
-*wxpython*
-**********
+* **wxPython**
 
-Install wxGTK 2.8 with the command::
+Install *wxGTK 2.8* with the command::
 
-  sudo apt-get install python-wxgtk2.8
+   sudo apt-get install python-wxgtk2.8
 
 Verify that everything is OK
 
