@@ -2220,7 +2220,8 @@ class cad_geometry(object):
         return self._list[self._currentElt]
 
     def __iter__(self):
-        return self
+        for nrb in self._list:
+            yield nrb
 
     def __getitem__(self, key):
         return self._list[key]
