@@ -4,3 +4,15 @@ The Post-Processing and advanced visualization capabilities are still under deve
 
 For more details, please read **CAID** `documentation <http://ratnani.org/caid_doc/>`_
 
+Requierements
+=============
+
+* **wxPython**
+
+* **PyOpenGL**
+
+* **scipy**
+
+* **numpy**
+
+
