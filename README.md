@@ -17,6 +17,7 @@ Install *wxGTK 2.8* with the command
 Verify that everything is OK
 
    `import wx`
+
    `import wxversion`
 
 * **PyOpenGL**
