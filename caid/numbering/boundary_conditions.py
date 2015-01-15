@@ -143,8 +143,11 @@ def _indices_face_3D(nrb, ai_face, shift):
     sys.exit(1)
 
 class boundary_conditions(object):
-    def __init__(self, geometry, list_Dirichlet_ind = [], list_Neumann_ind = [] \
-    , list_Periodic_ind = [], list_duplicated_ind = [], list_duplicata_ind = []):
+    def __init__(self, geometry \
+                 , list_Dirichlet_ind = [], list_Neumann_ind = [] \
+                 , list_Periodic_ind = [], list_duplicated_ind = [] \
+                 , list_duplicata_ind = [] \
+                , isPeriodic=None):
         self._geo                   = geometry
         self.DirFaces               = [[]]*geometry.npatchs
         self.DuplicatedFaces        = []
@@ -158,7 +161,9 @@ class boundary_conditions(object):
         li_npatch = geometry.npatchs
         list_empty = [[]] * li_npatch
         self.dirichlet(geometry, list_empty)
-        self.duplicate(geometry, faces_base=None, faces=None)
+
+        self._isPeriodic = isPeriodic
+        self.duplicate(geometry)
 
     @property
     def geometry(self):
@@ -331,11 +336,30 @@ class boundary_conditions(object):
 
             self.list_Dirichlet_ind.append(list_Dirichlet_ind)
 
-    def duplicate(self, geometry, faces_base, faces):
+    def duplicate(self, geometry):
         """
         this routine is used to duplicate the basis fct
         faces_base and faces, must be of the form : list of [patch_id, face_id, shift]
         """
+        # ...
+        list_DuplicatedFaces            = []
+        list_DuplicataFaces             = []
+        list_DuplicatedFacesPeriodic    = []
+
+        list_connectivity = self.geometry.connectivity
+
+        for dict_con in list_connectivity:
+            list_DuplicatedFaces.append(dict_con['original'])
+            list_DuplicataFaces.append(dict_con['clone'])
+            try:
+                list_DuplicatedFacesPeriodic.append(dict_con['periodic'])
+            except:
+                list_DuplicatedFacesPeriodic.append(False)
+        # ...
+
+        faces_base = list_DuplicatedFaces
+        faces      = list_DuplicataFaces
+        isPeriodic = list_DuplicatedFacesPeriodic
 
         if faces_base is None:
             li_npatch = geometry.npatchs
