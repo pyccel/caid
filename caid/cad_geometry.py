@@ -3225,13 +3225,13 @@ class cad_geometry(object):
                 pts_y = nrb.points[i,j,1]
 
                 # ...
-                # compute the boundary code
+                # compute the boundary code, for dirichlet
                 # ...
                 boundaryCode = 0
                 if j in  [0,lpi_n[1] - 1]:
-                    boundaryCode += 1
+                    boundaryCode = 1
                 if i in  [0,lpi_n[0] - 1]:
-                    boundaryCode += 2
+                    boundaryCode = 1
                 # ...
 
                 nodeData = [[boundaryCode], [pts_x, pts_y]]
@@ -3250,8 +3250,12 @@ class cad_geometry(object):
         # MUST BE DONE USING geo_ref AND NOT geo
         nrb = geo_ref[0]
         list_elementData = []
-        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
-        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+#        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+#        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+        nx_elt = len(np.unique(nrb.knots[0])) - 1
+        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        list_i = list(range(0,nx_elt))
+        list_j = list(range(0,ny_elt))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3267,11 +3271,10 @@ class cad_geometry(object):
 
                 # ... vertex indices
                 list_indices = []
-                ind = 0
                 for _i in range(i, i+lpi_p[0]+1):
                     for _j in range(j, j+lpi_p[1]+1):
-                        ind += 1
-                        list_indices.append(ind)
+                        ind = _i + _j * lpi_n[0]
+                        list_indices.append(ind+1)
                 # ...
 
                 ux = nrb.knots[0] ; uy = nrb.knots[1]
@@ -3291,8 +3294,12 @@ class cad_geometry(object):
         # .................................................
         # ... sets the list of Basis
         list_basisData = []
-        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
-        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+#        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+#        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+        nx_elt = len(np.unique(nrb.knots[0])) - 1
+        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        list_i = list(range(0,nx_elt))
+        list_j = list(range(0,ny_elt))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3323,8 +3330,12 @@ class cad_geometry(object):
         # .................................................
         # ... sets the list of connectivities
         list_connectivityData = []
-        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
-        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+#        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+#        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+        nx_elt = len(np.unique(nrb.knots[0])) - 1
+        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        list_i = list(range(0,nx_elt))
+        list_j = list(range(0,ny_elt))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3377,8 +3388,12 @@ class cad_geometry(object):
         local_LM = con_dir.LM[0]
 
         list_dirichletData = []
-        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
-        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+#        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+#        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+        nx_elt = len(np.unique(nrb.knots[0])) - 1
+        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        list_i = list(range(0,nx_elt))
+        list_j = list(range(0,ny_elt))
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3411,8 +3426,13 @@ class cad_geometry(object):
         list_BnetData = []
         list_nBnet    = []
 
-        list_i = list(range(0,lpi_n[0]-lpi_p[0]))
-        list_j = list(range(0,lpi_n[1]-lpi_p[1]))
+#        list_i = list(range(0,lpi_n[0]-1,lpi_p[0]))
+#        list_j = list(range(0,lpi_n[1]-1,lpi_p[1]))
+        nx_elt = len(np.unique(nrb.knots[0])) - 1
+        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        list_i = list(range(0,nx_elt))
+        list_j = list(range(0,ny_elt))
+
         for enum_j, j in enumerate(list_j):
             for enum_i, i in enumerate(list_i):
                 # compute index element index
@@ -3519,7 +3539,7 @@ class cad_geometry(object):
                 line = str(L[1]) + ' \n'
                 a.write(line)
                 # ... local LM
-                line = ''.join(str(fmt_int % e)+', ' for e in L)[2:-2]+' \n'
+                line = ''.join(str(fmt_int % e)+', ' for e in L[2:])[:-2]+' \n'
                 a.write(line)
             a.close()
             # ...
@@ -3536,7 +3556,7 @@ class cad_geometry(object):
                 line = str(L[1]) + ' \n'
                 a.write(line)
                 # ... dirichlet nodes
-                line = ''.join(str(fmt_int % e)+', ' for e in L)[2:-2]+' \n'
+                line = ''.join(str(fmt_int % e)+', ' for e in L[2:])[:-2]+' \n'
                 a.write(line)
             a.close()
             # ...
@@ -3867,7 +3887,7 @@ class cad_geometry(object):
             # ...
             # exporting files
             # ...
-            fmt = '%.7f'
+            fmt = '%.17f'
             a = open(filename+"_nodes.txt", "w")
             a.write(str(len(list_nodeData))+' \n')
             for L in list_nodeData:
