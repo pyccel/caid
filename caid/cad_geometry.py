@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import numpy as np
+from numpy import linspace
 from igakit.nurbs import NURBS
 from .op_nurbs import opNURBS
 from .io import XML, TXT
@@ -3580,13 +3581,13 @@ class cad_geometry(object):
         this routine transforms the current geometry into cubic Bezier patchs
         works only if dim == 2
         """
+        # ... TODO add loop on patchs here
         nrb = self[patch_id] #.copy()
         if nrb.dim != 2 :
             print("to_bezier_jorek : Only works for dim=2")
 
         if min(nrb.degree) > 3 :
             print("to_bezier_jorek : Not yet implemented for splines with degree > 3")
-
         # ...
         # we elevate the spline degree to 3
         # ...
@@ -3615,7 +3616,11 @@ class cad_geometry(object):
                     list_t_new.append(t)
             list_knots.append(list_t_new)
         geo.refine(list_t=list_knots)
+        # ...
+
+        # ... TODO add loop on patchs here
         nrb = geo[0]
+        node_index = 0
         # ...
 
         # ...
@@ -3627,6 +3632,31 @@ class cad_geometry(object):
         list_Index = list(range(0, np.asarray(lpi_n).prod()))
         lpi_Index = np.asarray(list_Index).reshape(lpi_n[::-1])
         lpi_Index = lpi_Index.transpose()
+
+        # ... create the coarse mesh
+        rx = (lpi_n[0] - 1) // lpi_p[0] - 1
+        ry = (lpi_n[1] - 1) // lpi_p[1] - 1
+        tx = [0.]+list(linspace(0.,1.,rx+2))+[1.]
+        ty = [0.]+list(linspace(0.,1.,ry+2))+[1.]
+        knots_coarse = [tx,ty]
+        C = np.zeros((rx+2,ry+2,3))
+        nrb_coarse = cad_nurbs(knots_coarse, C)
+        geo_coarse = cad_geometry()
+        geo_coarse.append(nrb_coarse)
+
+        geo_coarse._internal_faces = self._internal_faces
+        geo_coarse._external_faces = self._external_faces
+        geo_coarse._connectivity   = self._connectivity
+        # ...
+
+        # ... create the assiacted connectivity
+        from caid.numbering.connectivity import connectivity
+        con = connectivity(geo_coarse)
+        con.init_data_structure()
+
+        local_LM = con.LM[0]
+        local_ID = con.ID_loc[0]
+        # ...
 
         pts = nrb.points
 
@@ -3644,13 +3674,22 @@ class cad_geometry(object):
         list_indexNodes = []
         list_huhvNodes = []
         list_nodeData = []
-        for i in range(0,lpi_n[0],lpi_p[0]):
-            for j in range(0,lpi_n[1],lpi_p[1]):
+
+        nx_elt = len(np.unique(nrb.knots[0])) - 1
+        ny_elt = len(np.unique(nrb.knots[1])) - 1
+
+        for enum_i,i in enumerate(range(0,lpi_n[0],lpi_p[0])):
+            for enum_j,j in enumerate(range(0,lpi_n[1],lpi_p[1])):
+                node_index += 1
 
                 i1 = i + 1
                 j1 = j + 1
                 li_signi = 1
                 li_signj = 1
+
+                currentElt = -1
+                if enum_i < nx_elt and enum_j < ny_elt:
+                    currentElt = enum_i + nx_elt * enum_j
 
                 if ( i == lpi_n[0] - 1 ) :
                     i1 = lpi_n[0] - 2
@@ -3668,7 +3707,10 @@ class cad_geometry(object):
                 li_10 = lpi_Index[tuple([i1,j])]
                 li_01 = lpi_Index[tuple([i,j1])]
                 li_11 = lpi_Index[tuple([i1,j1])]
+
                 list_indexNodes.append(li_00)
+
+                globID = local_ID[enum_i,enum_j]
                 # ...
                 # compute u, v and w
                 # ...
@@ -3697,9 +3739,10 @@ class cad_geometry(object):
                     boundaryCode += 2
                 # ...
 
+                # ...
                 nodeData = [P00 \
                 , u, v, w \
-                , [boundaryCode]]
+                , [boundaryCode], [globID]]
 
                 lineNodeData = []
                 for data in nodeData:
@@ -3707,6 +3750,7 @@ class cad_geometry(object):
                         lineNodeData.append(d)
 
                 list_nodeData.append(lineNodeData)
+                # ...
         # ...
 
         # ...
