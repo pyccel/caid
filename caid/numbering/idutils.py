@@ -272,7 +272,7 @@ def computeGlobalID(list_id):
 # ...
 
 if __name__ == '__main__':
-    if False:
+    if True:
         from time import time
 
         t_start = time()
