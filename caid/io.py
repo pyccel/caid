@@ -390,7 +390,7 @@ class XML(object):
         rootElt = doc.createElement(self.GEOMETRY_TAG)
         doc.appendChild(rootElt)
 
-        f = open(filename, 'wr')
+        f = open(filename, 'w')
         doc = self.geotoxml(geo, doc, rootElt)
         s = doc.toprettyxml()
         f.write(s)

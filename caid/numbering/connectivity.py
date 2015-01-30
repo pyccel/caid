@@ -68,7 +68,6 @@ class connectivity:
                 list_elt_st.append(list_info_knots[li_d][2][0:-1])
             self.list_elt_st.append(list_elt_st)
 
-        self.dim = geometry.dim
         self.ndof = ai_ndof
 
         self.nnp = sum (self.list_nnp)
