@@ -3698,8 +3698,8 @@ class cad_geometry(object):
         nx_elt = len(np.unique(nrb.knots[0])) - 1
         ny_elt = len(np.unique(nrb.knots[1])) - 1
 
-        for enum_i,i in enumerate(range(0,lpi_n[0],lpi_p[0])):
-            for enum_j,j in enumerate(range(0,lpi_n[1],lpi_p[1])):
+        for enum_j,j in enumerate(range(0,lpi_n[1],lpi_p[1])):
+            for enum_i,i in enumerate(range(0,lpi_n[0],lpi_p[0])):
                 node_index += 1
 
                 i1 = i + 1
@@ -3775,8 +3775,8 @@ class cad_geometry(object):
 
         # ...
         list_elementData = []
-        for i in list_i:
-            for j in list_j:
+        for j in list_j:
+            for i in list_i:
 
                 P00 = pts[i  ,j  ,0:3] # remove the 3D coordinate
                 P10 = pts[i+1,j  ,0:3]
