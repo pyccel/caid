@@ -3760,9 +3760,27 @@ class cad_geometry(object):
                 # ...
 
                 # ...
+                # Duplication code
+                # 2 son
+                # 1 father
+                # 0 other
+                # TODO make compatible with multi patch => add test on faces
+                # ...
+                dupliCode = 0
+                #      father case
+                if (i == 0) and (j < lpi_n[1] - 1):
+                    dupliCode = 1
+                if (j == 0) and (i < lpi_n[0] - 1):
+                    dupliCode = 1
+                #      son    case
+                if (i == lpi_n[0] - 1) or (j == lpi_n[1]-1):
+                    dupliCode = 2
+                # ...
+
+                # ...
                 nodeData = [P00 \
                 , u, v, w \
-                , [boundaryCode], [globID]]
+                , [boundaryCode], [globID], [dupliCode]]
 
                 lineNodeData = []
                 for data in nodeData:
