@@ -3758,6 +3758,8 @@ class cad_geometry(object):
                 # compute the boundary code
                 # ...
                 boundaryCode = 0
+                # TODO to comment and treate in the case of connectivity (clone
+                # even in the same patch)
                 if j in  [0,lpi_n[1] - 1]:
                     boundaryCode += 1
                 if i in  [0,lpi_n[0] - 1]:
