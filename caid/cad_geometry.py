@@ -3738,6 +3738,11 @@ class cad_geometry(object):
                 v = P01 - P00 ; hv = np.sqrt(v[0]**2+v[1]**2)
                 w = P11 + P00 - P10 - P01
 
+                if (hu < 1.e-10):
+                    hu = 1.0
+                if (hv < 1.e-10):
+                    hv = 1.0
+
                 u /= hu
                 v /= hv
                 w /= ( hu * hv )
