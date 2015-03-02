@@ -65,8 +65,7 @@ Installation can be done by runing the following command, giving **PATH_FOR_INST
 Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_CAID_SRC**
 
     # CAID 
-    export CAID_DIR=PATH_TO_CAID_SRC/caid
-    alias caid="python $CAID_DIR/src/main.py"
+    alias caid="python $PATH_TO_CAID_SRC/src/main.py"
     #
 
 Usage
