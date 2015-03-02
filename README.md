@@ -66,7 +66,7 @@ Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_C
 
     # CAID 
     export CAID_DIR=PATH_TO_CAID_SRC/caid
-    alias caid="python $CAID_DIR/src/caid.py"
+    alias caid="python $CAID_DIR/src/main.py"
     #
 
 Usage
