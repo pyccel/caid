@@ -82,7 +82,7 @@ class Quadrangles(object):
     def _compute_neighbors(self):
         n_quad = len(self.quads)
         ancestors = self.ancestors
-        print ancestors
+#        print ancestors
         _neighbors = []
         for i in range(0, n_quad):
             T1 = 2*i ; T2 = 2*i+1
@@ -90,12 +90,15 @@ class Quadrangles(object):
             neighbors = list(self.triang.neighbors[T1][0:2]) \
                     + list(self.triang.neighbors[T2][1:])
             neighbors = np.array(neighbors, dtype=np.int32)
-            print neighbors
+#            print neighbors
             quad_neighbors = -np.ones(4, dtype=np.int32)
             for enum,T in enumerate(neighbors):
                 if T > -1:
                     quad_neighbors[enum] = ancestors[T]
             _neighbors.append(quad_neighbors)
         self._neighbors = np.array(_neighbors, dtype=np.int32)
-        print "========="
-        print self._neighbors
+#        print "========="
+#        print self._neighbors
+
+    def plot(self):
+        plt.triplot(self.triang, '-', lw=0.75, color="red")

@@ -43,7 +43,117 @@ def test_1():
     plt.triplot(quad.triang, '-', lw=0.75, color="red")
     plt.show()
 
+def test_2():
+    # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
+    fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
+    nodes    = np.genfromtxt("jorekNodes.txt", comments="#")
+#    print nodes.shape
+
+    # element,vertex(1:4),color
+    fmt_elements = [int, int, int, int, int, int]
+    elements = np.genfromtxt("jorekElements.txt", comments="#")
+    elements = np.array(elements, dtype=np.int32)
+#    print elements.shape
+
+    # extract quadrangles and use 0 based indexing
+    quads = elements[:,1:-1] - 1
+#    print quads
+
+    R        = nodes[:,1]
+    Z        = nodes[:,2]
+    u        = nodes[:,3:5]
+    v        = nodes[:,5:7]
+    w        = nodes[:,7:9]
+    bnd_type = np.array(nodes[:,9], dtype=np.int32)
+    bnd_ind  = np.array(nodes[:,10], dtype=np.int32)
+    color    = np.array(nodes[:,11], dtype=np.int32)
+
+    quadrangles = Quadrangles(R,Z,quads=quads)
+#    quadrangles.plot()
+#    plt.show()
+
+    triang = quadrangles.triang
+    color_tri = color[quadrangles.ancestors]
+
+    mask_1 = np.where(color[quadrangles.ancestors] == 1, 1, 0)
+    mask_2 = np.where(color[quadrangles.ancestors] == 2, 1, 0)
+    mask_3 = np.where(color[quadrangles.ancestors] == 3, 1, 0)
+    mask_4 = np.where(color[quadrangles.ancestors] == 4, 1, 0)
+
+#    masks = [mask_1, mask_2, mask_3, mask_4]
+#    for mask, color in zip(masks, ["red", "blue", "green", "yellow"]):
+#        triang.set_mask(mask)
+#        plt.triplot(triang, '-', lw=0.75, color=color)
+#        plt.show()
+
+#    mask = mask_1 ; color = "blue"
+#    triang.set_mask(mask)
+#    plt.triplot(triang, '-', lw=0.75, color=color)
+#    plt.show()
+
+
+
 
 ####################################
 if __name__=="__main__":
-    test_1()
+#    test_1()
+#    test_2()
+
+
+    # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
+    fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
+    nodes    = np.genfromtxt("jorekNodes.txt", comments="#")
+#    print nodes.shape
+
+    # element,vertex(1:4),color
+    fmt_elements = [int, int, int, int, int, int]
+    elements = np.genfromtxt("jorekElements.txt", comments="#")
+    elements = np.array(elements, dtype=np.int32)
+#    print elements.shape
+
+    # extract quadrangles and use 0 based indexing
+    quads = elements[:,1:-1] - 1
+#    print quads
+
+    R        = nodes[:,1]
+    Z        = nodes[:,2]
+    u        = nodes[:,3:5]
+    v        = nodes[:,5:7]
+    w        = nodes[:,7:9]
+    bnd_type = np.array(nodes[:,9], dtype=np.int32)
+    bnd_ind  = np.array(nodes[:,10], dtype=np.int32)
+    color    = np.array(nodes[:,11], dtype=np.int32)
+
+    quadrangles = Quadrangles(R,Z,quads=quads)
+#    quadrangles.plot()
+#    plt.show()
+
+    triang = quadrangles.triang
+    color_tri = color[quadrangles.ancestors]
+
+    mask_1 = np.where(color[quadrangles.ancestors] == 1)[0]
+    mask_2 = np.where(color[quadrangles.ancestors] == 2)[0]
+    mask_3 = np.where(color[quadrangles.ancestors] == 3)[0]
+    mask_4 = np.where(color[quadrangles.ancestors] == 4)[0]
+
+    mask = np.zeros(color_tri.shape[0], dtype=np.int32)
+    mask[mask_1] = 1
+
+    mask = (color[quadrangles.ancestors] == 1)
+    print mask
+
+
+#    masks = [mask_1, mask_2, mask_3, mask_4]
+#    for mask in masks:
+#        print len(mask[0])
+#    for mask, color in zip(masks, ["red", "blue", "green", "yellow"]):
+#        triang.set_mask(mask)
+#        plt.triplot(triang, '-', lw=0.75, color=color)
+#        plt.show()
+
+#    mask = mask_1 ; color = "blue"
+
+    color = "blue"
+    triang.set_mask(mask)
+    plt.triplot(triang, '-', lw=0.75, color=color)
+    plt.show()

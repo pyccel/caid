@@ -27,6 +27,7 @@ setup_args = dict(
 )
 
 packages=[  'caid' \
+          , 'caid.quadrangles' \
           , 'caid.graphics' \
           , 'caid.numbering' \
           , 'caid.utils' \
