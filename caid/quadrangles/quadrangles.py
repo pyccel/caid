@@ -147,6 +147,39 @@ class CubicHermiteBezier(Quadrangles):
         self._bnd_index = bnd_ind
         self._vertices_colors = vertices_colors
 
+        self._compute_colored_neighbors()
+
+    def _compute_colored_neighbors(self):
+        n = self.colors.shape[0]
+        color_neighbors = -np.ones((n,4), dtype=np.int32)
+        elements_bnd_patchs = np.zeros(n, dtype=np.int32)
+        for i in range(0,n):
+            neighbors = self.neighbors[i]
+            my_color = self.colors[i]
+            for j in range(0,4):
+                if neighbors[j] >= 0:
+                    color_neighbors[i,j] = self.colors[neighbors[j]]
+                    if color_neighbors[i,j] !=  my_color:
+                        elements_bnd_patchs[i] += 1
+                else:
+                    elements_bnd_patchs[i] += 1
+        self._elements_bnd_patchs = elements_bnd_patchs
+        self._color_neighbors = color_neighbors
+
+    @property
+    def elements_bnd_patchs(self):
+        """
+        returns an array of number of neighbors having the same color
+        """
+        return self._elements_bnd_patchs
+
+    @property
+    def color_neighbors(self):
+        """
+        returns an array of number of neighbors colors for each element
+        """
+        return self._color_neighbors
+
     @property
     def colors(self):
         """

@@ -66,24 +66,9 @@ def test_2():
     my_color = 2
     ll_condition = (quadrangles.colors[quadrangles.ancestors] == my_color)
     mask = np.where(ll_condition)
-#    print quadrangles.neighbors
-#    print quadrangles.colors[quadrangles.neighbors]
-    n = quadrangles.colors.shape[0]
-    color_neighbors = -np.ones((n,4), dtype=np.int32)
-    elements_bnd_patchs = np.zeros(n, dtype=np.int32)
-    for i in range(0,n):
-        neighbors = quadrangles.neighbors[i]
-        my_color = quadrangles.colors[i]
-        for j in range(0,4):
-            if neighbors[j] >= 0:
-                color_neighbors[i,j] = quadrangles.colors[neighbors[j]]
-                if color_neighbors[i,j] !=  my_color:
-                    elements_bnd_patchs[i] = 1
-            else:
-                elements_bnd_patchs[i] = 1
 
-    for i in range(0, n):
-        if elements_bnd_patchs[i] == 1:
+    for i in range(0, quadrangles.quads.shape[0]):
+        if quadrangles.elements_bnd_patchs[i] > 1 and quadrangles.colors[i]==2:
             plt.plot(quadrangles.x[quadrangles.quads[i]], quadrangles.y[quadrangles.quads[i]], "or")
 
     plt.show()
