@@ -49,6 +49,10 @@ class Quadrangles(object):
         return self._ancestors
 
     @property
+    def neighbors(self):
+        return self._neighbors
+
+    @property
     def sons(self):
         return self._sons
 
@@ -102,3 +106,94 @@ class Quadrangles(object):
 
     def plot(self):
         plt.triplot(self.triang, '-', lw=0.75, color="red")
+
+
+class CubicHermiteBezier(Quadrangles):
+    def __init__(self, nodes_filename, elements_filename):
+        # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
+        fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
+        nodes    = np.genfromtxt(nodes_filename, comments="#")
+        print nodes.shape
+
+        # element,vertex(1:4),color
+        fmt_elements = [int, int, int, int, int, int]
+        elements = np.genfromtxt(elements_filename, comments="#")
+        elements = np.array(elements, dtype=np.int32)
+        colors    = np.array(elements[:,-1], dtype=np.int32)
+        print elements.shape
+
+        # extract quadrangles and use 0 based indexing
+        quads = elements[:,1:-1] - 1
+
+        R        = nodes[:,1]
+        Z        = nodes[:,2]
+        u        = nodes[:,3:5]
+        v        = nodes[:,5:7]
+        w        = nodes[:,7:9]
+        bnd_type = np.array(nodes[:,9], dtype=np.int32)
+        bnd_ind  = np.array(nodes[:,10], dtype=np.int32)
+        vertices_colors  = np.array(nodes[:,11], dtype=np.int32)
+
+        Quadrangles.__init__(self, R, Z, quads=quads)
+
+        # elements attributs
+        self._colors    = colors
+
+        # nodes attributs
+        self._u         = u
+        self._v         = v
+        self._w         = w
+        self._bnd_type  = bnd_type
+        self._bnd_index = bnd_ind
+        self._vertices_colors = vertices_colors
+
+    @property
+    def colors(self):
+        """
+        returns an array of colors for each quadrangle
+        """
+        return self._colors
+
+    @property
+    def vertices_colors(self):
+        """
+        returns an array of colors for each quadrangle
+        """
+        return self._vertices_colors
+
+    @property
+    def u(self):
+        """
+        returns a 2D array of u vector for each vertex
+        """
+        return self._u
+
+    @property
+    def v(self):
+        """
+        returns a 2D array of v vector for each vertex
+        """
+        return self._v
+
+    @property
+    def w(self):
+        """
+        returns a 2D array of w vector for each vertex
+        """
+        return self._w
+
+    @property
+    def boundary_type(self):
+        """
+        returns a 1D array of boundary type for each vertex
+        """
+        return self._bnd_type
+
+    @property
+    def boundary_index(self):
+        """
+        returns a 1D array of boundary index for each vertex
+        """
+        return self._bnd_index
+
+

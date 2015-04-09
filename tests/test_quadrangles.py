@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.tri as tri
 import matplotlib.pyplot as plt
-from caid.quadrangles.quadrangles import Quadrangles
+from caid.quadrangles.quadrangles import Quadrangles, CubicHermiteBezier
 
 def test_1():
     """
@@ -44,105 +44,53 @@ def test_1():
     plt.show()
 
 def test_2():
-    # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
-    fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
-    nodes    = np.genfromtxt("jorekNodes.txt", comments="#")
-#    print nodes.shape
-
-    # element,vertex(1:4),color
-    fmt_elements = [int, int, int, int, int, int]
-    elements = np.genfromtxt("jorekElements.txt", comments="#")
-    elements = np.array(elements, dtype=np.int32)
-#    print elements.shape
-
-    # extract quadrangles and use 0 based indexing
-    quads = elements[:,1:-1] - 1
-#    print quads
-
-    R        = nodes[:,1]
-    Z        = nodes[:,2]
-    u        = nodes[:,3:5]
-    v        = nodes[:,5:7]
-    w        = nodes[:,7:9]
-    bnd_type = np.array(nodes[:,9], dtype=np.int32)
-    bnd_ind  = np.array(nodes[:,10], dtype=np.int32)
-    color    = np.array(nodes[:,11], dtype=np.int32)
-
-    quadrangles = Quadrangles(R,Z,quads=quads)
-#    quadrangles.plot()
-#    plt.show()
-
-    triang = quadrangles.triang
-    color_tri = color[quadrangles.ancestors]
-
-    mask_1 = np.where(color[quadrangles.ancestors] == 1, 1, 0)
-    mask_2 = np.where(color[quadrangles.ancestors] == 2, 1, 0)
-    mask_3 = np.where(color[quadrangles.ancestors] == 3, 1, 0)
-    mask_4 = np.where(color[quadrangles.ancestors] == 4, 1, 0)
-
-#    masks = [mask_1, mask_2, mask_3, mask_4]
-#    for mask, color in zip(masks, ["red", "blue", "green", "yellow"]):
-#        triang.set_mask(mask)
-#        plt.triplot(triang, '-', lw=0.75, color=color)
-#        plt.show()
-
-#    mask = mask_1 ; color = "blue"
-#    triang.set_mask(mask)
-#    plt.triplot(triang, '-', lw=0.75, color=color)
-#    plt.show()
-
-
-
-
-####################################
-if __name__=="__main__":
-#    test_1()
-#    test_2()
-
 #    nodes_filename    = "jorekNodes.txt"
 #    elements_filename = "jorekElements.txt"
 
     nodes_filename    = "jorekNodes_ref.txt"
     elements_filename = "jorekElements_ref.txt"
 
-    # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
-    fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
-    nodes    = np.genfromtxt(nodes_filename, comments="#")
-    print nodes.shape
-
-    # element,vertex(1:4),color
-    fmt_elements = [int, int, int, int, int, int]
-    elements = np.genfromtxt(elements_filename, comments="#")
-    elements = np.array(elements, dtype=np.int32)
-    color    = np.array(elements[:,-1], dtype=np.int32)
-    print elements.shape
-
-    # extract quadrangles and use 0 based indexing
-    quads = elements[:,1:-1] - 1
-#    print quads
-
-    R        = nodes[:,1]
-    Z        = nodes[:,2]
-    u        = nodes[:,3:5]
-    v        = nodes[:,5:7]
-    w        = nodes[:,7:9]
-    bnd_type = np.array(nodes[:,9], dtype=np.int32)
-    bnd_ind  = np.array(nodes[:,10], dtype=np.int32)
-
-    quadrangles = Quadrangles(R,Z,quads=quads)
+    quadrangles = CubicHermiteBezier(nodes_filename, elements_filename)
 #    quadrangles.plot()
 #    plt.show()
 
     triang = quadrangles.triang
-    color_tri = color[quadrangles.ancestors]
-
-    ll_condition_1 = (color[quadrangles.ancestors] == 1)
-    ll_condition_2 = (color[quadrangles.ancestors] == 2)
-    ll_condition_3 = (color[quadrangles.ancestors] == 3)
     for my_color, col in zip([1,2,4], ["blue", "red", "green"]):
-        ll_condition = (color[quadrangles.ancestors] == my_color)
+        ll_condition = (quadrangles.colors[quadrangles.ancestors] == my_color)
         mask = np.where(ll_condition, 0, 1)
 
         triang.set_mask(mask)
         plt.triplot(triang, '-', lw=0.75, color=col)
+
+
+    my_color = 2
+    ll_condition = (quadrangles.colors[quadrangles.ancestors] == my_color)
+    mask = np.where(ll_condition)
+#    print quadrangles.neighbors
+#    print quadrangles.colors[quadrangles.neighbors]
+    n = quadrangles.colors.shape[0]
+    color_neighbors = -np.ones((n,4), dtype=np.int32)
+    elements_bnd_patchs = np.zeros(n, dtype=np.int32)
+    for i in range(0,n):
+        neighbors = quadrangles.neighbors[i]
+        my_color = quadrangles.colors[i]
+        for j in range(0,4):
+            if neighbors[j] >= 0:
+                color_neighbors[i,j] = quadrangles.colors[neighbors[j]]
+                if color_neighbors[i,j] !=  my_color:
+                    elements_bnd_patchs[i] = 1
+            else:
+                elements_bnd_patchs[i] = 1
+
+    for i in range(0, n):
+        if elements_bnd_patchs[i] == 1:
+            plt.plot(quadrangles.x[quadrangles.quads[i]], quadrangles.y[quadrangles.quads[i]], "or")
+
     plt.show()
+
+
+
+####################################
+if __name__=="__main__":
+#    test_1()
+    test_2()
