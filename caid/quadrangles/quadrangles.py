@@ -229,4 +229,13 @@ class CubicHermiteBezier(Quadrangles):
         """
         return self._bnd_index
 
+    def extremal_elements(self, color):
+        """
+        returns elements with at least 2 neighbors of the same color
+        """
+        list_elements = []
+        for i in range(0, self.quads.shape[0]):
+            if self.elements_bnd_patchs[i] > 1 and self.colors[i]==color:
+                list_elements.append(i)
+        return list_elements
 

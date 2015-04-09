@@ -51,6 +51,10 @@ def test_2():
     elements_filename = "jorekElements_ref.txt"
 
     quadrangles = CubicHermiteBezier(nodes_filename, elements_filename)
+    x = quadrangles.x
+    y = quadrangles.y
+    quads = quadrangles.quads
+
 #    quadrangles.plot()
 #    plt.show()
 
@@ -62,18 +66,30 @@ def test_2():
         triang.set_mask(mask)
         plt.triplot(triang, '-', lw=0.75, color=col)
 
+#        elts = quadrangles.extremal_elements(my_color)
+#        for i in elts:
+#            plt.plot(quadrangles.x[quadrangles.quads[i]],\
+#                     quadrangles.y[quadrangles.quads[i]], "o", color=col)
 
     my_color = 2
     ll_condition = (quadrangles.colors[quadrangles.ancestors] == my_color)
     mask = np.where(ll_condition)
 
-    for i in range(0, quadrangles.quads.shape[0]):
-        if quadrangles.elements_bnd_patchs[i] > 1 and quadrangles.colors[i]==2:
-            plt.plot(quadrangles.x[quadrangles.quads[i]], quadrangles.y[quadrangles.quads[i]], "or")
+    elmts = quadrangles.extremal_elements(my_color)
+    for e in elmts:
+        mask = np.logical_and(quadrangles.neighbors[e] >= 0, \
+                              quadrangles.colors[quadrangles.neighbors[e]]==my_color)
+        neighbors = quadrangles.neighbors[e][np.where(mask)[0]]
+        for nei in neighbors:
+            mask = np.logical_and(quadrangles.neighbors[nei] >= 0, \
+                                  quadrangles.colors[quadrangles.neighbors[nei]]==my_color)
+            _neighbors = quadrangles.neighbors[nei][np.where(mask)[0]]
+            for _nei in _neighbors:
+                plt.plot(x[quads[_nei]],y[quads[_nei]],"ob")
+
+
 
     plt.show()
-
-
 
 ####################################
 if __name__=="__main__":
