@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.tri as tri
 import matplotlib.pyplot as plt
-from caid.quadrangles.quadrangles import Quadrangles, CubicHermiteBezier
+from caid.quadrangles.quadrangles import Quadrangles, CubicHermiteBezier, QuadSticker
 
 def test_1():
     """
@@ -91,7 +91,45 @@ def test_2():
 
     plt.show()
 
+def test_3():
+#    nodes_filename    = "jorekNodes.txt"
+#    elements_filename = "jorekElements.txt"
+
+    nodes_filename    = "jorekNodes_ref.txt"
+    elements_filename = "jorekElements_ref.txt"
+
+    quadrangles = CubicHermiteBezier(nodes_filename, elements_filename)
+    x = quadrangles.x
+    y = quadrangles.y
+    quads = quadrangles.quads
+
+    Sticker = QuadSticker(quadrangles)
+
+#    quadrangles.plot()
+#    plt.show()
+
+#    triang = quadrangles.triang
+#    for my_color, col in zip([1,2,4], ["blue", "red", "green"]):
+#        ll_condition = (quadrangles.colors[quadrangles.ancestors] == my_color)
+#        mask = np.where(ll_condition, 0, 1)
+#
+#        triang.set_mask(mask)
+#        plt.triplot(triang, '-', lw=0.75, color=col)
+
+
+#        elts = quadrangles.extremal_elements(my_color)
+#        for i in elts:
+#            plt.plot(quadrangles.x[quadrangles.quads[i]],\
+#                     quadrangles.y[quadrangles.quads[i]], "o", color=col)
+
+
+    my_color = 2
+    Sticker.find_elements(my_color)
+
+#    plt.show()
+
 ####################################
 if __name__=="__main__":
 #    test_1()
-    test_2()
+#    test_2()
+    test_3()
