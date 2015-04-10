@@ -244,13 +244,23 @@ class CubicHermiteBezier(Quadrangles):
         return list_elements
 
 class QuadSticker(object):
-    def __init__(self, quadrangles):
+    def __init__(self, quadrangles, find=False):
         self._quadrangles = quadrangles
         self._treated_elements = -np.ones(quadrangles.n_quads, dtype=np.int32)
+        self._dict_elements = {}
+        if find:
+            self.find_elements()
 
     @property
     def quadrangles(self):
         return self._quadrangles
+
+    @property
+    def available_colors(self):
+        return np.unique(self.quadrangles.colors)
+
+    def tensor_elements(self,color):
+        return self._dict_elements[color]
 
     def _distance_point_quad(self, quad, x, y):
         """
@@ -294,28 +304,19 @@ class QuadSticker(object):
         """
         pass
 
-    def find_elements(self, color):
-#        ll_condition = (self.colors[self.ancestors] == color)
-#        mask = np.where(ll_condition)
-
+    def find_elements(self, color=None, str_color=None):
         col = ["r","g","y","k","c"]
+        if color is None:
+            list_colors = self.available_colors
+        else:
+            list_colors = [color]
 
-        x = self.quadrangles.x
-        y = self.quadrangles.y
-        quads = self.quadrangles.quads
-        list_all_elements = []
-
-        elmts = self.quadrangles.extremal_elements(color)
-        elmt_base = elmts[0]
-        quad_base = quads[elmt_base]
-#        plt.plot(x[quad_base],y[quad_base],"ob")
-        mask = np.logical_and(self.quadrangles.neighbors[elmt_base] >= 0, \
-                              self.quadrangles.colors[self.quadrangles.neighbors[elmt_base]]==color)
-        directions = np.where(mask)[0]
-
-        def _find_stage_elements(elmt, direction, stage):
+        def _find_stage_elements(elmt, direction, marked_elements, stage, str_color=None):
             e = elmt
-#            plt.plot(x[quads[e]],y[quads[e]],"o"+col[stage % 5])
+            marked_elements[e] = 1
+            if str_color is None:
+                str_color = col[stage % 5]
+#            plt.plot(x[quads[e]],y[quads[e]],"o"+str_color)
             list_elements = []
             ll_condition = True
             while ll_condition:
@@ -323,29 +324,59 @@ class QuadSticker(object):
                 neighbors = self.quadrangles.neighbors[e]
                 e = neighbors[direction]
                 ll_condition = not (e == -1)
+                ll_condition = ll_condition \
+                        and (self.quadrangles.colors[e]==color) \
+                        and (marked_elements[e] == 0)
                 if ll_condition:
                     list_elements.append(e)
+                    marked_elements[e] = 1
                     quad = quads[e]
-#                    plt.plot(x[quad],y[quad],"o"+col[stage % 5])
+#                    plt.plot(x[quad],y[quad],"o"+str_color)
             return list_elements
 
-        list_elements = _find_stage_elements(elmt_base, directions[0], 0)
-        list_all_elements.append(list_elements)
+        for color in list_colors:
+            x = self.quadrangles.x
+            y = self.quadrangles.y
+            quads = self.quadrangles.quads
+            list_all_elements = []
+            marked_elements = np.zeros(self.quadrangles.n_quads, dtype=np.int32)
 
-        ll_all_condition = True
-        i_stage = 1
-        while ll_all_condition:
-            direction = directions[1]
-            neighbors = self.quadrangles.neighbors[elmt_base]
-            elmt_base = neighbors[direction]
-            ll_all_condition = not (elmt_base == -1)
-#            ll_all_condition = ll_all_condition and (i_stage < 100)
+            elmts = self.quadrangles.extremal_elements(color)
+            elmt_base = elmts[0]
+            quad_base = quads[elmt_base]
 
-            if ll_all_condition:
-                list_elements = _find_stage_elements(elmt_base, directions[0], i_stage)
-                list_all_elements.append(list_elements)
-                i_stage += 1
-
-        return list_all_elements
+            mask = np.logical_and(self.quadrangles.neighbors[elmt_base] >= 0, \
+                                  self.quadrangles.colors[self.quadrangles.neighbors[elmt_base]]==color)
+            directions = np.where(mask)[0]
 
 
+            list_elements = _find_stage_elements(elmt_base, directions[0], marked_elements, 0, str_color=str_color)
+            list_all_elements.append(list_elements)
+
+            ll_all_condition = True
+            i_stage = 1
+            while ll_all_condition:
+                direction = directions[1]
+                neighbors = self.quadrangles.neighbors[elmt_base]
+                elmt_base = neighbors[direction]
+                ll_all_condition = not (elmt_base == -1)
+                ll_all_condition = ll_all_condition \
+                        and (self.quadrangles.colors[elmt_base]==color)\
+                        and (marked_elements[elmt_base] == 0)
+    #            ll_all_condition = ll_all_condition and (i_stage < 10)
+
+                if ll_all_condition:
+    #                print i_stage
+                    list_elements = _find_stage_elements(elmt_base, directions[0], marked_elements, i_stage, str_color=str_color)
+                    list_all_elements.append(list_elements)
+                    i_stage += 1
+
+            assert_condition = True
+            my_len = len(list_all_elements[0])
+            for all_elements in list_all_elements:
+                if len(all_elements) != my_len:
+                    assert_condition = False
+                    print "Error. Not a tensor product structure"
+            assert(assert_condition)
+
+            self._dict_elements[color] = list_all_elements
