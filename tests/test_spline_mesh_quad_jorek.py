@@ -575,7 +575,7 @@ if __name__=="__main__":
     geo = square(n=[3,3], p=[3,3])
 #    geo = circle_5mp(n=[3,3], p=[3,3])
 
-    basename = "square"
+    basename = "splines"
     from caid.io import BZR
     rw = BZR()
     rw.write(basename, geo, fmt="txt")
