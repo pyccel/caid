@@ -1142,7 +1142,21 @@ def get_elements_sons_2d(geo):
                 # ... number of elements
                 n_elements = len(list_indices)
 
-                elementData = [[i_elt+1, n_elements], list_indices]
+                # ... vertex indices
+                list_nodes_indices= []
+                for _j in range(0, lpi_p[1]+1):
+                    j = _j + lpi_p[1] * elt_j
+                    for _i in range(0, lpi_p[0]+1):
+                        i = _i + lpi_p[0] * elt_i
+
+                        I = i + j * lpi_n[0]
+                        list_nodes_indices.append(I+1)
+                # ...
+
+                # ... number of vertices
+                n_vertices = len(list_nodes_indices)
+
+                elementData = [[i_elt+1, n_elements, n_vertices], list_indices, list_nodes_indices]
                 list_elementData.append(elementData)
         # ...
     return list_elementData
@@ -1162,12 +1176,16 @@ def save_elements_sons_2d(geo, filename):
     a.write(str(len(list_elementData))+' \n')
 
     for multiL in list_elementData:
-        # ... element id  and  number of sons elements
+        # ... element id, number of sons elements and vertices
         L = multiL[0]
-        line = str(L[0]) + ", "+ str(L[1]) +  ' \n'
+        line = str(L[0]) + ", "+ str(L[1]) + ", "+ str(L[2]) +  ' \n'
         a.write(line)
         # ... sons elements indices
         L = multiL[1]
+        line = ''.join(str(fmt_int % e)+', ' for e in L[0:])[:-2]+' \n'
+        a.write(line)
+        # ... sons vertices indices
+        L = multiL[2]
         line = ''.join(str(fmt_int % e)+', ' for e in L[0:])[:-2]+' \n'
         a.write(line)
     a.close()
