@@ -947,8 +947,8 @@ def save_elements_2d(geo, filename):
 
     # .................................................
     a = open(filename+"_elements.txt", "w")
-    # ... write size of list_elementData
-    a.write(str(len(list_elementData))+' \n')
+    # ... write size of list_elementData and number of vertex per element
+    a.write(str(len(list_elementData)) + " , 4 " +' \n')
 
     for L in list_elementData:
         line = ''.join(str(fmt_int % e)+', ' for e in L[0:])[:-2]+' \n'
@@ -1019,8 +1019,8 @@ def save_elements_bezier_2d(geo, filename):
 
     # .................................................
     a = open(filename+"_elements_bezier.txt", "w")
-    # ... write size of list_elementData
-    a.write(str(len(list_elementData))+' \n')
+    # ... write size of list_elementData and number of vertices per element
+    a.write(str(len(list_elementData)) + " , 4 "+' \n')
 
     for L in list_elementData:
         line = ''.join(str(fmt_int % e)+', ' for e in L[0:])[:-2]+' \n'
@@ -1028,84 +1028,14 @@ def save_elements_bezier_2d(geo, filename):
     a.close()
     # .................................................
 
-def get_nodes_sons_2d(geo):
-    # ... sets the list of Nodes
-    geo_ref, list_lmatrices = geo.bezier_extract()
-
-    list_nodeData = []
-
-    node_index = 0
-    for nrb_ref, nrb in zip(geo_ref, geo):
-        # ...
-        # we loop over each element and generate the P,
-        # ...
-        # we start by matching the 1D index with the 2D one
-        lpi_n = nrb_ref.shape
-        lpi_p = nrb_ref.degree
-
-        # .................................................
-        nx_elt = len(np.unique(nrb.knots[0])) - 1
-        ny_elt = len(np.unique(nrb.knots[1])) - 1
-        list_i = list(range(0,nx_elt))
-        list_j = list(range(0,ny_elt))
-        for elt_j in list_j:
-            for elt_i in list_i:
-                node_index += 1
-
-                # compute index element index
-                i_elt = elt_i + elt_j * len(list_i)
-
-                # ... vertex indices
-                list_indices = []
-                for _j in range(0, lpi_p[1]+1):
-                    j = _j + lpi_p[1] * elt_j
-                    for _i in range(0, lpi_p[0]+1):
-                        i = _i + lpi_p[0] * elt_i
-
-                        I = i + j * lpi_n[0]
-                        list_indices.append(I+1)
-                # ...
-
-                # ... number of nodes
-                n_nodes = len(list_indices)
-
-                nodeData = [[i_elt+1, n_nodes], list_indices]
-                list_nodeData.append(nodeData)
-        # ...
-    return list_nodeData
-    # .................................................
-
-def save_nodes_sons_2d(geo, filename):
-    list_nodeData = get_nodes_sons_2d(geo)
-
-    # .................................................
-    # ... exporting files
-    fmt_int = '%d'
-    # .................................................
-
-    # .................................................
-    a = open(filename+"_nodes_sons.txt", "w")
-    # ... write size of list_nodeData
-    a.write(str(len(list_nodeData))+' \n')
-
-    for multiL in list_nodeData:
-        # ... element id  and  number of sons nodes
-        L = multiL[0]
-        line = str(L[0]) + ", "+ str(L[1]) +  ' \n'
-        a.write(line)
-        # ... sons nodes indices
-        L = multiL[1]
-        line = ''.join(str(fmt_int % e)+', ' for e in L[0:])[:-2]+' \n'
-        a.write(line)
-    a.close()
-    # .................................................
-
-
-def get_elements_sons_2d(geo):
+def get_sons_2d(geo):
     # ... sets the list of Nodes
     geo_ref, list_lmatrices = geo.bezier_extract()
 
     list_elementData = []
+
+    max_n_elements = -1
+    max_n_vertices = -1
 
     element_index = 0
     for nrb_ref, nrb in zip(geo_ref, geo):
@@ -1135,12 +1065,15 @@ def get_elements_sons_2d(geo):
                     for _i in range(0, lpi_p[0]):
                         i = _i + lpi_p[0] * elt_i
 
-                        I = i + j * (lpi_n[0]-1)
+                        I = i + j * lpi_n[0]
                         list_indices.append(I+1)
                 # ...
 
                 # ... number of elements
                 n_elements = len(list_indices)
+
+                if (max_n_elements < n_elements):
+                    max_n_elements = n_elements
 
                 # ... vertex indices
                 list_nodes_indices= []
@@ -1156,14 +1089,17 @@ def get_elements_sons_2d(geo):
                 # ... number of vertices
                 n_vertices = len(list_nodes_indices)
 
+                if (max_n_vertices < n_vertices):
+                    max_n_vertices = n_vertices
+
                 elementData = [[i_elt+1, n_elements, n_vertices], list_indices, list_nodes_indices]
                 list_elementData.append(elementData)
         # ...
-    return list_elementData
+    return max_n_elements, max_n_vertices, list_elementData
     # .................................................
 
-def save_elements_sons_2d(geo, filename):
-    list_elementData = get_elements_sons_2d(geo)
+def save_sons_2d(geo, filename):
+    max_n_elements, max_n_vertices, list_elementData = get_sons_2d(geo)
 
     # .................................................
     # ... exporting files
@@ -1171,9 +1107,12 @@ def save_elements_sons_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_elements_sons.txt", "w")
+    a = open(filename+"_sons.txt", "w")
     # ... write size of list_nodeData
-    a.write(str(len(list_elementData))+' \n')
+    nData        = len(list_elementData)
+    line = str(nData) + ", "+ str(max_n_elements) + ", "+ str(max_n_vertices) +  ' \n'
+    a.write(line)
+    # ...
 
     for multiL in list_elementData:
         # ... element id, number of sons elements and vertices
@@ -1191,21 +1130,59 @@ def save_elements_sons_2d(geo, filename):
     a.close()
     # .................................................
 
-def get_bernstein_representation_2d(geo):
+def get_bernstein_span_2d(geo):
     # .................................................
     from caid.numbering.connectivity import connectivity
+    from caid.numbering.boundary_conditions import boundary_conditions
+
+    # ... without bc
     con = connectivity(geo)
     con.init_data_structure()
-
     geo_ref, list_lmatrices = geo.bezier_extract()
+    # ...
+
+    # ... sets the list of Dirichlet Basis functions for each Element
+    #     All external faces are set to Dirichlet
+    list_DirFaces = []
+    for i in range(0, geo.npatchs):
+        list_DirFaces.append([])
+
+    list_extFaces = geo.external_faces
+    for extFaces in list_extFaces:
+        patch_id    = extFaces[0]
+        face_id     = extFaces[1]
+        list_DirFaces[patch_id].append(face_id)
+    # ...
+
+    # ... with dirichlet bc
+    con_dir = connectivity(geo)
+    bc = boundary_conditions(geo)
+    bc.dirichlet(geo, list_DirFaces)
+    con_dir.init_data_structure(bc)
+    # ...
+
+    # ... max nen
+    maxnen = -1
+    for patch_id in range(0, geo.npatchs):
+        nrb = geo[patch_id]
+        lpi_p = nrb.degree
+        nen = (lpi_p[0] + 1) * (lpi_p[1] + 1)
+        if (nen > maxnen):
+            maxnen = nen
+    # ...
+
+    # ... space dim
+    dim_space = np.max(asarray((con.ID)))
+    # ...
 
     # ... sets the list of connectivities
-    list_bernstein_representationData = []
+    list_bernstein_spanData = [[maxnen, dim_space]]
 
     for patch_id in range(0, geo.npatchs):
         nrb = geo[patch_id]
-        lmatrices = list_lmatrices[patch_id]
-        local_LM = con.LM[patch_id]
+        lmatrices    = list_lmatrices[patch_id]
+        local_LM     = con.LM[patch_id]
+        local_LM_dir = con_dir.LM[patch_id]
 
         lpi_n = nrb.shape
         lpi_p = nrb.degree
@@ -1232,14 +1209,23 @@ def get_bernstein_representation_2d(geo):
                 Mat_Bform = np.ravel(Mat_Bform, order='F')
                 # ...
 
-                bernstein_representationData = [[i_elt+1, nen], Mat_LM, Mat_Bform]
-                list_bernstein_representationData.append(bernstein_representationData)
+                # ...
+                Mat_LM_dir = local_LM_dir[:,i_elt]
+                list_Dirichlet = np.zeros(nen, dtype=np.int)
+                for enum_lm, lm in enumerate(Mat_LM_dir):
+                    if lm == 0:
+                        list_Dirichlet[enum_lm] = 1
+                # ...
+
+
+                bernstein_spanData = [[i_elt+1, nen], Mat_LM, Mat_Bform, list_Dirichlet]
+                list_bernstein_spanData.append(bernstein_spanData)
     # ...
-    return list_bernstein_representationData
+    return list_bernstein_spanData
     # .................................................
 
-def save_bernstein_representation_2d(geo, filename):
-    list_bernstein_representationData = get_bernstein_representation_2d(geo)
+def save_bernstein_span_2d(geo, filename):
+    list_bernstein_spanData = get_bernstein_span_2d(geo)
 
     # .................................................
     # ... exporting files
@@ -1248,10 +1234,16 @@ def save_bernstein_representation_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_bernstein_representation.txt", "w")
-    # ... write size of list_bernstein_representationData
-    a.write(str(len(list_bernstein_representationData))+' \n')
-    for multiL in list_bernstein_representationData:
+    a = open(filename+"_bernstein_span.txt", "w")
+    # ... write size of list_bernstein_spanData
+    multiL    = list_bernstein_spanData[0]
+    nData     = len(list_bernstein_spanData[1:])
+    nen       = multiL[0]
+    dim_space = multiL[1]
+    line = str(nData) + ", "+ str(nen) + ", "+ str(dim_space) +  ' \n'
+    a.write(line)
+    # ...
+    for multiL in list_bernstein_spanData[1:]:
         # ... element id  and  number of non vanishing basis per element
         L = multiL[0]
         line = str(L[0]) + ", "+ str(L[1]) +  ' \n'
@@ -1264,45 +1256,57 @@ def save_bernstein_representation_2d(geo, filename):
         L = multiL[2]
         line = ''.join(str(fmt_float % e)+', ' for e in L[:])[:-2]+' \n'
         a.write(line)
+        # ... dirichlet basis functions id
+        L = multiL[3]
+        line = ''.join(str(fmt_int % e)+', ' for e in L[:])[:-2]+' \n'
+        a.write(line)
     a.close()
     # ...
     # .................................................
 
 # ...
-def save_bernstein_basis_2d(geo, basename=None, quad_rule="legendre", nderiv=1):
+def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1):
+    # .................................................
+    # ... exporting files
+    fmt_int   = '%d'
+    fmt_float = '%.15f'
+    # .................................................
     filename_quad   = "quadrature.txt"
     filename_values = "bernstein_values.txt"
-    if basename is not None:
-        filename_quad   = basename + "_" + "quadrature.txt"
-        filename_values = basename + "_" + "bernstein_values.txt"
+#    if basename is not None:
+#        filename_quad   = basename + "_" + "quadrature.txt"
+#        filename_values = basename + "_" + "bernstein_values.txt"
 
     nrb = geo[0]
     px = nrb.degree[0] ; py = nrb.degree[1]
 
     # ... create a Bezier patch of the given polynomial degrees
     Bx = bernstein(px)
-    By = bernstein(px)
+    By = bernstein(py)
     qd = quadratures()
     xint = np.asarray([0.,1.])
     yint = np.asarray([0.,1.])
-    [x,wx] = qd.generate(xint, px, quad_rule)
-    [y,wy] = qd.generate(yint, py, quad_rule)
+    qx = px ; qy = py
+    [x,wx] = qd.generate(xint, qx, quad_rule)
+    [y,wy] = qd.generate(yint, qy, quad_rule)
     x = x[0] ; wx = wx[0]
     y = y[0] ; wy = wy[0]
-    Batx = Bx.evaluate(x, der=nderiv)
-    Baty = By.evaluate(y, der=nderiv)
+    Batx = Bx.evaluate(x, der=nderiv+1)
+    Baty = By.evaluate(y, der=nderiv+1)
 
     lpi_p = np.asarray([px,py])
 
     # .................................................
     a = open(filename_quad, "w")
     # ... write spline degrees
-    line = str(lpi_p[0]) + ', ' + str(lpi_p[1]) + ' \n'
+    npts = (qx+1) * (qy+1)
+    line = str(npts) + ' \n'
     a.write(line)
     # ... write gauss points and their weights
     for _y,_wy in zip(y,wy):
         for _x,_wx in zip(x,wx):
-            line = str(_x) + ', ' + str(_y) + ', ' + str(_wx*_wy)
+            _wxy = _wx * _wy
+            line = str(fmt_float % _x) + ', ' + str(fmt_float % _y) + ', ' + str(fmt_float % _wxy)
             line = line + ' \n'
             a.write(line)
     a.close()
@@ -1311,24 +1315,52 @@ def save_bernstein_basis_2d(geo, basename=None, quad_rule="legendre", nderiv=1):
     # .................................................
     a = open(filename_values, "w")
     # ... write spline degrees    and     n derivaties
-    line = str(lpi_p[0]) + ', ' + str(lpi_p[1]) + ', ' + str(nderiv) + ' \n'
+    nen = (lpi_p[0]+1) * (lpi_p[1]+1)
+    line = str(nen) + ', ' + str(nderiv+1) + ' \n'
     a.write(line)
     # ... write gauss points and their weights
+    # loop over Bernstein polynomials
     for j in range(0, py+1):
         for i in range(0, px+1):
+            # loop over quadrature points
             for jy in range(0,py+1):
                 for ix in range(0,px+1):
                     line = " "
-                    for dy in range(0,nderiv+1):
-                        for dx in range(0,nderiv+1):
-                            B = Batx[i,ix,dx] * Baty[j,jy,dy]
-                            line += str(B) + ', '
+                    # loop over derivatives
+                    # B_0_0
+                    dx = 0 ; dy = 0
+                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                    line += str(fmt_float % B) + ', '
+                    # B_x_0
+                    dx = 1 ; dy = 0
+                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                    line += str(fmt_float % B) + ', '
+                    # B_0_y
+                    dx = 0 ; dy = 1
+                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                    line += str(fmt_float % B) + ', '
+                    # B_x_y
+                    dx = 1 ; dy = 1
+                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                    line += str(fmt_float % B) + ', '
+                    # B_xx_0
+                    dx = 2 ; dy = 0
+                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                    line += str(fmt_float % B) + ', '
+                    # B_0_yy
+                    dx = 0 ; dy = 2
+                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                    line += str(fmt_float % B) + ', '
+
+#                    for dy in range(0,nderiv+2):
+#                        for dx in range(0,nderiv+2):
+#                            B = Batx[i,ix,dx] * Baty[j,jy,dy]
+#                            line += str(B) + ', '
                     line = line[:-2] + ' \n'
                     a.write(line)
     a.close()
     # .................................................
 # ...
-
 
 ########################################################################
 
@@ -1341,12 +1373,11 @@ class BZR(object):
         if geo.dim == 2:
             save_nodes_2d(geo, name)
             save_nodes_bezier_2d(geo, name)
-            save_nodes_sons_2d(geo, name)
             save_elements_2d(geo, name)
             save_elements_bezier_2d(geo, name)
-            save_elements_sons_2d(geo, name)
-            save_bernstein_representation_2d(geo, name)
-            save_bernstein_basis_2d(geo, basename=name)
+            save_sons_2d(geo, name)
+            save_bernstein_span_2d(geo, name)
+            save_bernstein_basis_2d(geo)
 
         # ...
         def exportAdditionalInfo(geo, filename):
