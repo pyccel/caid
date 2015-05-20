@@ -1058,14 +1058,14 @@ def get_sons_2d(geo):
                 # compute index element index
                 i_elt = elt_i + elt_j * len(list_i)
 
-                # ... vertex indices
+                # ... elements indices
                 list_indices = []
                 for _j in range(0, lpi_p[1]):
                     j = _j + lpi_p[1] * elt_j
                     for _i in range(0, lpi_p[0]):
                         i = _i + lpi_p[0] * elt_i
 
-                        I = i + j * lpi_n[0]
+                        I = i + j * nx_elt
                         list_indices.append(I+1)
                 # ...
 
