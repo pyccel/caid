@@ -1,5 +1,6 @@
 import numpy as np
 from igakit.nurbs import NURBS
+from numpy.linalg import inv as matrix_inverse
 
 __all__ = ['XML', 'formatter', 'TXT', 'BZR']
 
@@ -796,7 +797,13 @@ def get_nodes_2d(geo):
     return list_nodeData
     # .................................................
 
-def save_nodes_2d(geo, filename):
+def save_nodes_2d(geo, basename=None, dirname=None):
+    filename = "nodes.txt"
+    if basename is not None:
+        filename = basename + "_" + filename
+    if dirname is not None:
+        filename = dirname + "/" + filename
+
     list_nodeData = get_nodes_2d(geo)
 
     # .................................................
@@ -805,7 +812,7 @@ def save_nodes_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_nodes.txt", "w")
+    a = open(filename, "w")
     # ... write size of list_nodeData
     a.write(str(len(list_nodeData))+' \n')
 
@@ -865,7 +872,13 @@ def get_nodes_bezier_2d(geo):
     return list_nodeData
     # .................................................
 
-def save_nodes_bezier_2d(geo, filename):
+def save_nodes_bezier_2d(geo, basename=None, dirname=None):
+    filename = "nodes_bezier.txt"
+    if basename is not None:
+        filename = basename + "_" + filename
+    if dirname is not None:
+        filename = dirname + "/" + filename
+
     list_nodeData = get_nodes_bezier_2d(geo)
 
     # .................................................
@@ -874,7 +887,7 @@ def save_nodes_bezier_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_nodes_bezier.txt", "w")
+    a = open(filename, "w")
     # ... write size of list_nodeData
     a.write(str(len(list_nodeData))+' \n')
 
@@ -937,7 +950,13 @@ def get_elements_2d(geo):
     return list_elementData
     # .................................................
 
-def save_elements_2d(geo, filename):
+def save_elements_2d(geo, basename=None, dirname=None):
+    filename = "elements.txt"
+    if basename is not None:
+        filename = basename + "_" + filename
+    if dirname is not None:
+        filename = dirname + "/" + filename
+
     list_elementData = get_elements_2d(geo)
 
     # .................................................
@@ -946,7 +965,7 @@ def save_elements_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_elements.txt", "w")
+    a = open(filename, "w")
     # ... write size of list_elementData and number of vertex per element
     a.write(str(len(list_elementData)) + " , 4 " +' \n')
 
@@ -1009,7 +1028,13 @@ def get_elements_bezier_2d(geo):
     return list_elementData
     # .................................................
 
-def save_elements_bezier_2d(geo, filename):
+def save_elements_bezier_2d(geo, basename=None, dirname=None):
+    filename = "elements_bezier.txt"
+    if basename is not None:
+        filename = basename + "_" + filename
+    if dirname is not None:
+        filename = dirname + "/" + filename
+
     list_elementData = get_elements_bezier_2d(geo)
 
     # .................................................
@@ -1018,7 +1043,7 @@ def save_elements_bezier_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_elements_bezier.txt", "w")
+    a = open(filename, "w")
     # ... write size of list_elementData and number of vertices per element
     a.write(str(len(list_elementData)) + " , 4 "+' \n')
 
@@ -1051,7 +1076,7 @@ def get_sons_2d(geo):
         ny_elt = len(np.unique(nrb.knots[1])) - 1
         list_i = list(range(0,nx_elt))
         list_j = list(range(0,ny_elt))
-        print "nxny ", nx_elt, ny_elt
+#        print "nxny ", nx_elt, ny_elt
         for elt_j in list_j:
             for elt_i in list_i:
                 element_index += 1
@@ -1067,7 +1092,7 @@ def get_sons_2d(geo):
                         i = _i + lpi_p[0] * elt_i
 
                         I = i + j * nx_elt * lpi_p[0]
-                        print element_index, I, _i,_j, i,j
+#                        print element_index, I, _i,_j, i,j
                         list_indices.append(I+1)
                 # ...
 
@@ -1100,7 +1125,13 @@ def get_sons_2d(geo):
     return max_n_elements, max_n_vertices, list_elementData
     # .................................................
 
-def save_sons_2d(geo, filename):
+def save_sons_2d(geo, basename=None, dirname=None):
+    filename = "sons.txt"
+    if basename is not None:
+        filename = basename + "_" + filename
+    if dirname is not None:
+        filename = dirname + "/" + filename
+
     max_n_elements, max_n_vertices, list_elementData = get_sons_2d(geo)
 
     # .................................................
@@ -1109,7 +1140,7 @@ def save_sons_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_sons.txt", "w")
+    a = open(filename, "w")
     # ... write size of list_nodeData
     nData        = len(list_elementData)
     line = str(nData) + ", "+ str(max_n_elements) + ", "+ str(max_n_vertices) +  ' \n'
@@ -1226,7 +1257,13 @@ def get_bernstein_span_2d(geo):
     return list_bernstein_spanData
     # .................................................
 
-def save_bernstein_span_2d(geo, filename):
+def save_bernstein_span_2d(geo, basename=None, dirname=None):
+    filename = "bernstein_span.txt"
+    if basename is not None:
+        filename = basename + "_" + filename
+    if dirname is not None:
+        filename = dirname + "/" + filename
+
     list_bernstein_spanData = get_bernstein_span_2d(geo)
 
     # .................................................
@@ -1236,7 +1273,7 @@ def save_bernstein_span_2d(geo, filename):
     # .................................................
 
     # .................................................
-    a = open(filename+"_bernstein_span.txt", "w")
+    a = open(filename, "w")
     # ... write size of list_bernstein_spanData
     multiL    = list_bernstein_spanData[0]
     nData     = len(list_bernstein_spanData[1:])
@@ -1267,7 +1304,7 @@ def save_bernstein_span_2d(geo, filename):
     # .................................................
 
 # ...
-def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1):
+def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1, dirname=None):
     # .................................................
     # ... exporting files
     fmt_int   = '%d'
@@ -1275,9 +1312,9 @@ def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1):
     # .................................................
     filename_quad   = "quadrature.txt"
     filename_values = "bernstein_values.txt"
-#    if basename is not None:
-#        filename_quad   = basename + "_" + "quadrature.txt"
-#        filename_values = basename + "_" + "bernstein_values.txt"
+    if dirname is not None:
+        filename_quad   = dirname + "/" + "quadrature.txt"
+        filename_values = dirname + "/" + "bernstein_values.txt"
 
     nrb = geo[0]
     px = nrb.degree[0] ; py = nrb.degree[1]
@@ -1370,16 +1407,17 @@ class BZR(object):
     def __init__(self):
         pass
 
-    def write(self, name, geo, fmt="txt"):
+    def write(self, geo, fmt="txt", basename=None, dirname=None, basis_only=False):
         # ...
         if geo.dim == 2:
-            save_nodes_2d(geo, name)
-            save_nodes_bezier_2d(geo, name)
-            save_elements_2d(geo, name)
-            save_elements_bezier_2d(geo, name)
-            save_sons_2d(geo, name)
-            save_bernstein_span_2d(geo, name)
-            save_bernstein_basis_2d(geo)
+            if not basis_only:
+                save_nodes_2d(geo, basename=basename, dirname=dirname)
+                save_nodes_bezier_2d(geo, basename=basename, dirname=dirname)
+                save_elements_2d(geo, basename=basename, dirname=dirname)
+                save_elements_bezier_2d(geo, basename=basename, dirname=dirname)
+                save_sons_2d(geo, basename=basename, dirname=dirname)
+            save_bernstein_span_2d(geo, basename=basename, dirname=dirname)
+            save_bernstein_basis_2d(geo, dirname=dirname)
 
         # ...
         def exportAdditionalInfo(geo, filename):
@@ -1442,39 +1480,51 @@ class BZR(object):
             fo.close()
         # ...
 
-        # ...
-        _name = name.split('.')[0]
-        if fmt == "zip":
-            import os
-            os.system("mkdir " + _name)
+        if not basis_only:
+            # ...
+            if fmt == "zip":
+                import os
+                os.system("mkdir " + dirname)
 
-        if fmt == "zip":
-            filename = _name + "/" + "info.txt"
-        if fmt == "txt":
-            filename = _name + "_" + "info.txt"
-        exportAdditionalInfo(geo, filename)
-        # ...
-
-        # ...
-        if fmt == "zip":
-            from contextlib import closing
-            from zipfile import ZipFile, ZIP_DEFLATED
-            import os
+            if fmt == "zip":
+                _filename = "info.txt"
+                if basename is not None:
+                    _filename = basename + "_" + _filename
+                if dirname is not None:
+                    _filename = dirname + "/" + _filename
+            if fmt == "txt":
+                _filename = "info.txt"
+                if basename is not None:
+                    _filename = basename + "_" + _filename
+                if dirname is not None:
+                    _filename = dirname + "/" + _filename
+            exportAdditionalInfo(geo, _filename)
+            # ...
 
             # ...
-            def zipdir(basedir, archivename):
-                assert os.path.isdir(basedir)
-                with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
-                    for root, dirs, files in os.walk(basedir):
-                        #NOTE: ignore empty directories
-                        for fn in files:
-                            absfn = os.path.join(root, fn)
-                            zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
-                            z.write(absfn, zfn)
+            if fmt == "zip":
+                if dirname is None:
+                    print "Erro: dirname must be given."
+                    raise()
+
+                from contextlib import closing
+                from zipfile import ZipFile, ZIP_DEFLATED
+                import os
+
+                # ...
+                def zipdir(basedir, archivename):
+                    assert os.path.isdir(basedir)
+                    with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
+                        for root, dirs, files in os.walk(basedir):
+                            #NOTE: ignore empty directories
+                            for fn in files:
+                                absfn = os.path.join(root, fn)
+                                zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
+                                z.write(absfn, zfn)
+                # ...
+                basedir = dirname
+                archivename = dirname
+                zipdir(basedir, archivename)
+                os.system("rm -R " + _name)
             # ...
-            basedir = _name
-            archivename = name
-            zipdir(basedir, archivename)
-            os.system("rm -R " + _name)
-        # ...
 
