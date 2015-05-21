@@ -1051,6 +1051,7 @@ def get_sons_2d(geo):
         ny_elt = len(np.unique(nrb.knots[1])) - 1
         list_i = list(range(0,nx_elt))
         list_j = list(range(0,ny_elt))
+        print "nxny ", nx_elt, ny_elt
         for elt_j in list_j:
             for elt_i in list_i:
                 element_index += 1
@@ -1065,7 +1066,8 @@ def get_sons_2d(geo):
                     for _i in range(0, lpi_p[0]):
                         i = _i + lpi_p[0] * elt_i
 
-                        I = i + j * nx_elt
+                        I = i + j * nx_elt * lpi_p[0]
+                        print element_index, I, _i,_j, i,j
                         list_indices.append(I+1)
                 # ...
 

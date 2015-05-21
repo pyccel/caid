@@ -2,7 +2,6 @@
 import numpy as np
 from caid.numbering.connectivity import connectivity
 from caid.utils.quadratures import *
-from bernstein import *
 
 ############################################################
 if __name__=="__main__":
