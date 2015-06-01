@@ -1320,6 +1320,9 @@ def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1, dirname=None):
     px = nrb.degree[0] ; py = nrb.degree[1]
 
     # ... create a Bezier patch of the given polynomial degrees
+    nderiv_x = min(nderiv+1, px)
+    nderiv_y = min(nderiv+1, py)
+
     Bx = bernstein(px)
     By = bernstein(py)
     qd = quadratures()
@@ -1330,8 +1333,8 @@ def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1, dirname=None):
     [y,wy] = qd.generate(yint, qy, quad_rule)
     x = x[0] ; wx = wx[0]
     y = y[0] ; wy = wy[0]
-    Batx = Bx.evaluate(x, der=nderiv+1)
-    Baty = By.evaluate(y, der=nderiv+1)
+    Batx = Bx.evaluate(x, der=nderiv_x)
+    Baty = By.evaluate(y, der=nderiv_y)
 
     lpi_p = np.asarray([px,py])
 
@@ -1355,7 +1358,7 @@ def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1, dirname=None):
     a = open(filename_values, "w")
     # ... write spline degrees    and     n derivaties
     nen = (lpi_p[0]+1) * (lpi_p[1]+1)
-    line = str(nen) + ', ' + str(nderiv+1) + ' \n'
+    line = str(nen) + ', ' + str(nderiv_x) + ' \n'
     a.write(line)
     # ... write gauss points and their weights
     # loop over Bernstein polynomials
@@ -1382,14 +1385,15 @@ def save_bernstein_basis_2d(geo, quad_rule="legendre", nderiv=1, dirname=None):
                     dx = 1 ; dy = 1
                     B = Batx[i,ix,dx] * Baty[j,jy,dy]
                     line += str(fmt_float % B) + ', '
-                    # B_xx_0
-                    dx = 2 ; dy = 0
-                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
-                    line += str(fmt_float % B) + ', '
-                    # B_0_yy
-                    dx = 0 ; dy = 2
-                    B = Batx[i,ix,dx] * Baty[j,jy,dy]
-                    line += str(fmt_float % B) + ', '
+                    if (nderiv_x > 1) and (nderiv_y > 1):
+                        # B_xx_0
+                        dx = 2 ; dy = 0
+                        B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                        line += str(fmt_float % B) + ', '
+                        # B_0_yy
+                        dx = 0 ; dy = 2
+                        B = Batx[i,ix,dx] * Baty[j,jy,dy]
+                        line += str(fmt_float % B) + ', '
 
 #                    for dy in range(0,nderiv+2):
 #                        for dx in range(0,nderiv+2):
