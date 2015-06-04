@@ -2,7 +2,7 @@ import numpy as np
 from igakit.nurbs import NURBS
 from numpy.linalg import inv as matrix_inverse
 
-__all__ = ['XML', 'formatter', 'TXT', 'BZR']
+__all__ = ['XML', 'formatter', 'TXT', 'BZR','NML']
 
 class formatter(object):
     """
@@ -740,6 +740,162 @@ class TXT(object):
 #            __list_domains__.append(lo_domain)
 #        lo_file.close()
 #        return __list_domains__
+
+########################################################################
+def remove_duplicates( lst ):
+    no_dups = []
+    for i in lst:
+        if i not in no_dups:
+            no_dups.append(i)
+    return no_dups
+
+class NML(object):
+
+    def __init__(self):
+        pass
+        
+    def write(self, name, geo):
+        # ...
+        def exportPatch(nrb, filename):
+            
+            fo = open(filename, "w")
+            
+            fo.write("&transf_label\n")
+            fo.write("    label = "+"\""+filename+"\""+"\n")
+            fo.write("/" + "\n\n")
+
+            # ... write degree
+            fo.write("&degree\n")
+            fo.write("    spline_deg1 = " +str(nrb.degree[0])  +"\n")
+            fo.write("    spline_deg2 = " + str(nrb.degree[1]) +"\n")
+            fo.write("/" + "\n\n")
+
+            # ...
+
+            # ... write shape
+            fo.write("&shape\n")
+            fo.write("    num_pts1 = " + str(nrb.shape[0]) +"\n")
+            fo.write("    num_pts2 = " + str(nrb.shape[1])+"\n")
+            fo.write("/" + "\n\n")
+
+            # ...
+
+            # ... write rational
+            fo.write("&rational\n")
+            if nrb.rational:
+                txt = "1"
+            else:
+                txt = "0"
+            fo.write("    is_rational = "+txt+"\n")
+            fo.write("/" + "\n\n")
+            # ...
+
+            # ... write knots
+            
+            
+            txt = str(nrb.knots[0])[1:-1]
+            
+            cartesian_mesh_locations1=remove_duplicates(nrb.knots[0])
+            
+            fo.write("&knots_1\n")
+            fo.write("    knots1"" = "+txt+"\n")
+            fo.write("/" + "\n\n")
+            
+            if nrb.dim >= 2:
+                txt = str(nrb.knots[1])[1:-1]
+                cartesian_mesh_locations2=remove_duplicates(nrb.knots[1])
+                fo.write("&knots_2\n")
+                fo.write("    knots2 = "+txt+"\n")
+                fo.write("/" + "\n\n")
+            if nrb.dim == 3 :
+                txt = str(nrb.knots[2])[1:-1]
+                cartesian_mesh_locations3=remove_duplicates(nrb.knots[2])
+                fo.write("&knots_3\n")
+                fo.write("    knots3 = "+txt+"\n")
+                fo.write("/" + "\n\n")
+            # ...
+
+            # ... write Control Points
+            fo.write("&control_points\n")
+            fo.write("\n")
+            n = nrb.shape
+            x1 = []
+            x2 = []
+            x3 = []
+            
+            if nrb.dim == 1:
+                fo.write("    control_pts1 = ")
+                for i in range(0, n[0]):
+                    txt = str(nrb.points[i,:])[1:-1]
+                    fo.write("  "+txt)
+
+            if nrb.dim == 2:
+                for i in range(0, n[0]):
+                    for j in range(0, n[1]):
+                        x1.append(str(nrb.points[i,j,0])+' ')
+                        x2.append(str(nrb.points[i,j,1])+' ')
+                fo.write("    control_pts1 = "+" ".join(x1)+"\n")     
+                fo.write("    control_pts2 = "+" ".join(x2)+"\n")
+
+            if nrb.dim == 3:
+                for i in range(0, n[0]):
+                    for j in range(0, n[1]):
+                        for k in range(0, n[2]):
+                            txt = str(nrb.points[i,j,k,:])[1:-1]
+                            x1.append(str(nrb.points[i,j,k,0])+' ')
+                            x2.append(str(nrb.points[i,j,k,1])+' ')
+                            x3.append(str(nrb.points[i,j,k,2])+' ')
+                fo.write("    control_pts1 = "+" ".join(x1)+"\n")     
+                fo.write("    control_pts2 = "+" ".join(x2)+"\n")
+                fo.write("    control_pts3 = "+" ".join(x3)+"\n")
+            fo.write("/" + "\n\n")
+
+            # ...
+
+            # ... write weights
+            fo.write("&pt_weights\n")
+            fo.write("/" + "\n\n")
+            n = nrb.shape
+            wgts = []
+            if nrb.dim == 1:
+                for i in range(0, n[0]):
+                    txt = str(nrb.weights[i])
+                    wgts.append(txt)
+            if nrb.dim == 2:
+                for i in range(0, n[0]):
+                    for j in range(0, n[1]):
+                        txt = str(nrb.weights[i,j])
+                        wgts.append(txt)
+            if nrb.dim == 3:
+                for i in range(0, n[0]):
+                    for j in range(0, n[1]):
+                        for k in range(0, n[2]):
+                            txt = str(nrb.weights[i,j,k])
+                            wgts.append(txt)
+            fo.write("    weights = "+" ".join(wgts)+"\n")
+            fo.write("/" + "\n\n")
+            # ...
+
+            # ...
+            # add information relevant to the construction of the logical mesh.       
+            fo.write("&logical_mesh_2d\n")
+            nc1 = len(cartesian_mesh_locations1) - 1
+            fo.write("    number_cells1 = " + str(nc1) + "\n")
+            nc2 = len(cartesian_mesh_locations2) - 1
+            fo.write("    number_cells2 = " + str(nc2) + "\n")
+            fo.write("/" + "\n\n")
+
+            fo.close()
+
+
+        # ...
+        _name = name.split('.')[0]
+        for i in range(0, geo.npatchs):
+            nrb = geo[i]
+            filename = _name + "_" + "patch"+str(i)+".nml"
+            exportPatch(nrb, filename)
+        
+        # ...
 
 ########################################################################
 # TODO to move to a directory io, in a file bezier
