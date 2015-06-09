@@ -116,14 +116,14 @@ class CubicHermiteBezier(Quadrangles):
         # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
         fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
         nodes    = np.genfromtxt(nodes_filename, comments="#")
-        print nodes.shape
+#        print nodes.shape
 
         # element,vertex(1:4),color
         fmt_elements = [int, int, int, int, int, int]
         elements = np.genfromtxt(elements_filename, comments="#")
         elements = np.array(elements, dtype=np.int32)
         colors    = np.array(elements[:,-1], dtype=np.int32)
-        print elements.shape
+#        print elements.shape
 
         if huhv_filename is not None:
             # node,hu,hv
@@ -411,7 +411,7 @@ class QuadSticker(object):
             for all_elements in list_all_elements:
                 if len(all_elements) != my_len:
                     assert_condition = False
-                    print "Error. Not a tensor product structure"
+                    print ("Error. Not a tensor product structure")
             assert(assert_condition)
 
             self._dict_elements[color] = list_all_elements

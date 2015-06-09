@@ -753,13 +753,13 @@ class NML(object):
 
     def __init__(self):
         pass
-        
+
     def write(self, name, geo):
         # ...
         def exportPatch(nrb, filename):
-            
+
             fo = open(filename, "w")
-            
+
             fo.write("&transf_label\n")
             fo.write("    label = "+"\""+filename+"\""+"\n")
             fo.write("/" + "\n\n")
@@ -791,16 +791,16 @@ class NML(object):
             # ...
 
             # ... write knots
-            
-            
+
+
             txt = str(nrb.knots[0])[1:-1]
-            
+
             cartesian_mesh_locations1=remove_duplicates(nrb.knots[0])
-            
+
             fo.write("&knots_1\n")
             fo.write("    knots1"" = "+txt+"\n")
             fo.write("/" + "\n\n")
-            
+
             if nrb.dim >= 2:
                 txt = str(nrb.knots[1])[1:-1]
                 cartesian_mesh_locations2=remove_duplicates(nrb.knots[1])
@@ -822,7 +822,7 @@ class NML(object):
             x1 = []
             x2 = []
             x3 = []
-            
+
             if nrb.dim == 1:
                 fo.write("    control_pts1 = ")
                 for i in range(0, n[0]):
@@ -834,7 +834,7 @@ class NML(object):
                     for j in range(0, n[1]):
                         x1.append(str(nrb.points[i,j,0])+' ')
                         x2.append(str(nrb.points[i,j,1])+' ')
-                fo.write("    control_pts1 = "+" ".join(x1)+"\n")     
+                fo.write("    control_pts1 = "+" ".join(x1)+"\n")
                 fo.write("    control_pts2 = "+" ".join(x2)+"\n")
 
             if nrb.dim == 3:
@@ -845,7 +845,7 @@ class NML(object):
                             x1.append(str(nrb.points[i,j,k,0])+' ')
                             x2.append(str(nrb.points[i,j,k,1])+' ')
                             x3.append(str(nrb.points[i,j,k,2])+' ')
-                fo.write("    control_pts1 = "+" ".join(x1)+"\n")     
+                fo.write("    control_pts1 = "+" ".join(x1)+"\n")
                 fo.write("    control_pts2 = "+" ".join(x2)+"\n")
                 fo.write("    control_pts3 = "+" ".join(x3)+"\n")
             fo.write("/" + "\n\n")
@@ -877,7 +877,7 @@ class NML(object):
             # ...
 
             # ...
-            # add information relevant to the construction of the logical mesh.       
+            # add information relevant to the construction of the logical mesh.
             fo.write("&logical_mesh_2d\n")
             nc1 = len(cartesian_mesh_locations1) - 1
             fo.write("    number_cells1 = " + str(nc1) + "\n")
@@ -894,7 +894,7 @@ class NML(object):
             nrb = geo[i]
             filename = _name + "_" + "patch"+str(i)+".nml"
             exportPatch(nrb, filename)
-        
+
         # ...
 
 ########################################################################
@@ -1664,7 +1664,7 @@ class BZR(object):
             # ...
             if fmt == "zip":
                 if dirname is None:
-                    print "Erro: dirname must be given."
+                    print ("Erro: dirname must be given.")
                     raise()
 
                 from contextlib import closing
