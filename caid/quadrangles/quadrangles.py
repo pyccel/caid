@@ -109,7 +109,10 @@ class Quadrangles(object):
 
 
 class CubicHermiteBezier(Quadrangles):
-    def __init__(self, nodes_filename, elements_filename):
+    def __init__(self, nodes_filename, elements_filename, huhv_filename=None):
+        """
+        TODO: remove huhv_filename when huhv will be given in the nodes file
+        """
         # node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color
         fmt_nodes = [int, float, float, float, float, float, float, float, float, int, int, int]
         nodes    = np.genfromtxt(nodes_filename, comments="#")
@@ -121,6 +124,16 @@ class CubicHermiteBezier(Quadrangles):
         elements = np.array(elements, dtype=np.int32)
         colors    = np.array(elements[:,-1], dtype=np.int32)
         print elements.shape
+
+        if huhv_filename is not None:
+            # node,hu,hv
+            fmt_huhv = [int, float, float]
+            huhv     = np.genfromtxt(huhv_filename, comments="#")
+            print huhv.shape
+        else:
+            huhv = None
+            hu   = None
+            hv   = None
 
         # extract quadrangles and use 0 based indexing
         quads = elements[:,1:-1] - 1
@@ -134,12 +147,20 @@ class CubicHermiteBezier(Quadrangles):
         bnd_ind  = np.array(nodes[:,10], dtype=np.int32)
         vertices_colors  = np.array(nodes[:,11], dtype=np.int32)
 
+        # extract hu and hv
+        if huhv is not None:
+            hu       = huhv[:,1]
+            hv       = huhv[:,2]
+
+
         Quadrangles.__init__(self, R, Z, quads=quads)
 
         # elements attributs
         self._colors    = colors
 
         # nodes attributs
+        self._hu        = hu
+        self._hv        = hv
         self._u         = u
         self._v         = v
         self._w         = w
@@ -197,6 +218,20 @@ class CubicHermiteBezier(Quadrangles):
         returns an array of colors for each quadrangle
         """
         return self._vertices_colors
+
+    @property
+    def hu(self):
+        """
+        returns a 1D array of hu-length for each vertex
+        """
+        return self._hu
+
+    @property
+    def hv(self):
+        """
+        returns a 1D array of hv-length for each vertex
+        """
+        return self._hv
 
     @property
     def u(self):
