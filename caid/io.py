@@ -878,7 +878,7 @@ class NML(object):
 
             # ...
             # add information relevant to the construction of the logical mesh.
-            fo.write("&logical_mesh_2d\n")
+            fo.write("&cartesian_mesh_2d\n")
             nc1 = len(cartesian_mesh_locations1) - 1
             fo.write("    number_cells1 = " + str(nc1) + "\n")
             nc2 = len(cartesian_mesh_locations2) - 1
