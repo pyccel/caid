@@ -3024,13 +3024,14 @@ class cad_geometry(object):
             ydv  = Dw[2,:,:,1]
 
             jac = xdu * ydv - xdv * ydu
-            print("=== patch ",i, " ===")
-            print("jacobian[0,0] : ", jac[0,0])
-            print("jacobian[0,-1] : ", jac[0,-1])
-            print("jacobian[-1,0] : ", jac[-1,0])
-            print("jacobian[-1,-1] : ", jac[-1,-1])
-            print("min(jacobian) : ", jac.min())
-            print("max(jacobian) : ", jac.max())
+            if np.abs(jac.max()) < 1.e-6:
+                print("=== patch ",i, " ===")
+                print("jacobian[0,0] : ", jac[0,0])
+                print("jacobian[0,-1] : ", jac[0,-1])
+                print("jacobian[-1,0] : ", jac[-1,0])
+                print("jacobian[-1,-1] : ", jac[-1,-1])
+                print("min(jacobian) : ", jac.min())
+                print("max(jacobian) : ", jac.max())
             list_jac.append(jac)
             list_xyz.append([x,y])
 
@@ -3623,18 +3624,33 @@ class cad_geometry(object):
         # we elevate the interior knots multiplicities to 3
         # ...
         list_knots = []
+#        print ">>>> "
+#        print geo[0].knots[0]
+#        print geo[0].knots[1]
+#        print "<<<< "
+#        print nrb.breaks(mults=True)
         for axis in range(0, nrb.dim):
-            list_t = np.unique(nrb.knots[axis])[1:-1]
-            list_mult = []
-            for t in list_t:
-                mult = len([s for s in nrb.knots[axis] if s==t])
-                list_mult.append(mult)
+            # ... TODO there is a problem with this part.
+            #          use arc circle as test
+            list_t, list_mult = nrb.breaks(axis=axis, mults=True)
+            list_t = list_t[1:-1]
+            list_mult = list_mult[1:-1]
+#            list_mult = []
+#            for t in list_t:
+#                mult = len([s for s in nrb.knots[axis] if s==t])
+#                list_mult.append(mult)
+#            print "========="
+#            print list_mult
+#            print list_t
             list_t_new = []
             for t,m in zip(list_t, list_mult):
                 new_m = max(3-m,0)
                 for i in range(0,new_m):
                     list_t_new.append(t)
             list_knots.append(list_t_new)
+#        print list_knots[0]
+#        print list_knots[1]
+#        print "========="
         geo.refine(list_t=list_knots)
         # ...
 

@@ -15,8 +15,8 @@ def stickC1(crv_m,crv_s,face_m,face_s,ib=None,ie=None):
             u = crv.knots[0][0]
         if face == 1:
             u = crv.knots[0][-1]
-        D = crv.evaluate_deriv(u)
-        return D[1,...]
+        D = crv.gradient(u=[u])
+        return D[0,:2,0]
     # ...
     # ...
     def derivatives_surface(srf,face):
