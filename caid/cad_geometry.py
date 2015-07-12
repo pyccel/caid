@@ -3747,6 +3747,7 @@ class cad_geometry(object):
                 list_indexNodes.append(li_00)
 
                 globID = local_ID[enum_i,enum_j]
+                print currentElt, globID
                 # ...
                 # compute u, v and w
                 # ...
@@ -3798,6 +3799,24 @@ class cad_geometry(object):
 #                #      son    case
 #                if (i == lpi_n[0] - 1) or (j == lpi_n[1]-1):
 #                    dupliCode = 2
+#                # ...
+
+#                # ... periodicity in the first direction
+#                #      father case
+#                if (i == 0) and (j < lpi_n[1] - 1):
+#                    dupliCode = 1
+#                #      son    case
+#                if (i == lpi_n[0] - 1):
+#                    dupliCode = 2
+#                # ...
+
+                # ... periodicity in the second direction
+                #      father case
+                if (j == 0) and (i < lpi_n[0] - 1):
+                    dupliCode = 1
+                #      son    case
+                if (j == lpi_n[1] - 1):
+                    dupliCode = 2
                 # ...
 
                 # ...
