@@ -3602,6 +3602,39 @@ class cad_geometry(object):
         this routine transforms the current geometry into cubic Bezier patchs
         works only if dim == 2
         """
+        list_master_faces = [d['original'] for d in self.connectivity]
+        list_slave_faces  = [d['clone'] for d in self.connectivity]
+
+        # ...
+        def from_ij_to_face_id(i,j, api_n):
+            face_id = None
+            if (i == 0) and (j < api_n[1]):
+                face_id = 1
+            if (i == api_n[0]-1) and (j < api_n[1]):
+                face_id = 3
+            if (i < api_n[0]) and (j == 0):
+                face_id = 0
+            if (i < api_n[0]) and (j == api_n[1]-1):
+                face_id = 2
+            return face_id
+        # ...
+
+        # ...
+        def duplicated_code_from_ij(i,j, api_n):
+            face_id = from_ij_to_face_id(i,j, api_n)
+
+            dupliCode = 0
+            # first we need to know if the current face is a master or a slave one
+            if [patch_id, face_id] in list_master_faces:
+                dupliCode = 1
+
+            if [patch_id, face_id] in list_slave_faces:
+                dupliCode = 2
+            # ...
+
+            return dupliCode
+        # ...
+
         # ... TODO add loop on patchs here
         nrb = self[patch_id] #.copy()
         if nrb.dim != 2 :
@@ -3653,6 +3686,20 @@ class cad_geometry(object):
 #        print "========="
         geo.refine(list_t=list_knots)
         # ...
+
+        # ...
+        list_extFaces = self.external_faces
+        list_intFaces = self.internal_faces
+
+        list_DirFaces = []
+        for i in range(0, self.npatchs):
+            list_DirFaces.append([])
+        for extFaces in list_extFaces:
+            nrb_id  = extFaces[0]
+            face_id = extFaces[1]
+            list_DirFaces[nrb_id].append(face_id)
+        # ...
+
 
         # ... TODO add loop on patchs here
         nrb = geo[0]
@@ -3710,6 +3757,7 @@ class cad_geometry(object):
         list_indexNodes = []
         list_huhvNodes = []
         list_nodeData = []
+        Dirichlet_faces = list_DirFaces[patch_id]
 
         nx_elt = len(np.unique(nrb.knots[0])) - 1
         ny_elt = len(np.unique(nrb.knots[1])) - 1
@@ -3771,53 +3819,34 @@ class cad_geometry(object):
                 list_huhvNodes.append([hu,hv])
                 # ...
 
+                # ...................................
+                #         Boundary treatment
+                # ...................................
+                face_id = from_ij_to_face_id(i,j,lpi_n)
+
                 # ...
-                # compute the boundary code
+                # compute the boundary code for external faces
                 # ...
                 boundaryCode = 0
-                # TODO to comment and treate in the case of connectivity (clone
-                # even in the same patch)
-                if j in  [0,lpi_n[1] - 1]:
-                    boundaryCode += 1
-                if i in  [0,lpi_n[0] - 1]:
-                    boundaryCode += 2
+
+                if face_id in Dirichlet_faces:
+                    if j in  [0,lpi_n[1] - 1]:
+                        boundaryCode += 1
+                    if i in  [0,lpi_n[0] - 1]:
+                        boundaryCode += 2
                 # ...
 
                 # ...
-                # Duplication code
+                # Duplication code internal faces
                 # 2 son
                 # 1 father
                 # 0 other
                 # TODO make compatible with multi patch => add test on faces
                 # ...
                 dupliCode = 0
-#                #      father case
-#                if (i == 0) and (j < lpi_n[1] - 1):
-#                    dupliCode = 1
-#                if (j == 0) and (i < lpi_n[0] - 1):
-#                    dupliCode = 1
-#                #      son    case
-#                if (i == lpi_n[0] - 1) or (j == lpi_n[1]-1):
-#                    dupliCode = 2
-#                # ...
-
-#                # ... periodicity in the first direction
-#                #      father case
-#                if (i == 0) and (j < lpi_n[1] - 1):
-#                    dupliCode = 1
-#                #      son    case
-#                if (i == lpi_n[0] - 1):
-#                    dupliCode = 2
-#                # ...
-
-                # ... periodicity in the second direction
-                #      father case
-                if (j == 0) and (i < lpi_n[0] - 1):
-                    dupliCode = 1
-                #      son    case
-                if (j == lpi_n[1] - 1):
-                    dupliCode = 2
+                dupliCode = duplicated_code_from_ij(i,j, lpi_n)
                 # ...
+                # ...................................
 
                 # ...
                 nodeData = [P00 \
