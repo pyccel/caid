@@ -302,6 +302,7 @@ class GeometryActionsNew(ClassActions):
         self.QCR_ID = wx.NewId() ; QCR_TAG = "Quart-Circle"
         self.ANL_ID = wx.NewId() ; ANL_TAG = "Annulus"
         self.CR5_ID = wx.NewId() ; CR5_TAG = "Circle 5 patchs"
+        self.PC5_ID = wx.NewId() ; PC5_TAG = "Pinched Circle 5 patchs"
         self.TRL_ID = wx.NewId() ; TRL_TAG = "Triangle"
 
         list_buttonsInfo = []
@@ -316,6 +317,7 @@ class GeometryActionsNew(ClassActions):
         list_buttonsInfo.append([self.QCR_ID, QCR_TAG])
         list_buttonsInfo.append([self.ANL_ID, ANL_TAG])
         list_buttonsInfo.append([self.CR5_ID, CR5_TAG])
+        list_buttonsInfo.append([self.PC5_ID, PC5_TAG])
         list_buttonsInfo.append([self.TRL_ID, TRL_TAG])
         # ...
 
@@ -386,10 +388,14 @@ class GeometryActionsNew(ClassActions):
         if ID == self.CR5_ID:
             self.parent.objectActionsCreateCircle_5mp.asGeometry()
             self.parent.ShowAction(self.parent.objectActionsCreateCircle_5mp)
+        if ID == self.PC5_ID:
+            self.parent.objectActionsCreatePinched_Circle_5mp.asGeometry()
+            self.parent.ShowAction(self.parent.objectActionsCreatePinched_Circle_5mp)
         if ID == self.TRL_ID:
             self.parent.objectActionsCreateTriangle.asGeometry()
             self.parent.ShowAction(self.parent.objectActionsCreateTriangle)
 
+            
 class GeometryActionsAdd(ClassActions):
     def __init__(self, parent, parentPanel, parentBox):
         self.LIN_ID = wx.NewId() ; LIN_TAG = "Line"
@@ -402,6 +408,7 @@ class GeometryActionsAdd(ClassActions):
         self.QCR_ID = wx.NewId() ; QCR_TAG = "Quart-Circle"
         self.ANL_ID = wx.NewId() ; ANL_TAG = "Annulus"
         self.CR5_ID = wx.NewId() ; CR5_TAG = "Circle 5 patchs"
+        self.PC5_ID = wx.NewId() ; PC5_TAG = "Pinched Circle 5 patchs"
         self.TRL_ID = wx.NewId() ; TRL_TAG = "Triangle"
 
         list_buttonsInfo = []
@@ -415,6 +422,7 @@ class GeometryActionsAdd(ClassActions):
         list_buttonsInfo.append([self.QCR_ID, QCR_TAG])
         list_buttonsInfo.append([self.ANL_ID, ANL_TAG])
         list_buttonsInfo.append([self.CR5_ID, CR5_TAG])
+        list_buttonsInfo.append([self.PC5_ID, PC5_TAG])
         list_buttonsInfo.append([self.TRL_ID, TRL_TAG])
         # ...
 
@@ -449,6 +457,9 @@ class GeometryActionsAdd(ClassActions):
         if ID == self.CR5_ID:
             self.parent.objectActionsCreateCircle_5mp.asPatch()
             self.parent.ShowAction(self.parent.objectActionsCreateCircle_5mp)
+        if ID == self.PC5_ID:
+            self.parent.objectActionsCreatePinched_Circle_5mp.asPatch()
+            self.parent.ShowAction(self.parent.objectActionsCreatePinched_Circle_5mp)
         if ID == self.TRL_ID:
             self.parent.objectActionsCreateTriangle.asGeometry()
             self.parent.ShowAction(self.parent.objectActionsCreateTriangle)

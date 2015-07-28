@@ -291,6 +291,8 @@ class ObjectActionsCreateQuartCircle(ObjectClassActions):
                 self.rmin = float(event.GetString())
             if event.GetId() == self.txtCtrlRadiusMaxId:
                 self.rmax= float(event.GetString())
+            if event.GetId() == self.txtCtrlEpsilonId:
+                self.epsilon= float(event.GetString())
             if event.GetId() == self.txtCtrlxId:
                 self.EvtCenterText(event, 0)
             if event.GetId() == self.txtCtrlyId:
@@ -554,6 +556,7 @@ class ObjectActionsCreateCircle_5mp(ObjectClassActions):
         self.Box.Add(hbox, border=5)
         # ...
 
+                
     def OnClick(self, event):
         ID = event.GetId()
         if ID == self.BCK_ID:
@@ -610,6 +613,186 @@ class ObjectActionsCreateCircle_5mp(ObjectClassActions):
                 self.rmin = float(event.GetString())
             if event.GetId() == self.txtCtrlRadiusMaxId:
                 self.rmax= float(event.GetString())
+            if event.GetId() == self.txtCtrlxId:
+                self.EvtCenterText(event, 0)
+            if event.GetId() == self.txtCtrlyId:
+                self.EvtCenterText(event, 1)
+            if event.GetId() == self.txtCtrlzId:
+                self.EvtCenterText(event, 2)
+        except:
+            pass
+
+    def EvtCenterText(self, event, i):
+        try :
+            self.center[i] = float(event.GetString())
+        except:
+            pass
+
+class ObjectActionsCreatePinched_Circle_5mp(ObjectClassActions):
+    def __init__(self, parent, parentPanel, parentBox):
+        self.GO_ID = wx.NewId() ; GO_TAG = "Go"
+
+        list_buttonsInfo = []
+        list_buttonsInfo.append([self.GO_ID, GO_TAG])
+        # ...
+
+        ObjectClassActions.__init__(self, parent, parentPanel, parentBox,
+                              list_buttonsInfo, backButton=True)
+
+        self.rmin = 0.5
+        self.rmax = 1.
+        self.center = np.asarray([0.,0.,0.])
+        self.epsilon = 0.5
+
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        text = wx.StaticText(parentPanel, -1, "rmin")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlRadiusMinId = wx.NewId()
+        self.txtCtrlRadiusMin = wx.TextCtrl(parentPanel, self.txtCtrlRadiusMinId)
+        self.txtCtrlRadiusMin.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlRadiusMin.SetValue(str(self.rmin))
+        hbox.Add(self.txtCtrlRadiusMin, border=5)
+
+        self.Box.Add(hbox, border=10)
+        # ...
+
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        text = wx.StaticText(parentPanel, -1, "rmax")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlRadiusMaxId = wx.NewId()
+        self.txtCtrlRadiusMax = wx.TextCtrl(parentPanel, self.txtCtrlRadiusMaxId)
+        self.txtCtrlRadiusMax.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlRadiusMax.SetValue(str(self.rmax))
+        hbox.Add(self.txtCtrlRadiusMax, border=5)
+
+        self.Box.Add(hbox, border=10)
+        # ...
+
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        text = wx.StaticText(parentPanel, -1, "epsilon")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlEpsilonId = wx.NewId()
+        self.txtCtrlEpsilon = wx.TextCtrl(parentPanel, self.txtCtrlEpsilonId)
+        self.txtCtrlEpsilon.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlEpsilon.SetValue(str(self.epsilon))
+        hbox.Add(self.txtCtrlEpsilon, border=5)
+
+        self.Box.Add(hbox, border=10)
+        # ...
+
+        
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        text = wx.StaticText(parentPanel, -1, "x")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlxId = wx.NewId()
+        self.txtCtrlx = wx.TextCtrl(parentPanel, self.txtCtrlxId, size=(50,25))
+        self.txtCtrlx.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlx.SetValue(str(self.center[0]))
+        hbox.Add(self.txtCtrlx, border=5)
+
+        self.Box.Add(hbox, border=5)
+        # ...
+
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        text = wx.StaticText(parentPanel, -1, "y")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlyId = wx.NewId()
+        self.txtCtrly = wx.TextCtrl(parentPanel, self.txtCtrlyId, size=(50,25))
+        self.txtCtrly.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrly.SetValue(str(self.center[1]))
+        hbox.Add(self.txtCtrly, border=5)
+
+        self.Box.Add(hbox, border=5)
+        # ...
+
+        # ...
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        text = wx.StaticText(parentPanel, -1, "z")
+        hbox.Add(text, 0, wx.ALL, 5)
+
+        self.txtCtrlzId = wx.NewId()
+        self.txtCtrlz = wx.TextCtrl(parentPanel, self.txtCtrlzId, size=(50,25))
+        self.txtCtrlz.Bind(wx.EVT_TEXT, self.EvtText)
+        self.txtCtrlz.SetValue(str(self.center[2]))
+        hbox.Add(self.txtCtrlz, border=5)
+
+        self.Box.Add(hbox, border=5)
+        # ...
+
+        
+    def OnClick(self, event):
+        ID = event.GetId()
+        if ID == self.BCK_ID:
+            self.parent.ShowAction(self.parent.geometryActions)
+        if ID == self.GO_ID:
+            # inspector = self.parent
+            wk = self.parent.WorkGroup
+            geo = wk.inspector.currentGeometry
+            geoItem = wk.inspector.currentGeometryItem
+            from caid.cad_geometry import pinched_circle_5mp as domain
+            _geo = domain(rmin=self.rmin, rmax=self.rmax, epsilon=self.epsilon, center=self.center)
+            # macro recording
+            if wk.macroRecording:
+                macro_script = wk.macro_script
+                macro_script.new_line()
+                macro_script.append("# ... create object")
+                macro_script.append("rmin = "+str(self.rmin))
+                macro_script.append("rmax = "+str(self.rmax))
+                macro_script.append("epsilon = "+str(self.epsilon))
+                macro_script.append("center = "+str(list(self.center)))
+            if self.patch:
+                for nrb in _geo:
+                    wk.add_patch(geoItem, geo, nrb)
+                # macro recording
+                if wk.macroRecording:
+                    patch = wk.inspector.currentObject
+                    patchItem = wk.inspector.currentPatchItem
+                    geoItem = wk.inspector.tree.GetItemParent(patchItem)
+                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo_id   = wk.list_geo.index(geo)
+                    patch_id = geo.index(patch)
+                    macro_script.append("geo_id = "+str(geo_id))
+                    macro_script.append("patch_id = "+str(patch_id))
+                    macro_script.append("geo = geometries[geo_id]")
+                    macro_script.append("patch = geo[patch_id]")
+                    macro_script.append("geoItem = geo.treeItem")
+                    macro_script.append("_geo = pinched_circle_5mp(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center)")
+                    macro_script.append("for nrb in _geo:")
+                    macro_script.append("\twk.add_patch(geoItem, geo, nrb)")
+                    macro_script.append("wk.Refresh(inspector=True)")
+                    macro_script.append("# ...")
+                wk.Refresh(inspector=True)
+            else:
+                geo_new = geometry(_geo)
+                geo_newItem = wk.add_geometry(geo_new)
+                # macro recording
+                if wk.macroRecording:
+                    macro_script.append("_geo = pinched_circle_5mp(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center)")
+                    macro_script.append("wk.add_geometry(geometry(_geo))")
+                    macro_script.append("# ...")
+
+    def EvtText(self, event):
+        try:
+            if event.GetId() == self.txtCtrlRadiusMinId:
+                self.rmin = float(event.GetString())
+            if event.GetId() == self.txtCtrlRadiusMaxId:
+                self.rmax= float(event.GetString())
+            if event.GetId() == self.txtCtrlEpsilonId:
+                self.epsilon= float(event.GetString())
             if event.GetId() == self.txtCtrlxId:
                 self.EvtCenterText(event, 0)
             if event.GetId() == self.txtCtrlyId:
