@@ -50,6 +50,16 @@ ext_modules  = [ \
                            define_macros = [ \
                                             #('F2PY_REPORT_ATEXIT', 0),
                                             ('F2PY_REPORT_ON_ARRAY_COPY', 0)] \
+                          ), \
+                # ...
+                # ... hermite-bezier extension
+                 Extension('caid.core.hbezier', \
+                           sources = ['caid/core/hbezier.pyf', \
+                                      'caid/core/hbezier.F90'], \
+                           f2py_options = ['--quiet'], \
+                           define_macros = [ \
+                                            #('F2PY_REPORT_ATEXIT', 0),
+                                            ('F2PY_REPORT_ON_ARRAY_COPY', 0)] \
                           ) \
                 # ...
                 ,]

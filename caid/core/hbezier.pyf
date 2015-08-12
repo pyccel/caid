@@ -1,0 +1,97 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module hbezier ! in 
+    interface  ! in :hbezier
+        module hbezier_polar ! in :hbezier:hbezier.F90
+            integer, parameter,optional :: n_dim=2
+            integer, private,parameter,optional :: i_drz=4
+            integer, private,parameter,optional :: i_dz=3
+            integer, private,parameter,optional :: i_drr=5
+            integer, private,parameter,optional :: i_d0=1
+            integer, private,parameter,optional :: i_dr=2
+            integer, parameter,optional :: pol_dim=2
+            integer, parameter,optional :: n_max_vtex_per_elmt=4
+            integer, private,parameter,optional :: i_x_z=2
+            integer, private,parameter,optional :: i_dzz=6
+            real(kind=8), private,optional :: pi=4.0d0*atan(1.d0)
+            integer, parameter,optional :: n_order=4
+            integer, private,parameter,optional :: i_x_r=1
+            subroutine construct_grid(rgeo,zgeo,amin,acentre,angle_start,nr,np,coor2d,vertices,boundary,scales) ! in :hbezier:hbezier.F90:hbezier_polar
+                real(kind=8) intent(in) :: rgeo
+                real(kind=8) intent(in) :: zgeo
+                real(kind=8) intent(in) :: amin
+                real(kind=8) intent(in) :: acentre
+                real(kind=8) intent(in) :: angle_start
+                integer(kind=4) intent(in) :: nr
+                integer(kind=4) intent(in) :: np
+                real(kind=8) dimension(2,4,nr*np),intent(out),depend(nr,np) :: coor2d
+                integer(kind=4) dimension(4,(nr-1)*np),intent(out),depend(nr,np) :: vertices
+                integer(kind=4) dimension(nr*np),intent(out),depend(nr,np) :: boundary
+                real(kind=8) dimension(4,4,(nr-1)*np),intent(out),depend(nr,np) :: scales
+            end subroutine construct_grid
+            function spwert(n,xwert,a,b,c,d,x,abltg) ! in :hbezier:hbezier.F90:hbezier_polar
+                integer, optional,check(len(a)>=n),depend(a) :: n=len(a)
+                real(kind=8) :: xwert
+                real(kind=8) dimension(n) :: a
+                real(kind=8) dimension(n),depend(n) :: b
+                real(kind=8) dimension(n),depend(n) :: c
+                real(kind=8) dimension(n),depend(n) :: d
+                real(kind=8) dimension(n),depend(n) :: x
+                real(kind=8) dimension(3) :: abltg
+                real*8 :: spwert
+            end function spwert
+            subroutine meshac2(nr,sg,xr1,xr2,sig1,sig2,bgf,fact) ! in :hbezier:hbezier.F90:hbezier_polar
+                integer intent(in) :: nr
+                real(kind=8) dimension(:),intent(inout) :: sg
+                real(kind=8) :: xr1
+                real(kind=8) :: xr2
+                real(kind=8) :: sig1
+                real(kind=8) :: sig2
+                real(kind=8) :: bgf
+                real(kind=8) :: fact
+            end subroutine meshac2
+            function fgaus(zs,bgf,xr1,xr2,sig1,sig2,fact,dfgauss) ! in :hbezier:hbezier.F90:hbezier_polar
+                real(kind=8) :: zs
+                real(kind=8) :: bgf
+                real(kind=8) :: xr1
+                real(kind=8) :: xr2
+                real(kind=8) :: sig1
+                real(kind=8) :: sig2
+                real(kind=8) :: fact
+                real(kind=8) :: dfgauss
+                real(kind=8) :: fgaus
+            end function fgaus
+            subroutine spline(n,x,y,alfa,beta,typ,a,b,c,d) ! in :hbezier:hbezier.F90:hbezier_polar
+                integer, optional,check(len(x)>=n),depend(x) :: n=len(x)
+                real(kind=8) dimension(n) :: x
+                real(kind=8) dimension(n),depend(n) :: y
+                real(kind=8) :: alfa
+                real(kind=8) :: beta
+                integer :: typ
+                real(kind=8) dimension(n),depend(n) :: a
+                real(kind=8) dimension(n),depend(n) :: b
+                real(kind=8) dimension(n),depend(n) :: c
+                real(kind=8) dimension(n),depend(n) :: d
+            end subroutine spline
+            subroutine dgtsl(n,c,d,e,b,info) ! in :hbezier:hbezier.F90:hbezier_polar
+                integer :: n
+                real(kind=8) dimension(*) :: c
+                real(kind=8) dimension(*) :: d
+                real(kind=8) dimension(*) :: e
+                real(kind=8) dimension(*) :: b
+                integer :: info
+            end subroutine dgtsl
+            subroutine dcopy(n,dx,incx,dy,incy) ! in :hbezier:hbezier.F90:hbezier_polar
+                integer :: n
+                real(kind=8) dimension(*) :: dx
+                integer :: incx
+                real(kind=8) dimension(*) :: dy
+                integer :: incy
+            end subroutine dcopy
+        end module hbezier_polar
+    end interface 
+end python module hbezier
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

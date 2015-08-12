@@ -69,6 +69,37 @@ def test1D2():
 # ...
 
 # ...
+def test1D3():
+    spl = splineRefMat(DIM_1D)
+#    list_r = list(np.random.random(20))
+    list_r = [0.25,0.5,0.75]
+
+    nx = 3
+    px = 2
+    geo = line(n=[nx], p=[px])
+
+    nrb     = geo[0]
+    knots   = nrb.knots[0]
+#    nrb     = nrb.clone().unclamp(0)
+    n       = nrb.shape[0]
+    p       = nrb.degree[0]
+    P       = nrb.points
+
+    M = spl.construct(list_r, p, n, knots)
+    from scipy.io import mmwrite
+    mmwrite('M.mtx', M)
+    R = M.dot(nrb.points[:,0])
+
+    geo = line(n=[nx], p=[px])
+    geo.refine(id=0, list_t=[list_r])
+    nrb     = geo[0]
+    P = np.asarray(nrb.points[:,0])
+
+    assert(np.allclose(P,R))
+    print("test1D3: OK")
+# ...
+
+# ...
 def test2D1():
     spl = splineRefMat(DIM_1D)
     list_r1 = list(np.random.random(20))
@@ -191,6 +222,7 @@ def test2D3():
 
 test1D1()
 test1D2()
-test2D1()
-test2D2()
-test2D3()
+test1D3()
+#test2D1()
+#test2D2()
+#test2D3()
