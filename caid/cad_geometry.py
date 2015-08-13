@@ -566,6 +566,164 @@ def circle_5mp(rmin=0.5, rmax=1.0, center=None, n=None, p=None):
 
     return geo
 
+def pinched_quart_circle(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, degree=0.0):
+    """Creates a 2D pinched quarter circle with 1 patch as cad_geometry object.
+
+    Kwargs:
+        rmin (float): Minimal radius of the quart-circle. default 0.5
+
+        rmax (float): Maximal radius of the quart-circle. default 1.0
+
+        epsilon (float): Factor of deformation of the quart-circle. default 0.5
+
+        degree (float): rotation degree. default 0.0
+
+    Returns:
+       A cad_geometry object.
+
+    """
+
+    # ... Import the quart_circle domain
+    geo = quart_circle(rmin=rmin, rmax=rmax, center=center)
+    #getting the patch:
+    cad_nrb = geo[0]
+    
+    # Refining...
+    list_t = None
+    n = 4
+    p = 3
+    if n is not None:
+        list_t = []
+        for axis in range(0,geo.dim):
+            ub = cad_nrb.knots[axis][0]
+            ue = cad_nrb.knots[axis][-1]
+            list_t.append(np.linspace(ub,ue,n+2)[1:-1])
+        list_p = None
+        if p is not None:
+            list_p = []
+            for axis in range(0,cad_nrb.dim):
+                list_p.append(p - cad_nrb.degree[axis])
+        geo.refine(list_t=list_t, list_p=list_p, list_m=[1,1])
+
+    # "Pinching" the geometry
+    cad_nrb = geo[0]
+    if ((epsilon<=1.)and(epsilon>=0)) :
+        epsilon = epsilon/10.
+        # first corner
+        cad_nrb.control[0,0,1] -= epsilon
+        cad_nrb.control[1,0,1] -= epsilon/2.
+        cad_nrb.control[0,1,1] -= epsilon
+        cad_nrb.control[1,1,1] -= epsilon/2.
+        # second corner
+        cad_nrb.control[7,0,0] -= epsilon
+        cad_nrb.control[6,0,0] -= epsilon/2.
+        cad_nrb.control[7,1,0] -= epsilon
+        cad_nrb.control[6,1,0] -= epsilon/2.
+
+        cad_nrb.rotate(degree)
+    else:
+        print " ERROR  in pinched_quart_circle : epsilon should be in between 0 and 1"
+        STOP
+    return geo
+
+def pinched_circle(radius=0.5, epsilon=0.5, center=None, n=None, p=None):
+    geo = circle(radius=radius, center=center, n=n, p=p)
+    geo[0].rotate(0.25*np.pi)
+    cad_nrb = geo[0]
+    
+    # Refining...
+    list_t = None
+    n = 4
+    p = 3
+    if n is not None:
+        list_t = []
+        for axis in range(0,geo.dim):
+            ub = cad_nrb.knots[axis][0]
+            ue = cad_nrb.knots[axis][-1]
+            list_t.append(np.linspace(ub,ue,n+2)[1:-1])
+        list_p = None
+        if p is not None:
+            list_p = []
+            for axis in range(0,cad_nrb.dim):
+                list_p.append(p - cad_nrb.degree[axis])
+        geo.refine(list_t=list_t, list_p=list_p, list_m=[1,1])
+
+    # "Pinching" the geometry
+    cad_nrb = geo[0]
+    if ((epsilon<=1.)and(epsilon>=0)) :
+        epsilon = epsilon/10.
+        # first corner
+        cad_nrb.control[0,0,1] -= epsilon
+        cad_nrb.control[1,0,1] -= epsilon/2.
+        cad_nrb.control[1,1,1] -= epsilon
+        cad_nrb.control[0,1,1] -= epsilon/2.
+        # second corner
+        cad_nrb.control[7,0,0] -= epsilon
+        cad_nrb.control[6,0,0] -= epsilon/2.
+        cad_nrb.control[6,1,0] -= epsilon
+        cad_nrb.control[7,1,0] -= epsilon/2.
+        # third corner
+        cad_nrb.control[1,6,0] += epsilon
+        cad_nrb.control[0,6,0] += epsilon/2.
+        cad_nrb.control[0,7,0] += epsilon
+        cad_nrb.control[1,7,0] += epsilon/2.
+        # second corner
+        cad_nrb.control[6,6,1] += epsilon
+        cad_nrb.control[7,6,1] += epsilon/2.
+        cad_nrb.control[7,7,1] += epsilon
+        cad_nrb.control[6,7,1] += epsilon/2.
+    else:
+        print " ERROR  in pinched_circle : epsilon should be in between 0 and 1"
+        STOP
+    return geo
+
+def pinched_circle_5mp(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, n=None, p=None):
+    """Creates a 2D description of a pinched circle using 5 patchs.
+       This geometry is supposed to avoid any singular points on the disk.
+
+    Kwargs:
+        rmin (float): Minimal radius of the annulus. default 0.5
+
+        rmax (float): Maximal radius of the circle. default 1.0
+
+        epsilon (float): Parameter that mesures the level of deformation of the internal interface. default 0.5
+
+        n (list int): This is a list containing the number of interior knots to insert. default None
+
+        p (list int): This is a list containing the spline degree of the line. default None
+
+    Returns:
+       A cad_geometry object.
+
+    """
+    # ... Import the quart_circle domain
+    geo_1 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center)
+    geo_1[0].transpose()
+    
+    # ... Import the quart_circle domain
+    geo_2 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center, degree=0.5*np.pi)
+    geo_2[0].reverse(0)
+    
+    # ... Import the quart_circle domain
+    geo_3 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center, degree=np.pi)
+    geo_3[0].reverse(0)
+
+    # ... Import the quart_circle domain
+    geo_4 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, degree=1.5*np.pi)
+#    geo_4[0].reverse(0)
+    geo_4[0].transpose()
+    
+    # ... Import the pinched_circle domain
+    geo_5 = pinched_circle(radius=rmin, epsilon=epsilon, center=center,n=n,p=p)
+
+    geo_12   = geo_1.merge(geo_2)
+    geo_34   = geo_3.merge(geo_4)
+    geo_1234 = geo_12.merge(geo_34)
+    geo      = geo_1234.merge(geo_5)
+
+    return geo
+
+
 def trilinear(points=None, n=None, p=None):
     from igakit.cad import trilinear as nrb_trilinear
     """Creates a bilinear cad_geometry object. TODO: needs to be updated

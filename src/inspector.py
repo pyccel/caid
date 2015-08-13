@@ -1239,6 +1239,8 @@ class Inspector(wx.Frame):
         self.list_actions.append(self.objectActionsCreateAnnulus)
         self.objectActionsCreateCircle_5mp = ObjectActionsCreateCircle_5mp(self, self.actionsPanel, self.actionsBox)
         self.list_actions.append(self.objectActionsCreateCircle_5mp)
+        self.objectActionsCreatePinched_Circle_5mp = ObjectActionsCreatePinched_Circle_5mp(self, self.actionsPanel, self.actionsBox)
+        self.list_actions.append(self.objectActionsCreatePinched_Circle_5mp)
         self.objectActionsCreateTriangle = ObjectActionsCreateTriangle(self, self.actionsPanel, self.actionsBox)
         self.list_actions.append(self.objectActionsCreateTriangle)
         self.objectActionsPolarExtrude = ObjectActionsPolarExtrude(self, self.actionsPanel, self.actionsBox)
