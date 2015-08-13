@@ -312,11 +312,14 @@ class CubicHermiteBezier(Quadrangles):
                 list_elements.append(i)
         return list_elements
 
-    def save(self, label="", colors=False, neighbours=True):
+    def save(self, label="", colors=False, neighbours=True, with_id=False):
         # ... save elements file
-        n_attributs = 1 + 4
-        fmt ='\t %d \t %d \t %d \t %d \t %d'
+        n_attributs = 4
+        fmt ='\t %d \t %d \t %d \t %d'
 
+        if with_id:
+            n_attributs += 1
+            fmt += " \t %d"
         if colors:
             n_attributs += 1
             fmt += " \t %d"
@@ -331,9 +334,13 @@ class CubicHermiteBezier(Quadrangles):
 
         list_elmts_id = range(1, n_elmts + 1)
 
-        elements[:,0] = np.array(list_elmts_id)
-        elements[:,1:5] = self.quads + 1
-        i_end = 5
+        i_end = 0
+        if with_id:
+            elements[:,0] = np.array(list_elmts_id)
+            i_end += 1
+
+        elements[:,i_end:i_end+4] = self.quads + 1
+        i_end += 4
 
         if colors:
             elements[:,i_end] = np.ones(n_elmts)
@@ -347,7 +354,10 @@ class CubicHermiteBezier(Quadrangles):
         header += "\n"
         header += " " + str(n_elmts)
         header += "\n"
-        header += " Element Data: element, vertex(1:4)"
+        header += " Element Data: "
+        if with_id:
+            header += ", element-id"
+        header += " , vertex(1:4)"
         if colors:
             header += ", color"
         if neighbours:
@@ -381,10 +391,13 @@ class CubicHermiteBezier(Quadrangles):
         nodes[:,7:9] = self.w
         # boundary type 
         nodes[:,9] = self.boundary_type
-        # boundary index 
+        # global id
         nodes[:,10] = list_nodes_id
+        # duplicated code
+        nodes[:,11] = 0
         # color
-        nodes[:,11] = np.ones(n_nodes)
+        if colors:
+            nodes[:,12] = np.ones(n_nodes)
 
         fmt ='\t %d  \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %d \t %d \t %d'
 
