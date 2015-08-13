@@ -312,26 +312,46 @@ class CubicHermiteBezier(Quadrangles):
                 list_elements.append(i)
         return list_elements
 
-    def save(self, label=""):
+    def save(self, label="", colors=False, neighbours=True):
         # ... save elements file
+        n_attributs = 1 + 4
+        fmt ='\t %d \t %d \t %d \t %d \t %d'
+
+        if colors:
+            n_attributs += 1
+            fmt += " \t %d"
+        if neighbours:
+            n_attributs += 4
+            fmt +=' \t %d \t %d \t %d \t %d'
+
         elements_filename = label + "Elements.txt"
 
         n_elmts = self.quads.shape[0]
-        elements = np.zeros((n_elmts, 6), dtype=np.int32)
+        elements = np.zeros((n_elmts, n_attributs), dtype=np.int32)
 
         list_elmts_id = range(1, n_elmts + 1)
 
         elements[:,0] = np.array(list_elmts_id)
         elements[:,1:5] = self.quads + 1
-        elements[:,5] = np.ones(n_elmts)
+        i_end = 5
 
-        fmt ='\t %d \t %d \t %d \t %d \t %d \t %d'
+        if colors:
+            elements[:,i_end] = np.ones(n_elmts)
+            i_end += 1
+
+        if neighbours:
+            elements[:,i_end:i_end+4] = -np.ones((n_elmts,4))
+            i_end += 4
 
         header = " Number of elements"
         header += "\n"
         header += " " + str(n_elmts)
         header += "\n"
-        header += " Element Data: element,vertex(1:4),color"
+        header += " Element Data: element, vertex(1:4)"
+        if colors:
+            header += ", color"
+        if neighbours:
+            header += ", neighbours(1:4)"
 
         np.savetxt(elements_filename, elements, fmt=fmt, header=header)
         # ...
