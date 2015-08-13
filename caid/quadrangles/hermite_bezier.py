@@ -2,8 +2,58 @@
 import numpy as np
 import matplotlib.tri as tri
 import matplotlib.pyplot as plt
+from caid.core.hbezier import hbezier_square
 from caid.core.hbezier import hbezier_polar
 from .quadrangles import Quadrangles
+
+def rectangle(n=None, origin=None, lengths=None):
+
+    if n is not None:
+        N_r = n[0] ; N_p = n[1]
+    else:
+        N_r = 10 ;  N_p = 10
+
+    if origin is None:
+        Xmin = 0. ; Ymin = 0.
+    else:
+        Xmin = origin[0] ; Ymin = origin[1]
+
+    if lengths is None:
+        Lx = 1. ; Ly = 1.
+    else:
+        Lx = lengths[0] ; Ly = lengths[1]
+
+    coor2d, vertices, boundary_type, scales = \
+            hbezier_square.construct_grid(Lx, Ly, Xmin, Ymin, N_r, N_p)
+
+    x = coor2d[0, 0, :]
+    y = coor2d[1, 0, :]
+
+    u = coor2d[0:1, 1, :]
+    v = coor2d[0:1, 2, :]
+    w = coor2d[0:1, 3, :]
+
+    n_elmts = scales.shape[2]
+    for e in range(0, n_elmts):
+        ones  = scales[0, :, e]
+        hu = scales[1, :, e]
+        hv = scales[2, :, e]
+        huhv = scales[3, :, e]
+
+    quads = vertices.transpose()
+    quads -= 1
+
+    geo = CubicHermiteBezier(x, y, u, v, w, hu, hv, quads \
+                         , colors=None, vertices_colors=None \
+                         , bnd_type=boundary_type, bnd_ind=None)
+
+    return geo
+
+def square(n=None):
+    """
+    Creates a unit square Cubic Hermite Bezier object.
+    """
+    return rectangle(n=n, origin=[0.,0.], lengths=[1.,1.])
 
 def circle(n=None, center=None, rmin=0., rmax=1.):
     if center is None:

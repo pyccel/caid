@@ -15,7 +15,6 @@ MODULE HBEZIER_POLAR
   INTEGER, PARAMETER          :: N_DIM = 2 
   INTEGER, PARAMETER          :: POL_DIM = 2 
   INTEGER, PARAMETER          :: N_ORDER = 4 
-  INTEGER, PARAMETER          :: N_MAX_VTEX_PER_ELMT = 4 
 
 CONTAINS
 
@@ -320,7 +319,7 @@ CONTAINS
 !              2    "    "   2.     "           "
 !              3    "    "   3.     "           "
 !
-!     BEMERKUNG: MIT TYP = 2 UND ALFA = BETA = 0 ERHAELT MAN
+!     BEME8UNG: MIT TYP = 2 UND ALFA = BETA = 0 ERHAELT MAN
 !           EINEN NATUERLICHEN SPLINE
 !
 !     OUTPUT:
@@ -638,3 +637,133 @@ CONTAINS
       END SUBROUTINE  dcopy 
 
 END MODULE HBEZIER_POLAR
+
+
+
+
+MODULE HBEZIER_SQUARE
+  IMPLICIT NONE
+
+  INTEGER, PARAMETER, PRIVATE :: i_D0  = 1
+  INTEGER, PARAMETER, PRIVATE :: i_DR  = 2
+  INTEGER, PARAMETER, PRIVATE :: i_DZ  = 3
+  INTEGER, PARAMETER, PRIVATE :: i_DRZ = 4 
+  INTEGER, PARAMETER, PRIVATE :: i_DRR = 5 
+  INTEGER, PARAMETER, PRIVATE :: i_DZZ = 6 
+
+  INTEGER, PARAMETER, PRIVATE :: i_X_R = 1 
+  INTEGER, PARAMETER, PRIVATE :: i_X_Z = 2 
+
+  INTEGER, PARAMETER          :: N_DIM = 2 
+  INTEGER, PARAMETER          :: POL_DIM = 2 
+  INTEGER, PARAMETER          :: N_ORDER = 4 
+
+CONTAINS
+  ! -----------------------------------------------------------------------------
+  ! -----------------------------------------------------------------------------
+  SUBROUTINE construct_grid( &
+                  & Lx, Ly, Xmin, Ymin, &
+                  & nr, np,  &
+                  & Coor2D, vertices, boundary, scales)
+    ! -------------------------------------------------------
+    REAL(KIND=8)                                                    , INTENT(IN)  :: Lx
+    REAL(KIND=8)                                                    , INTENT(IN)  :: Ly     
+    REAL(KIND=8)                                                    , INTENT(IN)  :: Xmin
+    REAL(KIND=8)                                                    , INTENT(IN)  :: Ymin
+    INTEGER(KIND=4)                                                 , INTENT(IN)  :: Nr
+    INTEGER(KIND=4)                                                 , INTENT(IN)  :: Np        
+    INTEGER(KIND=4), DIMENSION(4, (Nr-1)*(Np-1))      , INTENT(OUT) :: vertices     
+    INTEGER(KIND=4), DIMENSION(Nr*Np)                               , INTENT(OUT) :: boundary  
+    REAL(KIND=8), DIMENSION(2, 4, Nr*Np)                  , INTENT(OUT) :: Coor2D          
+    REAL(KIND=8), DIMENSION(4, 4, (Nr-1)*(Np-1)), INTENT(OUT) :: Scales   
+    ! -------------------------------------------------------
+    !       Local variables
+    ! -------------------------------------------------------
+    INTEGER :: li_n_nodes
+    INTEGER :: li_n_elmts
+    INTEGER          :: ir, ip, is, js, ks, ielmt
+    INTEGER          :: il, jl, id
+    REAL(KIND=8)    :: Dr, dp,  xxi, yyi
+    REAL(KIND=8), DIMENSION(2)      :: Xi, Xj
+    REAL(KIND=8), DIMENSION(2)      :: Ui, Uj, Vj, Wj
+    ! -------------------------------------------------------
+    ! -------------------------------------------------------
+
+    li_n_nodes     = Nr*Np
+    li_n_elmts     = (Nr-1)*(Np-1)
+
+    Dr = Lx/REAL(Nr-1)
+    Dp = Ly/REAL(Np-1) 
+
+    boundary = 0     
+
+    DO ir = 1, Nr
+       xxi = Xmin + (ir-1)*Dr
+       DO ip = 1, Np
+          yyi  = Ymin + (ip-1)*Dp
+
+          Uj    = (/ 1.0, 0.0 /)
+          Vj    = (/ 0.0, 1.0 /)
+          Wj    =  0.0
+          is    = isrp(ir,ip)
+          Coor2D(1:2, i_D0 , is) =  xxi*Uj(1:2)  + yyi*Vj(1:2)
+          Coor2D(1:2, i_DR , is) = Uj(1:2)
+          Coor2D(1:2, i_DZ , is) = Vj(1:2)
+          Coor2D(1:2, i_DRZ, is) = Wj(1:2)
+
+          IF ( ir < Nr ) THEN
+             IF( ip < Np) THEN
+                ielmt = ielmtrp(ir,ip)
+                js    = isrp(ir+1,ip)
+                vertices(1:4 , ielmt) = (/is, js, js+1, is+1  /)
+              END IF
+
+          END IF
+
+          IF ((ir .EQ. 1) .OR. (ir .EQ. Nr)) boundary(is) = boundary(is) + 2
+          IF ((ip .EQ. 1) .OR. (ip .EQ. Np)) boundary(is) = boundary(is) + 1
+       END DO
+    END DO
+    ! Scaling
+    DO ielmt = 1, li_n_elmts
+       DO il = 1, 4 
+          id = MOD(il+1, 2) + 2
+
+          is = vertices(il, ielmt) 
+          Xi = Coor2D(1:2, i_D0 , is)
+          Ui = Coor2D(1:2, id   ,is)
+
+          jl = MOD(il, 4) + 1
+          js = vertices(jl, ielmt) 
+          Xj = Coor2D(1:2, i_D0 , js)
+          Uj = Coor2D(1:2, id   , js)    
+
+          Scales(id , il, ielmt) =  1.0*SIGN( SQRT(SUM((Xi-Xj)**2)), SUM((Xj-Xi)*Ui) )/3
+          Scales(id , jl, ielmt) =  1.0*SIGN( SQRT(SUM((Xi-Xj)**2)), SUM((Xi-Xj)*Uj) )/3
+       END DO
+
+       DO il = 1, 4
+          Scales(1 , il, ielmt)    =  1.0
+          Scales(4 , il, ielmt)    =   &
+               &  Scales(2 , il, ielmt)*Scales(3 , il, ielmt) 
+       END DO
+
+    END DO
+
+    ! =========================================================================
+  CONTAINS
+
+    INTEGER FUNCTION isrp(irl, ipl)
+      INTEGER :: irl, ipl
+      isrp =  (irl-1)*Np + ipl
+    END FUNCTION isrp
+
+    INTEGER FUNCTION ielmtrp(irl, ipl)
+      INTEGER :: irl, ipl
+      ielmtrp =  (irl-1)*(Np-1) + ipl
+    END FUNCTION ielmtrp
+
+  END SUBROUTINE construct_grid 
+
+END MODULE HBEZIER_SQUARE
+

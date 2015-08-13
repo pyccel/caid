@@ -11,7 +11,6 @@ python module hbezier ! in
             integer, private,parameter,optional :: i_d0=1
             integer, private,parameter,optional :: i_dr=2
             integer, parameter,optional :: pol_dim=2
-            integer, parameter,optional :: n_max_vtex_per_elmt=4
             integer, private,parameter,optional :: i_x_z=2
             integer, private,parameter,optional :: i_dzz=6
             real(kind=8), private,optional :: pi=4.0d0*atan(1.d0)
@@ -90,6 +89,31 @@ python module hbezier ! in
                 integer :: incy
             end subroutine dcopy
         end module hbezier_polar
+        module hbezier_square ! in :hbezier:hbezier.F90
+            integer, parameter,optional :: n_dim=2
+            integer, private,parameter,optional :: i_drz=4
+            integer, private,parameter,optional :: i_dz=3
+            integer, private,parameter,optional :: i_drr=5
+            integer, private,parameter,optional :: i_d0=1
+            integer, private,parameter,optional :: i_dr=2
+            integer, parameter,optional :: pol_dim=2
+            integer, private,parameter,optional :: i_x_z=2
+            integer, private,parameter,optional :: i_dzz=6
+            integer, parameter,optional :: n_order=4
+            integer, private,parameter,optional :: i_x_r=1
+            subroutine construct_grid(lx,ly,xmin,ymin,nr,np,coor2d,vertices,boundary,scales) ! in :hbezier:hbezier.F90:hbezier_square
+                real(kind=8) intent(in) :: lx
+                real(kind=8) intent(in) :: ly
+                real(kind=8) intent(in) :: xmin
+                real(kind=8) intent(in) :: ymin
+                integer(kind=4) intent(in) :: nr
+                integer(kind=4) intent(in) :: np
+                real(kind=8) dimension(2,4,nr*np),intent(out),depend(nr,np) :: coor2d
+                integer(kind=4) dimension(4,(nr-1)*(np-1)),intent(out),depend(nr,np) :: vertices
+                integer(kind=4) dimension(nr*np),intent(out),depend(nr,np) :: boundary
+                real(kind=8) dimension(4,4,(nr-1)*(np-1)),intent(out),depend(nr,np) :: scales
+            end subroutine construct_grid
+        end module hbezier_square
     end interface 
 end python module hbezier
 
