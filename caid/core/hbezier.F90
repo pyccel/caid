@@ -123,8 +123,11 @@ CONTAINS
                 vertices(1:4 , ielmt) = (/is, is+Np, js+Np, js  /)
              END IF
           END IF
-!          IF ((ir .EQ. 1) .OR. (ir .EQ. Nr)) boundary(is) = boundary(is) + 1
-          IF (ir .EQ. Nr) boundary(is) = 2 
+          IF ( acentre < 0.00001 ) THEN 
+             IF (ir .EQ. Nr) boundary(is) = 2 
+          ELSE
+             IF ((ir .EQ. 1) .OR. (ir .EQ. Nr)) boundary(is) = 2 
+          END IF
        END DO
     END DO Loop_On_Radius
     ! -------------------------------------------------------------------------------------
