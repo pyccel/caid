@@ -33,12 +33,15 @@ def rectangle(n=None, origin=None, lengths=None):
     v = coor2d[0:2, 2, :].transpose()
     w = coor2d[0:2, 3, :].transpose()
 
-    n_elmts = scales.shape[2]
-    for e in range(0, n_elmts):
-        ones  = scales[0, :, e]
-        hu = scales[1, :, e]
-        hv = scales[2, :, e]
-        huhv = scales[3, :, e]
+    hu = scales[1, :, :].transpose()
+    hv = scales[2, :, :].transpose()
+
+#    n_elmts = scales.shape[2]
+#    for e in range(0, n_elmts):
+#        ones  = scales[0, :, e]
+#        hu = scales[1, :, e]
+#        hv = scales[2, :, e]
+#        huhv = scales[3, :, e]
 
     quads = vertices.transpose()
     quads -= 1
@@ -78,12 +81,15 @@ def circle(n=None, center=None, rmin=0., rmax=1.):
     v = coor2d[0:2, 2, :].transpose()
     w = coor2d[0:2, 3, :].transpose()
 
-    n_elmts = scales.shape[2]
-    for e in range(0, n_elmts):
-        ones  = scales[0, :, e]
-        hu = scales[1, :, e]
-        hv = scales[2, :, e]
-        huhv = scales[3, :, e]
+    hu = scales[1, :, :].transpose()
+    hv = scales[2, :, :].transpose()
+
+#    n_elmts = scales.shape[2]
+#    for e in range(0, n_elmts):
+#        ones  = scales[0, :, e]
+#        hu = scales[1, :, e]
+#        hv = scales[2, :, e]
+#        huhv = scales[3, :, e]
 
     quads = vertices.transpose()
     quads -= 1
@@ -312,14 +318,29 @@ class CubicHermiteBezier(Quadrangles):
                 list_elements.append(i)
         return list_elements
 
-    def save(self, label="", colors=False, neighbours=True, with_id=False):
+    def save(self, label=None, colors=False, neighbours=True \
+             , with_id=False, header_full=False):
+        if label is None:
+            label = ""
+        else:
+            label = str(label) + "_"
         # ... save elements file
-        n_attributs = 4
-        fmt ='\t %d \t %d \t %d \t %d'
+        n_attributs = 0
+        fmt = ""
 
         if with_id:
             n_attributs += 1
             fmt += " \t %d"
+
+        # vertices id
+        n_attributs += 4
+        fmt +=' \t %d \t %d \t %d \t %d'
+
+        # hu hv for each vertex
+        for i in range(0, 4):
+            n_attributs += 2
+            fmt +=' \t %.17f \t %.17f'
+
         if colors:
             n_attributs += 1
             fmt += " \t %d"
@@ -327,10 +348,10 @@ class CubicHermiteBezier(Quadrangles):
             n_attributs += 4
             fmt +=' \t %d \t %d \t %d \t %d'
 
-        elements_filename = label + "Elements.txt"
+        elements_filename = label + "elements.txt"
 
         n_elmts = self.quads.shape[0]
-        elements = np.zeros((n_elmts, n_attributs), dtype=np.int32)
+        elements = np.zeros((n_elmts, n_attributs), dtype=np.float)
 
         list_elmts_id = range(1, n_elmts + 1)
 
@@ -342,6 +363,12 @@ class CubicHermiteBezier(Quadrangles):
         elements[:,i_end:i_end+4] = self.quads + 1
         i_end += 4
 
+        # hu hv for each vertex
+        for i in range(0, 4):
+            elements[:,i_end]   = self.hu[:,i]
+            elements[:,i_end+1] = self.hv[:,i]
+            i_end += 2
+
         if colors:
             elements[:,i_end] = np.ones(n_elmts)
             i_end += 1
@@ -350,67 +377,132 @@ class CubicHermiteBezier(Quadrangles):
             elements[:,i_end:i_end+4] = -np.ones((n_elmts,4))
             i_end += 4
 
-        header = " Number of elements"
-        header += "\n"
-        header += " " + str(n_elmts)
-        header += "\n"
-        header += " Element Data: "
-        if with_id:
-            header += ", element-id"
-        header += " , vertex(1:4)"
-        if colors:
-            header += ", color"
-        if neighbours:
-            header += ", neighbours(1:4)"
+        if header_full:
+            header = " Number of elements"
+            header += "\n"
+            header += " " + str(n_elmts)
+            header += "\n"
+            header += " Element Data: "
+            if with_id:
+                header += ", element-id"
+            header += " , vertex(1:4), hu, hv"
+            if colors:
+                header += ", color"
+            if neighbours:
+                header += ", neighbours(1:4)"
 
-        np.savetxt(elements_filename, elements, fmt=fmt, header=header)
+            comments = "# "
+        else:
+            header = str(n_elmts)
+            comments = ""
+
+        np.savetxt(elements_filename, elements, fmt=fmt, header=header, comments=comments)
         # ...
 
         # ... save nodes file
-        nodes_filename = label + "Nodes.txt"
+        nodes_filename = label + "nodes.txt"
+
+        n_attributs = 0
+        fmt = ""
+
+        if with_id:
+            n_attributs += 1
+            fmt += " \t %d"
+
+        # vertices coordinates
+        n_attributs += 2
+        fmt +=' \t %.17f \t %.17f'
+
+        # u, v, w
+        for i in range(0, 3):
+            n_attributs += 2
+            fmt +=' \t %.17f \t %.17f'
+
+        # boundary type
+        n_attributs += 1
+        fmt += " \t %d"
+
+        # Global ID
+        n_attributs += 1
+        fmt += " \t %d"
+
+        # duplicated code
+        n_attributs += 1
+        fmt += " \t %d"
+
+        if colors:
+            n_attributs += 1
+            fmt += " \t %d"
 
         n_nodes = self.x.shape[0]
-        nodes = np.zeros((n_nodes, 12), dtype=np.float)
+        nodes = np.zeros((n_nodes, n_attributs), dtype=np.float)
 
         list_nodes_id = range(1, n_nodes + 1)
 
-        # vertices id
-        nodes[:,0] = np.array(list_nodes_id)
+        i_end = 0
+        if with_id:
+            # vertices id
+            nodes[:,0] = np.array(list_nodes_id)
+            i_end += 1
+
         # x coordinate
-        nodes[:,1] = self.x
+        nodes[:,i_end] = self.x
+        i_end += 1
+
         # y coordinate
-        nodes[:,2] = self.y
+        nodes[:,i_end] = self.y
+        i_end += 1
+
         # u vector 
-        #print self.u.shape
-        #
-        #import sys; sys.exit(0)
-        nodes[:,3:5] = self.u
+        nodes[:,i_end:i_end+2] = self.u
+        i_end += 2
+
         # v vector 
-        nodes[:,5:7] = self.v
+        nodes[:,i_end:i_end+2] = self.v
+        i_end += 2
+
         # w vector 
-        nodes[:,7:9] = self.w
+        nodes[:,i_end:i_end+2] = self.w
+        i_end += 2
+
         # boundary type 
-        nodes[:,9] = self.boundary_type
+        nodes[:,i_end] = self.boundary_type
+        i_end += 1
+
         # global id
-        nodes[:,10] = list_nodes_id
+        nodes[:,i_end] = list_nodes_id
+        i_end += 1
+
         # duplicated code
-        nodes[:,11] = 0
+        nodes[:,i_end] = 0
+        i_end += 1
+
         # color
         if colors:
-            nodes[:,12] = np.ones(n_nodes)
+            nodes[:,i_end] = np.ones(n_nodes)
+            i_end += 1
 
-        fmt ='\t %d  \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %.17f \t %d \t %d \t %d'
+        if header_full:
+            header = " Number of nodes"
+            header += "\n"
+            header += " " + str(n_nodes)
+            header += "\n"
+            header += " Number of DOF"
+            header += "\n"
+            header += " TODO " #+ str(n_nodes)
+            header += "\n"
+            header += " Node Data: "
+            if with_id:
+                header += ", node-id"
+            header += ",R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index"
+            if colors:
+                header += ", color"
 
-        header = " Number of nodes"
-        header += "\n"
-        header += " " + str(n_nodes)
-        header += "\n"
-        header += " Number of DOF"
-        header += "\n"
-        header += " TODO " #+ str(n_nodes)
-        header += "\n"
-        header += " Node Data: node,R,Z,u1,u2,v1,v2,w1,w2,boundary type,boundary index,color"
+            comments = "# "
+        else:
+            header = str(n_nodes)
+            comments = ""
 
-        np.savetxt(nodes_filename, nodes, fmt=fmt, header=header)
+        np.savetxt(nodes_filename, nodes, fmt=fmt, header=header, comments=comments)
         # ...
 
