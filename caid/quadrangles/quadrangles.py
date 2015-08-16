@@ -185,13 +185,14 @@ class QuadSticker(object):
         else:
             list_colors = [color]
 
+        # ...
         def _find_stage_elements(elmt, direction, marked_elements, stage, str_color=None):
             e = elmt
             marked_elements[e] = 1
             if str_color is None:
                 str_color = col[stage % 5]
 #            plt.plot(x[quads[e]],y[quads[e]],"o"+str_color)
-            list_elements = []
+            list_elements = [e]
             ll_condition = True
             while ll_condition:
 #                print mask
@@ -207,6 +208,7 @@ class QuadSticker(object):
                     quad = quads[e]
 #                    plt.plot(x[quad],y[quad],"o"+str_color)
             return list_elements
+        # ...
 
         for color in list_colors:
             x = self.quadrangles.x
@@ -225,6 +227,7 @@ class QuadSticker(object):
 
 
             list_elements = _find_stage_elements(elmt_base, directions[0], marked_elements, 0, str_color=str_color)
+#            plt.show()
             list_all_elements.append(list_elements)
 
             ll_all_condition = True

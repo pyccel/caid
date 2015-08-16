@@ -19,14 +19,15 @@ def test_square(n=4):
 #    plt.show()
 
 def test_circle():
-    geo = circle(n=[25,25], center=[5.,4.], rmin=0.1, rmax=1.5)
-    geo.save(label="circle")
-#    geo.plot()
-#    plt.title("Circular domain using Cubic hermite bezier elements")
-#    plt.show()
+    n = 16
+    geo = circle(n=[n+1,4*n+1], center=[0.,0.], rmin=0.1, rmax=1.)
+#    geo.save(label="circle")
+    geo.plot()
+    plt.title("Circular domain using a 16x64 grid")
+    plt.show()
 
 ########################################################################
 if __name__ == "__main__":
-    test_square(n=64)
-#    test_circle()
+#    test_square(n=64)
+    test_circle()
 
