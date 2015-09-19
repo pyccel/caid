@@ -2,7 +2,9 @@
 #! /usr/bin/python
 
 import caid.cad_geometry  as cg
-from caid.cad_geometry import cad_geometry, line, square, trilinear
+from caid.cad_geometry import cad_geometry, trilinear
+from caid.cad_geometry import line, periodic_line
+from caid.cad_geometry import square, periodic_square
 from caid.numbering.boundary_conditions import boundary_conditions
 from caid.numbering.connectivity import connectivity
 
@@ -79,22 +81,11 @@ def test4():
     k = 3
 
     #
-    geo1d = line(n=[n-1], p=[k-1])
-
-
-    c0 = geo1d[0]
-    c1 = c0.unclamp(0)
-    geometry = cad_geometry()
-    geometry.append(c1)
-    m = c1.shape[0]
-    for i in range(0,m):
-        print c1.points[i,0:2]
-
+    geo1d = periodic_line(n=[n-1], p=[k-1])
 
     # ...
     print ("===== connectivity on a periodic line ====")
-#    con1d = connectivity(geo1d)
-    con1d = connectivity(geometry)
+    con1d = connectivity(geo1d)
     con1d.init_data_structure()
 
     con1d.printinfo()
@@ -111,7 +102,7 @@ def test5():
 
     # ...
     print ("==== connectivity on a periodic square ====")
-    geo2d = square(n=[n-1,n-1], p=[k-1,k-1])
+    geo2d = periodic_square(n=[n-1,n-1], p=[k-1,k-1])
     con2d = connectivity(geo2d)
     con2d.init_data_structure()
 

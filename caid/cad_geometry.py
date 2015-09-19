@@ -11,7 +11,7 @@ _bsp = bsplinelib.bsp
 
 from numpy import pi, sqrt, array, zeros
 
-def line(n=None, p=None, periodic=None):
+def line(n=None, p=None):
     """Creates a unit line cad_geometry object.
 
     Kwargs:
@@ -23,7 +23,21 @@ def line(n=None, p=None, periodic=None):
        A cad_geometry object.
     """
     points = np.asarray([[0.,0.],[1.,0.]])
-    return linear(points=points, n=n, p=p, periodic=periodic)
+    return linear(points=points, n=n, p=p)
+
+def periodic_line(n=None, p=None):
+    """Creates a unit line cad_geometry object.
+
+    Kwargs:
+        n (list int): This is a list containing the number of interior knots to insert. default None
+
+        p (list int): This is a list containing the spline degree of the line. default None
+
+    Returns:
+       A cad_geometry object.
+    """
+    points = np.asarray([[0.,0.],[1.,0.]])
+    return periodic_linear(points=points, n=n, p=p)
 
 def square(n=None, p=None):
     """Creates a unit square cad_geometry object.
@@ -38,6 +52,21 @@ def square(n=None, p=None):
     """
     points = np.asarray([[[0.,0.],[0.,1.]],[[1.,0.],[1.,1.]]])
     return bilinear(points=points, n=n, p=p)
+
+
+def periodic_square(n=None, p=None):
+    """Creates a unit square cad_geometry object.
+
+    Kwargs:
+        n (list int): This is a list containing the number of interior knots to insert. default None
+
+        p (list int): This is a list containing the spline degree of the line. default None
+
+    Returns:
+       A cad_geometry object.
+    """
+    points = np.asarray([[[0.,0.],[0.,1.]],[[1.,0.],[1.,1.]]])
+    return periodic_bilinear(points=points, n=n, p=p)
 
 def triangle(n=None, p=None, points=None, profile=0):
     """Creates a degenerated triangle cad_geometry object.
@@ -75,7 +104,7 @@ def triangle(n=None, p=None, points=None, profile=0):
         points = np.asarray([[A,B],[C,D]])
     return bilinear(points=points, n=n, p=p)
 
-def linear(points=None, n=None, p=None, periodic=None):
+def linear(points=None, n=None, p=None):
     from igakit.cad import linear as nrb_linear
     """Creates a linear cad_geometry object.
 
@@ -123,21 +152,27 @@ def linear(points=None, n=None, p=None, periodic=None):
     geo._internal_faces = []
     geo._external_faces = [[0,0],[0,1]]
     geo._connectivity   = []
-    if periodic is not None:
-        if periodic:
-            geo[0].unclamp(0)
 
-            list_connectivity   = []
-            dict_con = {}
-            dict_con['original']    = [0,0]
-            dict_con['clone']       = [0,1]
-            dict_con['periodic']    = True
-            list_connectivity.append(dict_con)
+    return geo
 
-            geo._connectivity = list_connectivity
+def periodic_linear(points=None, n=None, p=None):
+    geo1d = linear(points=points, n=n, p=p)
+    c0 = geo1d[0]
+    c1 = c0.unclamp(0)
+    geo = cad_geometry()
+    geo.append(c1)
 
-            geo._internal_faces = [[0,0],[0,1]]
-            geo._external_faces = []
+    list_connectivity   = []
+    dict_con = {}
+    dict_con['original']    = [0,0]
+    dict_con['clone']       = [0,1]
+    dict_con['periodic']    = True
+    list_connectivity.append(dict_con)
+
+    geo._connectivity = list_connectivity
+
+    geo._internal_faces = [[0,0],[0,1]]
+    geo._external_faces = []
 
     return geo
 
@@ -251,6 +286,33 @@ def bilinear(points=None, n=None, p=None):
     geo._external_faces = [[0,0],[0,1],[0,2],[0,3]]
     geo._connectivity   = []
 
+
+    return geo
+
+def periodic_bilinear(points=None, n=None, p=None):
+    geo_init = bilinear(points=points, n=n, p=p)
+    nrb0 = geo_init[0]
+    nrb1 = nrb0.unclamp(0).unclamp(1)
+    geo = cad_geometry()
+    geo.append(nrb1)
+
+    list_connectivity   = []
+    dict_con = {}
+    dict_con['original']    = [0,0]
+    dict_con['clone']       = [0,2]
+    dict_con['periodic']    = True
+    list_connectivity.append(dict_con)
+
+    dict_con = {}
+    dict_con['original']    = [0,1]
+    dict_con['clone']       = [0,3]
+    dict_con['periodic']    = True
+    list_connectivity.append(dict_con)
+
+    geo._connectivity = list_connectivity
+
+    geo._internal_faces = [[0,0],[0,1],[0,2],[0,3]]
+    geo._external_faces = []
 
     return geo
 
