@@ -207,6 +207,7 @@ class QuadSticker(object):
                     marked_elements[e] = 1
                     quad = quads[e]
 #                    plt.plot(x[quad],y[quad],"o"+str_color)
+#            list_elements = list_elements[:10]
             return list_elements
         # ...
 
@@ -240,7 +241,8 @@ class QuadSticker(object):
                 ll_all_condition = ll_all_condition \
                         and (self.quadrangles.colors[elmt_base]==color)\
                         and (marked_elements[elmt_base] == 0)
-    #            ll_all_condition = ll_all_condition and (i_stage < 10)
+                # ... TODO comment after debug
+#                ll_all_condition = ll_all_condition and (i_stage < 50)
 
                 if ll_all_condition:
     #                print i_stage

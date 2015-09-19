@@ -271,6 +271,149 @@ def computeGlobalID(list_id):
     return ID
 # ...
 
+
+
+def init_ID_object_uniform_1d(n, p):
+    IEN = - (p-1) * np.ones((n, p+1), dtype=np.int)
+    for elmt in range(0, n):
+        IEN[elmt, :] += np.asarray(range(elmt, elmt+p+1))
+    print IEN
+    for elmt in range(0, p):
+        IEN[elmt, 0:(p-elmt)] = IEN[-elmt-1, elmt+1:p+1]
+    return IEN
+# ...
+
+# ... construct ID_object_uniform matrix in 2D
+def init_ID_object_uniform_2d(list_n, list_p):
+    IEN_u = init_ID_object_uniform_1d(list_n[0], list_p[0])
+    IEN_v = init_ID_object_uniform_1d(list_n[1], list_p[1])
+    print "IEN_u"
+    print IEN_u
+    print "IEN_v"
+    print IEN_v
+
+    n_u = list_n[0]
+    n_v = list_n[1]
+    p_u = list_p[0]
+    p_v = list_p[1]
+    n_elements = n_u * n_v
+    n_non_vanishing_basis = (p_u+1) * (p_v+1)
+
+    IEN = np.zeros((n_elements, n_non_vanishing_basis), dtype=np.int)
+
+    elmt = 0
+    for elmt_u in range(0, n_u):
+        for elmt_v in range(0, n_v):
+            ind = 0
+            for ind_v in range(0, p_v+1):
+                for ind_u in range(0, p_u+1):
+                    i_u = IEN_u[elmt_u, ind_u]
+                    i_v = IEN_v[elmt_v, ind_v]
+                    print i_u, i_v
+                    IEN[elmt, ind] = i_u + (i_v-1) * n_u
+
+                    ind += 1
+            elmt += 1
+    return IEN
+# ...
+
+class ID_object_uniform:
+    def __init__(self, list_n, list_p):
+        self._ID_extended = None
+        self._degrees = list_p
+        self._shape   = list_n
+
+        self.initialize()
+
+    @property
+    def degrees(self):
+        return self._degrees
+
+    @property
+    def shape(self):
+        return self._shape
+
+    @property
+    def dim(self):
+        return len(self.shape)
+
+    @property
+    def ID_extended(self):
+        return self._ID_extended
+
+    def initialize(self):
+        shape_total = np.asarray(self.shape) + 2 * np.asarray(self.degrees)
+        self._ID_extended = np.zeros(tuple(shape_total), dtype=np.int)
+
+class ID_object_uniform_1d(ID_object_uniform):
+    def __init__(self, n, p):
+        ID_object_uniform.__init__(self, [n], [p])
+        self.initialize_ID()
+
+    @property
+    def n(self):
+        return self.shape[0]
+
+    @property
+    def p(self):
+        return self.degrees[0]
+
+    @property
+    def ID(self):
+        return [self._ID_extended[self.p:]]
+
+    @property
+    def local_ID(self):
+        return [self._ID_extended[self.p:]]
+
+    def initialize_ID(self):
+        self._ID_extended[self.p:-self.p] = range(1, self.n+1)
+        self._ID_extended[:self.p] = self.ID[0][-self.p:]
+        self._ID_extended[-self.p:] = self.ID[0][:self.p]
+
+class ID_object_uniform_2d(ID_object_uniform):
+    def __init__(self, list_n, list_p):
+        ID_object_uniform.__init__(self, list_n, list_p)
+        self.initialize_ID()
+
+    @property
+    def n_u(self):
+        return self.shape[0]
+
+    @property
+    def n_v(self):
+        return self.shape[1]
+
+    @property
+    def p_u(self):
+        return self.degrees[0]
+
+    @property
+    def p_v(self):
+        return self.degrees[1]
+
+    @property
+    def local_ID(self):
+        return [self._ID_extended[self.p_u:, self.p_v:]]
+
+    @property
+    def ID(self):
+        ID = []
+        for id in self.local_ID:
+            ID += list(id.transpose().reshape(id.size))
+        return ID
+
+
+    def initialize_ID(self):
+        con_1d = ID_object_uniform_1d(self.n_u, self.p_u)
+        ID_extended_1d = con_1d.ID_extended
+
+        for j in range(self.p_v, self.n_v + self.p_v):
+            self._ID_extended[:, j] = (j - self.p_v) * self.n_u + ID_extended_1d
+
+        self._ID_extended[:, :self.p_v] = self.ID_extended[:, -2*self.p_v:-self.p_v]
+        self._ID_extended[:, -self.p_v:] = self.ID_extended[:, self.p_v:2*self.p_v]
+
 if __name__ == '__main__':
     if True:
         from time import time

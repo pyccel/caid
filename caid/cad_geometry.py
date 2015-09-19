@@ -587,7 +587,7 @@ def pinched_quart_circle(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, degree=0.
     geo = quart_circle(rmin=rmin, rmax=rmax, center=center)
     #getting the patch:
     cad_nrb = geo[0]
-    
+
     # Refining...
     list_t = None
     n = 4
@@ -630,7 +630,7 @@ def pinched_circle(radius=0.5, epsilon=0.5, center=None, n=None, p=None):
     geo = circle(radius=radius, center=center, n=n, p=p)
     geo[0].rotate(0.25*np.pi)
     cad_nrb = geo[0]
-    
+
     # Refining...
     list_t = None
     n = 4
@@ -699,11 +699,11 @@ def pinched_circle_5mp(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, n=None, p=N
     # ... Import the quart_circle domain
     geo_1 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center)
     geo_1[0].transpose()
-    
+
     # ... Import the quart_circle domain
     geo_2 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center, degree=0.5*np.pi)
     geo_2[0].reverse(0)
-    
+
     # ... Import the quart_circle domain
     geo_3 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, center=center, degree=np.pi)
     geo_3[0].reverse(0)
@@ -712,7 +712,7 @@ def pinched_circle_5mp(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, n=None, p=N
     geo_4 = pinched_quart_circle(rmin=rmin, rmax=rmax, epsilon=epsilon, degree=1.5*np.pi)
 #    geo_4[0].reverse(0)
     geo_4[0].transpose()
-    
+
     # ... Import the pinched_circle domain
     geo_5 = pinched_circle(radius=rmin, epsilon=epsilon, center=center,n=n,p=p)
 
