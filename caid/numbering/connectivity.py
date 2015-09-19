@@ -331,6 +331,46 @@ class connectivity:
         # INITIALIIZING THE LOCATION MATRIX LM ARRAY
         self.init_LM()
 
+        is_periodic_uniform_bspline = False
+        for nrb in geometry:
+            condition = True
+            for axis in range(0, nrb.dim):
+                condition = condition \
+                    and (len(nrb.breaks(axis))+2*nrb.degree[axis] == len(nrb.knots[axis]))
+
+            is_periodic_uniform_bspline = is_periodic_uniform_bspline or condition
+
+        if is_periodic_uniform_bspline and (len(geometry) > 1):
+            print ("periodic uniform bsplines works only for 1 patch")
+            raise()
+        if is_periodic_uniform_bspline:
+            if geometry.dim == 1:
+                nrb = geometry[0]
+                nel = len(nrb.breaks(0)) - 1
+                p = nrb.degree[0]
+
+                from caid.numbering.idutils import ID_object_uniform_1d
+                ID_unif_1d = ID_object_uniform_1d(nel, p)
+                self.ID_loc = ID_unif_1d.local_ID
+                self.ID = ID_unif_1d.ID
+                self.LM = []
+                self.init_LM()
+            if geometry.dim == 2:
+                nrb = geometry[0]
+                nel_u = len(nrb.breaks(0)) - 1
+                nel_v = len(nrb.breaks(1)) - 1
+                p_u,p_v = nrb.degree
+
+                from caid.numbering.idutils import ID_object_uniform_2d
+                ID_unif_2d = ID_object_uniform_2d([nel_u, nel_v], [p_v, p_v])
+                self.ID_loc = ID_unif_2d.local_ID
+                self.ID = ID_unif_2d.ID
+                self.LM = []
+                self.init_LM()
+            if geometry.dim == 3:
+                print ("not yet implemented")
+                raise()
+
     def init_ID(self, bound_cond):
         list_n = self.list_n
 #        print " list_n ", list_n
