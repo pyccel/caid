@@ -449,3 +449,26 @@ if __name__ == '__main__':
 
         t_end = time()
         print("Elapsed time ", t_end - t_start)
+
+
+
+
+
+        # ... number of elemens
+        n = 4
+
+        # ... k is the b-spline order
+        k = 3
+
+        con_1d = ID_object_uniform_1d(n, k-1)
+        print con_1d.ID[0].shape
+    #    print con_1d.ID_extended
+        print con_1d.ID
+
+        con_2d = ID_object_uniform_2d([n, n], [k-1, k-1])
+    #    con_2d = ID_object_uniform_2d([n, n+1], [k-1, k])
+        print con_2d.ID[0].shape
+    #    print con_2d.ID_extended.transpose()[::-1, :]
+        print con_2d.local_ID[0].transpose()[::-1, :]
+        print con_2d.ID
+
