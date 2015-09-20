@@ -1,16 +1,15 @@
 # coding: utf-8
 import numpy as np
 from caid import cad_geometry as cg
+from caid.cad_geometry import line, periodic_line
+from caid.cad_geometry import square, periodic_square
 import matplotlib.pyplot as plt
 
-#geo = cg.square()
-geo = cg.line()
-
-#geo.plotMesh()
-#plt.show()
-
-zero = np.zeros(geo.dim, dtype=np.int)
-def refine(geo, n=zero, p=zero):
+def refine(geo, n=None, p=None):
+    if n is None:
+        n = np.zeros(geo.dim, dtype=np.int)
+    if p is None:
+        p = np.zeros(geo.dim, dtype=np.int)
     n = np.asarray(n)
     p = np.asarray(p)
     geo_t = cg.cad_geometry()
@@ -38,11 +37,48 @@ def refine(geo, n=zero, p=zero):
     geo_t.refine(list_t=list_t, list_p=list_p)
     return geo_t
 
-#geo_r = refine(geo, n=[2,2], p=[2,2])
-geo_r = refine(geo, n=[2], p=[2])
+def test1():
+    geo = line()
 
-#geo_r.plotMesh()
-#plt.show()
+    geo_r = refine(geo, n=[2], p=[2])
+#    geo_r.plotMesh()
+#    plt.show()
 
+def test2():
+    geo = square()
+
+    geo_r = refine(geo, n=[2,2], p=[2,2])
+#    geo_r.plotMesh()
+#    plt.show()
+
+def test3():
+    n = 3 ; p = 2
+    geo = periodic_line(n=[n], p=[p])
+    geo_ref, list_lmatrices = geo.bezier_extract()
+    from scipy.io import mmwrite
+    M = list_lmatrices[0][0]
+    mmwrite("M_conversion_test_3.mtx", M)
+#    print geo[0].knots
+#    print "====="
+#    print geo_ref[0].knots
+
+def test4():
+    n = 3 ; p = 2
+    geo = periodic_square(n=[n,n], p=[p,p])
+    geo_ref, list_lmatrices = geo.bezier_extract()
+    from scipy.io import mmwrite
+    M = list_lmatrices[0][0]
+    mmwrite("M_conversion_test_4.mtx", M)
+#    print geo[0].knots
+#    print "====="
+#    print geo_ref[0].knots
+
+
+###############################################################################
+if __name__=="__main__":
+#    test1()
+#    test2()
+    test3()
+    test4()
 
 

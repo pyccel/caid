@@ -220,9 +220,11 @@ def test2D3():
     print("test2D3: OK")
 # ...
 
-test1D1()
-test1D2()
-test1D3()
-#test2D1()
-#test2D2()
-#test2D3()
+###############################################################################
+if __name__=="__main__":
+    test1D1()
+    test1D2()
+    test1D3()
+    test2D1()
+    test2D2()
+    test2D3()

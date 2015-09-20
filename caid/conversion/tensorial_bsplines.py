@@ -51,7 +51,3 @@ def matrix_conversion_ubspline_to_bernstein(n):
 
     return S
 # ...
-
-
-
-

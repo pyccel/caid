@@ -31,6 +31,7 @@ packages=[  'caid' \
           , 'caid.graphics' \
           , 'caid.numbering' \
           , 'caid.utils' \
+          , 'caid.conversion' \
           , 'caid.core' \
          ]
 package_dir={  'caid': 'caid'\
@@ -38,6 +39,7 @@ package_dir={  'caid': 'caid'\
               ,'caid.graphics': 'caid/graphics' \
               ,'caid.numbering':  'caid/numbering' \
               ,'caid.utils':  'caid/utils' \
+              ,'caid.conversion':  'caid/conversion' \
               ,'caid.core':  'caid/core' \
               ,}
 

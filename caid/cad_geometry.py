@@ -3267,6 +3267,25 @@ class cad_geometry(object):
     def bezier_extract(self):
         # TODO to be optimized.
         # construction of local matrices must be done in Fortran or c
+
+        # ... check if we are using periodic bsplines
+        is_periodic_uniform_bspline = False
+        for nrb in self:
+            condition = True
+            for axis in range(0, nrb.dim):
+                condition = condition \
+                    and (len(nrb.breaks(axis))+2*nrb.degree[axis] == len(nrb.knots[axis]))
+
+            is_periodic_uniform_bspline = is_periodic_uniform_bspline or condition
+
+        if is_periodic_uniform_bspline and (len(self) > 1):
+            print ("periodic uniform bsplines works only for 1 patch")
+            raise()
+        if is_periodic_uniform_bspline:
+            return self.bezier_extract_periodic()
+        # ...
+
+
         from caid.utils.extraction import BezierExtraction
         from caid.numbering.connectivity import connectivity
         from scipy.sparse import csr_matrix, kron
@@ -3388,6 +3407,77 @@ class cad_geometry(object):
             list_lmatrices.append(lmatrices)
 #        t_end = time()
 #        print ">> time for local matrices ", t_end-t_begin
+
+        return geo_ref, list_lmatrices
+
+    def bezier_extract_periodic(self):
+        """
+        self must contain one single object
+        """
+        geo_ref        = []
+        list_lmatrices = []
+
+        # ... convert the periodic knot vectors to open knot vectors
+        geo_ref = cad_geometry()
+        nrb = self[0]
+        nrb_ref = nrb
+        for axis in range(0, self.dim):
+            nrb_ref = nrb_ref.copy().clamp(axis)
+        geo_ref.append(nrb_ref)
+        # ...
+
+        # ... construct the bernstein basis
+        nrb = geo_ref[0].copy()
+        list_t = []
+        for axis in range(0, nrb.dim):
+            brk, mult = nrb.breaks(axis=axis, mults=True)
+
+            nbrk = len(mult)
+            mult = np.asarray(mult)
+            times = nrb.degree[axis] * np.ones(nbrk, dtype=np.int) - mult
+
+            list_r = []
+            for t,k in zip(brk, times):
+                for i in range(0, k):
+                    list_r.append(t)
+            list_t.append(list_r)
+
+        geo_ref.refine(id=0, list_t=list_t)
+        # ...
+
+#        print (">>> construct bernstein geometry done.")
+
+        nrb = self[0]
+
+        # ... construct matrix conversion
+        from caid.conversion.tensorial_bsplines import matrix_conversion_ubspline_to_bernstein
+        from scipy.sparse import csr_matrix, kron
+        axis = 0
+        k     = nrb.degree[axis] + 1
+        M_dir = matrix_conversion_ubspline_to_bernstein(k)
+        M     = csr_matrix(M_dir)
+        for axis in range(1, nrb.dim):
+            k     = nrb.degree[axis] + 1
+            M_dir = matrix_conversion_ubspline_to_bernstein(k)
+            M     = csr_matrix(kron(M_dir,M))
+        # ...
+#        print (">>> construct conversion matrix done.")
+#        print M.shape
+
+        # ... compute number of elements
+        nelts = 1
+        for axis in range(0, nrb.dim):
+            nelts *= len(nrb.breaks(axis)) - 1
+        # ...
+#        print (">>> number of elements: ", nelts)
+
+        # ... copy the matrix conversion for each element
+        list_lmatrices = []
+        lmatrices = []
+        for elt in range(0, nelts):
+            lmatrices.append(M)
+        list_lmatrices.append(lmatrices)
+        # ...
 
         return geo_ref, list_lmatrices
 

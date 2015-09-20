@@ -8,7 +8,7 @@ from caid.cad_geometry import line, periodic_line
 from caid.cad_geometry import square, periodic_square
 from caid.numbering.boundary_conditions import boundary_conditions
 from caid.numbering.connectivity import connectivity
-from caid.utils.conversion import matrix_conversion_ubspline_to_bernstein
+from caid.conversion.tensorial_bsplines import matrix_conversion_ubspline_to_bernstein
 
 def test1():
     # ...
