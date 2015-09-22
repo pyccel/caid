@@ -336,7 +336,8 @@ class connectivity:
             condition = True
             for axis in range(0, nrb.dim):
                 condition = condition \
-                    and (len(nrb.breaks(axis))+2*nrb.degree[axis] == len(nrb.knots[axis]))
+                    and (len(nrb.breaks(axis))+2*nrb.degree[axis] == \
+                         len(np.unique(nrb.knots[axis])))
 
             is_periodic_uniform_bspline = is_periodic_uniform_bspline or condition
 

@@ -934,6 +934,7 @@ def get_nodes_2d(geo):
                 # ...
                 # compute the boundary code, for dirichlet
                 # ...
+                # TODO ARA bc in case of periodic splines or duplication
                 boundaryCode = 0
                 if j in  [0,lpi_n[1] - 1]:
                     boundaryCode = 1
@@ -1009,6 +1010,7 @@ def get_nodes_bezier_2d(geo):
                 # ...
                 # compute the boundary code, for dirichlet
                 # ...
+                # TODO ARA bc in case of periodic splines or duplication
                 boundaryCode = 0
                 if j in  [0,lpi_n[1] - 1]:
                     boundaryCode = 1
@@ -1062,8 +1064,8 @@ def get_elements_2d(geo):
         lpi_n = nrb.shape
         lpi_p = nrb.degree
 
-        nx_elt = len(np.unique(nrb.knots[0])) - 1
-        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        nx_elt = len(nrb.breaks(0)) - 1
+        ny_elt = len(nrb.breaks(1)) - 1
         list_i = list(range(0,nx_elt))
         list_j = list(range(0,ny_elt))
         for enum_j, j in enumerate(list_j):
@@ -1228,8 +1230,8 @@ def get_sons_2d(geo):
         lpi_p = nrb_ref.degree
 
         # .................................................
-        nx_elt = len(np.unique(nrb.knots[0])) - 1
-        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        nx_elt = len(nrb.breaks(0)) - 1
+        ny_elt = len(nrb.breaks(1)) - 1
         list_i = list(range(0,nx_elt))
         list_j = list(range(0,ny_elt))
 #        print "nxny ", nx_elt, ny_elt
@@ -1375,8 +1377,8 @@ def get_bernstein_span_2d(geo):
 
         lpi_n = nrb.shape
         lpi_p = nrb.degree
-        nx_elt = len(np.unique(nrb.knots[0])) - 1
-        ny_elt = len(np.unique(nrb.knots[1])) - 1
+        nx_elt = len(nrb.breaks(0)) - 1
+        ny_elt = len(nrb.breaks(1)) - 1
         list_i = list(range(0,nx_elt))
         list_j = list(range(0,ny_elt))
         for enum_j, j in enumerate(list_j):
@@ -1395,6 +1397,7 @@ def get_bernstein_span_2d(geo):
 
                 # ... local Bezier-extraction matrix
                 Mat_Bform = lmatrices[i_elt]
+                Mat_Bform = Mat_Bform.todense()
                 Mat_Bform = np.ravel(Mat_Bform, order='F')
                 # ...
 
@@ -1569,6 +1572,11 @@ class BZR(object):
 
     def write(self, geo, fmt="txt", basename=None, dirname=None, basis_only=False):
         # ...
+        print "xxxxx degree " , geo[0].degree
+        if geo.dim == 1:
+            print ("Not yet implemented")
+            raise()
+
         if geo.dim == 2:
             if not basis_only:
                 save_nodes_2d(geo, basename=basename, dirname=dirname)

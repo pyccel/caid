@@ -39,7 +39,7 @@ def periodic_line(n=None, p=None):
     points = np.asarray([[0.,0.],[1.,0.]])
     return periodic_linear(points=points, n=n, p=p)
 
-def square(n=None, p=None):
+def square(n=None, p=None, m=None):
     """Creates a unit square cad_geometry object.
 
     Kwargs:
@@ -51,7 +51,7 @@ def square(n=None, p=None):
        A cad_geometry object.
     """
     points = np.asarray([[[0.,0.],[0.,1.]],[[1.,0.],[1.,1.]]])
-    return bilinear(points=points, n=n, p=p)
+    return bilinear(points=points, n=n, p=p, m=m)
 
 
 def periodic_square(n=None, p=None):
@@ -68,7 +68,7 @@ def periodic_square(n=None, p=None):
     points = np.asarray([[[0.,0.],[0.,1.]],[[1.,0.],[1.,1.]]])
     return periodic_bilinear(points=points, n=n, p=p)
 
-def triangle(n=None, p=None, points=None, profile=0):
+def triangle(n=None, p=None, points=None, m=None, profile=0):
     """Creates a degenerated triangle cad_geometry object.
 
     Kwargs:
@@ -102,7 +102,7 @@ def triangle(n=None, p=None, points=None, profile=0):
     if profile == 3:
         D = [.5*(b+c) for (b,c) in zip(B,C)]
         points = np.asarray([[A,B],[C,D]])
-    return bilinear(points=points, n=n, p=p)
+    return bilinear(points=points, n=n, p=p, m=m)
 
 def linear(points=None, n=None, p=None):
     from igakit.cad import linear as nrb_linear
@@ -232,7 +232,7 @@ def arc(radius=1, center=None, angle=pi/2, n=None, p=None):
 
     return geo
 
-def bilinear(points=None, n=None, p=None):
+def bilinear(points=None, n=None, p=None, m=None):
     from igakit.cad import bilinear as nrb_bilinear
     """Creates a bilinear cad_geometry object.
 
@@ -242,6 +242,8 @@ def bilinear(points=None, n=None, p=None):
         n (list int): This is a list containing the number of interior knots to insert. default None
 
         p (list int): This is a list containing the spline degree of the line. default None
+
+        m (list int): This is a list containing the multiplicity of inserted knots. len(m)=nrb.dim. default None
 
     Returns:
        A cad_geometry object.
@@ -279,7 +281,7 @@ def bilinear(points=None, n=None, p=None):
         for axis in range(0,cad_nrb.dim):
             list_p.append(p[axis] - cad_nrb.degree[axis])
 
-    geo.refine(list_t=list_t, list_p=list_p)
+    geo.refine(list_t=list_t, list_p=list_p, list_m=m)
     # ...
 
     geo._internal_faces = []
@@ -788,7 +790,7 @@ def pinched_circle_5mp(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, n=None, p=N
 
 def trilinear(points=None, n=None, p=None):
     from igakit.cad import trilinear as nrb_trilinear
-    """Creates a bilinear cad_geometry object. TODO: needs to be updated
+    """Creates a Trilinear cad_geometry object. TODO: needs to be updated
 
     Kwargs:
         points (array): The summits of the cube.
@@ -3274,7 +3276,8 @@ class cad_geometry(object):
             condition = True
             for axis in range(0, nrb.dim):
                 condition = condition \
-                    and (len(nrb.breaks(axis))+2*nrb.degree[axis] == len(nrb.knots[axis]))
+                    and (len(nrb.breaks(axis))+2*nrb.degree[axis] == \
+                         len(np.unique(nrb.knots[axis])))
 
             is_periodic_uniform_bspline = is_periodic_uniform_bspline or condition
 
@@ -3393,6 +3396,7 @@ class cad_geometry(object):
                         Mloc[j_ref_num, j_num] = M[j_ref, j]
 #                print Mloc.shape
 #                print "======================="
+                Mloc = csr_matrix(Mloc)
 
                 lmatrices.append(Mloc)
 
