@@ -93,16 +93,26 @@ def test5():
 #    ny = 31 ; py = 3
 #    nx = 63 ; px = 3
 #    ny = 63 ; py = 3
-    nx = 3 ; px = 4
-    ny = 3 ; py = 4
-    nx = 7 ; px = 4
-    ny = 7 ; py = 4
-    nx = 15 ; px = 4
-    ny = 15 ; py = 4
-    nx = 31 ; px = 4
-    ny = 31 ; py = 4
-    nx = 63 ; px = 4
-    ny = 63 ; py = 4
+#    nx = 3 ; px = 4
+#    ny = 3 ; py = 4
+#    nx = 7 ; px = 4
+#    ny = 7 ; py = 4
+#    nx = 15 ; px = 4
+#    ny = 15 ; py = 4
+#    nx = 31 ; px = 4
+#    ny = 31 ; py = 4
+#    nx = 63 ; px = 4
+#    ny = 63 ; py = 4
+#    nx = 3 ; px = 5
+#    ny = 3 ; py = 5
+#    nx = 7 ; px = 5
+#    ny = 7 ; py = 5
+    nx = 15 ; px = 5
+    ny = 15 ; py = 5
+#    nx = 31 ; px = 5
+#    ny = 31 ; py = 5
+#    nx = 63 ; px = 5
+#    ny = 63 ; py = 5
 
 #    geo = square(n=[nx, ny], p=[px, py])
     geo = periodic_square(n=[nx, ny], p=[px, py])
