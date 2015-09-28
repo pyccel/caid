@@ -2,8 +2,8 @@ import numpy as np
 from caid.cad_geometry import square
 from caid.io import NML
 
-geo = square(n=[3,3],p=[3,3])
+geo = square(n=[31,31],p=[1,1])
 nml_io = NML()
-nml_io.write('test.nml',geo)
+nml_io.write('domain_selalib.nml',geo)
 
 

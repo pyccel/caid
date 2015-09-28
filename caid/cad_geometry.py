@@ -4109,7 +4109,7 @@ class cad_geometry(object):
                 list_indexNodes.append(li_00)
 
                 globID = local_ID[enum_i,enum_j]
-                print currentElt, globID
+#                print currentElt, globID
                 # ...
                 # compute u, v and w
                 # ...

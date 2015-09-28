@@ -1096,7 +1096,7 @@ def get_elements_2d(geo):
                 index_vertices.append(ind+1)
                 # ...
 
-                elementData = [[i_elt+1], index_vertices, neighbours]
+                elementData = [[i_elt+1], index_vertices, neighbours, lpi_p]
 
                 lineElementData = []
                 for data in elementData:
