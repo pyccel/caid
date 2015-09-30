@@ -3922,15 +3922,18 @@ class cad_geometry(object):
         # ...
         def from_ij_to_face_id(i,j, api_n):
             face_id = None
-            if (i == 0) and (j < api_n[1]):
-                face_id = 1
             if (i == api_n[0]-1) and (j < api_n[1]):
                 face_id = 3
-            if (i < api_n[0]) and (j == 0):
-                face_id = 0
+                return face_id
             if (i < api_n[0]) and (j == api_n[1]-1):
                 face_id = 2
-            return face_id
+                return face_id
+            if (i == 0) and (j < api_n[1]):
+                face_id = 1
+                return face_id
+            if (i < api_n[0]) and (j == 0):
+                face_id = 0
+                return face_id
         # ...
 
         # ...
@@ -4143,11 +4146,16 @@ class cad_geometry(object):
                 # ...
                 boundaryCode = 0
 
-                if face_id in Dirichlet_faces:
-                    if j in  [0,lpi_n[1] - 1]:
-                        boundaryCode += 1
-                    if i in  [0,lpi_n[0] - 1]:
-                        boundaryCode += 2
+#                if face_id in Dirichlet_faces:
+#                    if j in  [0,lpi_n[1] - 1]:
+#                        boundaryCode += 1
+#                    if i in  [0,lpi_n[0] - 1]:
+#                        boundaryCode += 2
+
+                if j in  [0,lpi_n[1] - 1]:
+                    boundaryCode += 1
+                if i in  [0,lpi_n[0] - 1]:
+                    boundaryCode += 2
                 # ...
 
                 # ...
