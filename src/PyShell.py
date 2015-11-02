@@ -2,7 +2,11 @@ import wx
 from wx import py
 import os
 import __main__
-from plugin.poisson import run as run_poisson
+try:
+    from plugin.poisson import run as run_poisson
+    PIGASUS_AVAIL = True
+except:
+    PIGASUS_AVAIL = False
 
 class PyShell(object):
     def __init__(self, parent):
@@ -33,7 +37,8 @@ class PyShell(object):
         # ... geometry elements
         __main__.__dict__["geometries"]  = wk.list_geo
         # ...
-        __main__.__dict__["run_poisson"]  = run_poisson
+        if PIGASUS_AVAIL:
+            __main__.__dict__["run_poisson"]  = run_poisson
 
 
 class Interpreter(object):
@@ -64,7 +69,8 @@ class Interpreter(object):
         # ... geometry elements
         __main__.__dict__["geometries"]  = wk.list_geo
         # ...
-        __main__.__dict__["run_poisson"]  = run_poisson
+        if PIGASUS_AVAIL:
+            __main__.__dict__["run_poisson"]  = run_poisson
 
 
         self._locals["__main__"] = __main__
