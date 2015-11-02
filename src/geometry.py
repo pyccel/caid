@@ -123,6 +123,22 @@ class PatchInfo(object):
 
 
 class geometry(cad_geometry):
+    def __new__(typ, *args, **kwargs):
+        obj = cad_geometry.__new__(typ)
+
+        obj.MeshColor   = None
+        obj.NurbsColor  = None
+        obj.PointsColor = None
+        obj.PointsSize  = None
+        obj.showPoints  = None
+        obj.showMesh    = None
+        obj._show       = None
+        obj._treeItem   = None
+        obj.face        = None
+        obj.list_patchInfo = []
+
+        return obj
+
     def __init__(self, geo=None):
         cad_geometry.__init__(self)
         self.list_patchInfo = []
@@ -154,6 +170,28 @@ class geometry(cad_geometry):
 
         # needed when extracting faces for the instpector tree
         self.face = None
+
+    def copy(self):
+        geo = geometry.__new__(type(self))
+        for i in range(0, self.npatchs):
+            P = self._list[i]
+            geo.append(P.copy())
+        geo.set_internal_faces(self.internal_faces)
+        geo.set_external_faces(self.external_faces)
+        geo.set_connectivity(self.connectivity)
+
+        geo.MeshColor   = self.MeshColor
+        geo.NurbsColor  = self.NurbsColor
+        geo.PointsColor = self.PointsColor
+        geo.PointsSize  = self.PointsSize
+        geo.showPoints  = self.showPoints
+        geo.showMesh    = self.showMesh
+        geo._show       = self._show
+        geo._treeItem   = self._treeItem
+        geo.face        = self.face
+        geo.list_patchInfo = self.list_patchInfo
+
+        return geo
 
     @property
     def treeItem(self):

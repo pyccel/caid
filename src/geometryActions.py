@@ -82,6 +82,10 @@ class GeometryActions(ClassActions):
         if ID == self.DUP_ID:
             # inspector = self.parent
             wk = self.parent.WorkGroup
+            print ("=============")
+            print (type(wk.inspector.currentGeometry))
+            print ("=============")
+
             geo_new = wk.inspector.currentGeometry.copy()
             geo_newItem = wk.add_geometry(geo_new)
             # macro recording
@@ -395,7 +399,7 @@ class GeometryActionsNew(ClassActions):
             self.parent.objectActionsCreateTriangle.asGeometry()
             self.parent.ShowAction(self.parent.objectActionsCreateTriangle)
 
-            
+
 class GeometryActionsAdd(ClassActions):
     def __init__(self, parent, parentPanel, parentBox):
         self.LIN_ID = wx.NewId() ; LIN_TAG = "Line"
