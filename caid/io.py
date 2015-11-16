@@ -2,7 +2,7 @@ import numpy as np
 from igakit.nurbs import NURBS
 from numpy.linalg import inv as matrix_inverse
 
-__all__ = ['XML', 'formatter', 'TXT', 'BZR','NML']
+__all__ = ['XML', 'formatter', 'TXT', 'BZR','NML', "geopdes"]
 
 class formatter(object):
     """
@@ -1695,4 +1695,130 @@ class BZR(object):
                 zipdir(basedir, archivename)
                 os.system("rm -R " + _name)
             # ...
+
+
+
+
+
+class geopdes(object):
+    def __init__(self):
+        self._list_begin_line = []
+
+        self._n_lines_per_patch = 0
+
+    def read(self, filename, geo=None):
+        from caid.cad_geometry import cad_geometry, cad_nurbs
+        if geo is None:
+            geo = cad_geometry()
+
+        f = open(filename)
+        lines = f.readlines()
+        f.close()
+
+        _lines = []
+        for line in lines:
+            if line[0].strip() != "#":
+                _lines.append(line)
+        lines = _lines
+        data = self._read_header(lines[0])
+        n_dim = data[0]
+        n_patchs = data[2]
+
+        if n_dim == 2:
+            self._n_lines_per_patch = 2 + 2 + 3
+        else:
+            print "Only 2d patchs are used for the moment"
+
+            raise()
+        self._list_begin_line = self._get_begin_line(lines, n_patchs)
+
+        for i_patch in range(0, n_patchs):
+            cad_nrb = self._read_patch(lines, i_patch+1)
+            geo.append(cad_nrb)
+
+        return geo
+
+    def write(self, filename, geo):
+        pass
+
+    # ...
+    def _read_header(self, line):
+        chars = line.split(" ")
+        data  = []
+        for c in chars:
+            try:
+                data.append(int(c))
+            except:
+                pass
+        return data
+    # ...
+
+    # ...
+    def _extract_patch_line(self, lines, i_patch):
+        text = "PATCH " + str(i_patch)
+        for i_line,line in enumerate(lines):
+            r = line.find(text)
+            if r != -1:
+                print ">> find patch ", i_patch, " at the line number ", i_line
+                return i_line
+        return None
+    # ...
+
+    # ...
+    def _get_begin_line(self, lines, n_patchs):
+        list_begin_line = []
+        for i_patch in range(0, n_patchs):
+            r = self._extract_patch_line(lines, i_patch+1)
+            if r is not None:
+                list_begin_line.append(r)
+            else:
+                print "Seriours error while parsing the input file"
+                raise()
+        return list_begin_line
+    # ...
+
+    # ...
+    def _read_line(self, line):
+        chars = line.split(" ")
+        data  = []
+        for c in chars:
+            try:
+                data.append(int(c))
+            except:
+                try:
+                    data.append(float(c))
+                except:
+                    pass
+        return data
+    # ...
+
+    # ...
+    def _read_patch(self, lines, i_patch):
+        from caid.cad_geometry import cad_nurbs
+
+        i_begin_line = self._list_begin_line[i_patch-1]
+        data_patch = []
+        for i in range(i_begin_line+1, i_begin_line+self._n_lines_per_patch+1):
+            data_patch.append(self._read_line(lines[i]))
+        degres = data_patch[0]
+        shape  = data_patch[1]
+        u      = np.array(data_patch[2])
+        v      = np.array(data_patch[3])
+        x      = np.array(data_patch[4])
+        y      = np.array(data_patch[5])
+        w      = np.array(data_patch[6])
+
+        X = x.reshape(shape)
+        Y = y.reshape(shape)
+        W = w.reshape(shape)
+
+        points = np.zeros((shape[0], shape[1], 3))
+        points[:,:,0] = X
+        points[:,:,1] = Y
+
+        knots = [u,v]
+
+        cad_nrb = cad_nurbs(knots, points, weights=W)
+        return cad_nrb
+    # ...
 
