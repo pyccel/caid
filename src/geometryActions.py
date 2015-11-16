@@ -82,10 +82,8 @@ class GeometryActions(ClassActions):
         if ID == self.DUP_ID:
             # inspector = self.parent
             wk = self.parent.WorkGroup
-            print ("=============")
-            print (type(wk.inspector.currentGeometry))
-            print ("=============")
 
+            geo = wk.inspector.currentGeometry
             geo_new = wk.inspector.currentGeometry.copy()
             geo_newItem = wk.add_geometry(geo_new)
             # macro recording
