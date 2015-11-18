@@ -2197,12 +2197,13 @@ class cad_geometry(object):
 
         >>> geo = cad_geometry("mydomain.xml")
         """
-        self._list = []
-        self._currentElt = -1
+        self._list           = []
+        self._currentElt     = -1
         self._internal_faces = []
         self._external_faces = []
         self._connectivity   = []
         self._attributs      = {}
+        self._r_dim          = None
 
         if file is not None:
             self.__filename__ = file
@@ -2287,11 +2288,17 @@ class cad_geometry(object):
         """
         Physical dimension of the geometry object {1,2,3}.
         """
-        try:
-            Rd = self._list[0].points.shape[-1]
-        except:
-            Rd = 0
-        return Rd
+        if self._r_dim is not None:
+            return self._r_dim
+        else:
+            try:
+                Rd = self._list[0].points.shape[-1]
+            except:
+                Rd = 0
+            return Rd
+
+    def set_r_dim(self, r_dim):
+        self._r_dim = r_dim
 
     def __len__(self):
         return len(self._list)

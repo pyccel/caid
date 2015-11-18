@@ -1700,6 +1700,280 @@ class BZR(object):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+# ...
+def geopdes_to_caid_faces_2d(value):
+    i_face = None
+    if value == 0:
+        i_face = 1
+    if value == 1:
+        i_face = 3
+    if value == 2:
+        i_face = 2
+    if value == 3:
+        i_face = 4
+
+    return i_face
+# ...
+
+# ...
+class Writer(object):
+
+    def __init__(self, filename=None):
+        self._lines = []
+        self._filename = filename
+        self._f = None
+
+    @property
+    def filename(self):
+        return self._filename
+
+    def add_line(self, data, dtype='i', top=False):
+        # .................................................
+        # ... exporting files
+        fmt_int   = '%d'
+        fmt_float = '%.15f'
+        # .................................................
+        line = None
+        if dtype == 'i':
+            line = ''.join(str(fmt_int % e)+' ' for e in data[:])+' \n'
+        elif dtype == 'd':
+            line = ''.join(str(fmt_float % e)+' ' for e in data[:])+' \n'
+        elif dtype == 's':
+            line = data
+
+        if line is not None:
+            if top:
+                self._lines.reverse()
+                self._lines.append(line)
+                self._lines.reverse()
+            else:
+                self._lines.append(line)
+
+    def open(self):
+        self._f = open(self.filename, "w")
+
+    def close(self):
+        self._f.close()
+
+    def write(self, line=None):
+        if line is None:
+            for L in self._lines:
+                self._f.write(L)
+        else:
+            self._f.write(line)
+# ...
+
+# ...
+class Writer_geopdes(object):
+    def __init__(self, filename, geo):
+        self._geometry = geo
+        writer = Writer(filename)
+        self._writer = writer
+
+    @property
+    def geometry(self):
+        return self._geometry
+
+    @property
+    def writer(self):
+        return self._writer
+
+    def open(self):
+        self.writer.open()
+
+    def close(self):
+        self.writer.close()
+
+    def write(self):
+        self.writer.write()
+
+    def add_patch(self, i_patch):
+        geo = self.geometry
+        writer = self.writer
+
+        nrb = geo[i_patch]
+        line = "PATCH " + str(i_patch+1)+'\n'
+        writer.add_line(line, dtype='s')
+        # p(i): the degree in each Cartesian direction (ndim integers)
+        writer.add_line(nrb.degree, dtype='i')
+        # ncp(i): the number of control points in each direction (ndim integers)
+        writer.add_line(nrb.shape, dtype='i')
+        # knots{i}: knot sequence in the Cartesian direction (ncp(i)+p(i)+1 floats)
+        for axis in range(0, geo.dim):
+            writer.add_line(nrb.knots[axis], dtype='d')
+        total_size = np.asarray(nrb.shape).prod()
+        # cp_x, cp_y, cp_z: coordinates of the weighted control points
+        #   (see Section 4.2 of The NURBS Book, L. Piegl & W. Tiller)
+        #   (rdim rows, each one with prod_{i=1}^{N} ncp(i) float values)
+        #
+        # The control points are numbered in a reverse lexicographic order: starting
+        #  from the origin, we first increase the parametric coordinate x_1 and then
+        #  the parametric coordinate x_2 (and for 3D cases, then the coordinate x_3).
+        for d in range(0, geo.Rd):
+            points = nrb.points[...,d].reshape(total_size)
+            writer.add_line(points, dtype='d')
+        # weights: weight associated to each basis function (or control point)
+        #          (prod(ncp ) float values)
+        weights = nrb.weights[...].reshape(total_size)
+        writer.add_line(weights, dtype='d')
+
+    def add_patchs(self):
+        geo = self.geometry
+        for i_patch in range(0, geo.npatchs):
+            self.add_patch(i_patch)
+
+    def add_interfaces(self):
+        geo = self.geometry
+        writer = self.writer
+
+        for enum, interface in enumerate(geo.connectivity):
+            line = "INTERFACE " + str(enum+1) + "\n"
+            writer.add_line(line, dtype='s')
+            for key, value in interface.iteritems():
+                i_patch = value[0]+1
+                i_face = geopdes_to_caid_faces_2d(value[1])
+                data = [i_patch, i_face]
+                writer.add_line(data, dtype='i')
+            # ... TODO add orientation, for the moment it is supposed to be the same
+            data = [1]
+            writer.add_line(data, dtype='i')
+            # ...
+
+    def add_subdomains(self):
+        geo = self.geometry
+        writer = self.writer
+
+        # TODO : add color/subdomain notion
+        enum = 0
+        line = "SUBDOMAIN " + str(enum+1) + "\n"
+        writer.add_line(line, dtype='s')
+        list_patchs = range(1, geo.npatchs+1)
+        writer.add_line(list_patchs, dtype='i')
+
+    def add_boundaries(self, tol=1.e-7):
+        geo = self.geometry
+        writer = self.writer
+
+        # ...
+        n_ext_bnd = len(geo.external_faces)
+        list_parent = range(0,n_ext_bnd)
+        list_is_master = np.ones(n_ext_bnd, dtype=np.int)
+        list_global_bnd = []
+        for i in range(0, n_ext_bnd):
+            list_global_bnd.append([])
+        for i_m in range(0, n_ext_bnd-1):
+            i_patch_m = geo.external_faces[i_m][0]
+            i_face_m  = geo.external_faces[i_m][1]
+
+            nrb_m = geo[i_patch_m]
+            bnd_m = nrb_m.extract_face(i_face_m).clone()
+
+            u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1], 2)
+            P_m = bnd_m(u_m)
+            D_m = bnd_m.gradient(u=u_m)
+
+            i_face = geopdes_to_caid_faces_2d(i_face_m)
+            list_i_bnd = [[i_patch_m+1, i_face]]
+            for i_s in range(i_m+1, n_ext_bnd):
+                i_patch_s = geo.external_faces[i_s][0]
+                i_face_s  = geo.external_faces[i_s][1]
+
+                nrb_s = geo[i_patch_s]
+                bnd_s = nrb_s.extract_face(i_face_s).clone()
+
+                u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1], 2)
+                P_s = bnd_s(u_s)
+                D_s = bnd_s.gradient(u=u_s)
+
+                i_bnd_m = None
+                i_bnd_s = None
+                if np.allclose(P_m[0], P_s[0], rtol=0, atol=tol) :
+                    i_bnd_m = 0
+                    i_bnd_s = 0
+                if np.allclose(P_m[0], P_s[1], rtol=0, atol=tol) :
+                    i_bnd_m = 0
+                    i_bnd_s = 1
+                if np.allclose(P_m[1], P_s[0], rtol=0, atol=tol) :
+                    i_bnd_m = 1
+                    i_bnd_s = 0
+                if np.allclose(P_m[1], P_s[1], rtol=0, atol=tol) :
+                    i_bnd_m = 1
+                    i_bnd_s = 1
+
+                if (i_bnd_m is not None) and (i_bnd_s is not None):
+                    # ... TODO test alignement instead of the equality of the gradient
+                    condition = np.allclose(D_m[i_bnd_m].reshape(3)[:geo.Rd], \
+                                            D_s[i_bnd_s].reshape(3)[:geo.Rd], \
+                                            rtol=0., atol=tol)
+                    condition = condition or np.allclose(D_m[i_bnd_m].reshape(3)[:geo.Rd], \
+                                            -D_s[i_bnd_s].reshape(3)[:geo.Rd], \
+                                            rtol=0., atol=tol)
+
+                    if condition:
+                        i_face = geopdes_to_caid_faces_2d(i_face_s)
+                        list_i_bnd.append([i_patch_s+1, i_face])
+                        list_parent[i_s] = i_m
+                        list_is_master[i_s] = 0
+
+            i_parent = list_parent[i_m]
+            for pf in list_i_bnd:
+                if not (pf in list_global_bnd[i_parent]):
+                    list_global_bnd[i_parent].append(pf)
+        # ...
+
+        # ...
+        enum = 0
+        for G, is_master in zip(list_global_bnd, list_is_master):
+            if is_master == 1:
+                enum += 1
+                line = "BOUNDARY " + str(enum) + "\n"
+                writer.add_line(line, dtype='s')
+                line = str(len(G)) + "\n"
+                writer.add_line(line, dtype='s')
+                for data in G:
+                    writer.add_line(data, dtype='i')
+        # ...
+
+    def add_info(self):
+        #  ndim : dimension of the parametric domain
+        #  rdim : dimension of the physical domain
+        #  Np: number of patches to construct the geometry
+        #  Ni: total number of interfaces, each one connecting two patches
+        #  Ns: total number of subdomains, formed by the union of patches
+
+        geo = self.geometry
+        writer = self.writer
+
+        data = np.zeros(5, dtype=np.int)
+        data[0] = geo.dim
+        data[1] = geo.Rd
+        data[2] = geo.npatchs
+        data[3] = len(geo.connectivity)
+        data[4] = 1 # TODO must use the number of colors
+
+        writer.add_line(data, dtype='i', top=True)
+
+    def add_header(self):
+        geo = self.geometry
+        writer = self.writer
+
+        header  = "# this geometry has been automaticaly generated by CAID \n"
+        header += "# to report bugs please contact : ratnaniahmed@gmail.com \n"
+        writer.add_line(header, dtype='s', top=True)
+# ...
+
+
 class geopdes(object):
     def __init__(self):
         self._list_begin_line = []
@@ -1722,7 +1996,10 @@ class geopdes(object):
         lines = _lines
         data = self._read_header(lines[0])
         n_dim = data[0]
+        r_dim = data[1]
         n_patchs = data[2]
+
+        geo.set_r_dim(r_dim)
 
         if n_dim == 2:
             self._n_lines_per_patch = 2 + 2 + 3
@@ -1739,7 +2016,16 @@ class geopdes(object):
         return geo
 
     def write(self, filename, geo):
-        pass
+        writer_geopdes = Writer_geopdes(filename, geo)
+        writer_geopdes.open()
+        writer_geopdes.add_patchs()
+        writer_geopdes.add_interfaces()
+        writer_geopdes.add_subdomains()
+        writer_geopdes.add_boundaries()
+        writer_geopdes.add_info()
+        writer_geopdes.add_header()
+        writer_geopdes.write()
+        writer_geopdes.close()
 
     # ...
     def _read_header(self, line):
@@ -1800,7 +2086,7 @@ class geopdes(object):
         data_patch = []
         for i in range(i_begin_line+1, i_begin_line+self._n_lines_per_patch+1):
             data_patch.append(self._read_line(lines[i]))
-        degres = data_patch[0]
+        degree = data_patch[0]
         shape  = data_patch[1]
         u      = np.array(data_patch[2])
         v      = np.array(data_patch[3])
@@ -1821,4 +2107,5 @@ class geopdes(object):
         cad_nrb = cad_nurbs(knots, points, weights=W)
         return cad_nrb
     # ...
+
 
