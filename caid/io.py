@@ -854,7 +854,7 @@ class NML(object):
 
             # ... write weights
             fo.write("&pt_weights\n")
-            fo.write("/" + "\n\n")
+            fo.write("\n")
             n = nrb.shape
             wgts = []
             if nrb.dim == 1:
