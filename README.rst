@@ -35,6 +35,15 @@ You can install both **numpy** and **scipy** using
 
     sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
 
+**matplotlib**
+--------------
+
+[**Matplotlib**](http://www.matplotlib.org/) is a python 2D plotting library which produces publication quality figures in a variety of hardcopy formats and interactive environments across platforms. matplotlib can be used in python scripts, the python and ipython shell (ala MATLAB or Mathematica)
+
+Installation can be done using
+
+   `sudo apt-get install python-matplotlib`
+
 **igakit**
 ----------
 
@@ -77,8 +86,31 @@ Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_C
     alias caid="python $PATH_TO_CAID_SRC/src/main.py"
     #
 
-Usage
-=====
+Package-Usage
+=============
+
+Start by import the **CAID** package::
+
+  import caid
+
+In order to check that the fortran code has been well installed, use::
+
+  import caid.core
+  import caid.core.bspline
+  import caid.core.hbezier
+
+If you don't get any message, then everything seems to be fine.
+
+Let's now import a *square* geometry and refine it::
+
+  from caid.cad_geometry import square
+  geo = square(n=[3,3], p=[2,2])
+  geo.plotMesh()
+  import matplotlib.pyplot as plt
+  plt.show()
+
+GUI-Usage
+=========
 
 Runing **CAID** can be done in different ways.
 
@@ -97,6 +129,3 @@ Runing **CAID** can be done in different ways.
 * with a given field file
 
    `caid U.pfl`
-
-
-blabla
