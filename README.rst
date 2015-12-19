@@ -33,7 +33,7 @@ Installation can be done using
 
 You can install both **numpy** and **scipy** using 
 
-    sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
+   `sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose`
 
 **matplotlib**
 --------------
@@ -59,7 +59,7 @@ Install *wxGTK 2.8* with the command
 
    `sudo apt-get install python-wxgtk2.8`
 
-Verify that everything is OK
+Verify that everything is OK::
 
     import wx
     import wxversion
@@ -82,9 +82,7 @@ Installation can be done by runing the following command, giving **PATH_FOR_INST
 
 Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_CAID_SRC**
 
-    # CAID 
-    alias caid="python $PATH_TO_CAID_SRC/caid-gui/main.py"
-    #
+    `alias caid="python $PATH_TO_CAID_SRC/caid-gui/main.py"`
 
 Package-Usage
 =============
