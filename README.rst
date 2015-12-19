@@ -4,8 +4,14 @@ The Post-Processing and advanced visualization capabilities are still under deve
 
 For more details, please read [**CAID**](http://ratnani.org/caid_doc/)
 
-Requierements
-=============
+**CAID** can be used in 2 different ways:
+
+* as a *python* package: using *ipython* or *scripts* 
+
+* as a GUI modeler: for a better interactive use
+
+Common requierements
+====================
 
 **numpy**
 ---------
@@ -33,6 +39,9 @@ You can install both **numpy** and **scipy** using
 ----------
 
 [**igakit**](http://bitbucket.org/dalcinl/igakit) is a package that implements many of the NURBS routines from Piegl's book using Fortran and Python.
+
+GUI Requierements
+=================
 
 **wxPython**
 ------------
