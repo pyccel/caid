@@ -107,6 +107,14 @@ Let's now import a *square* geometry and refine it::
   import matplotlib.pyplot as plt
   plt.show()
 
+A *cad_geometry* object contains a list of *cad_nurbs* (more generally any class that inherits from the *cad_object* class) with some additional informations. The class *cad_nurbs* inherits the *NURBS* class in *igakit*. It represents a single patch but with some additional informations like
+
+* orientation: needed for *Neumann* boundary conditions
+
+* rational: *True* if we use the weights. Default value : *False*
+
+In the future, the *cad_geometry* class will also contain Splines on triangulations (using  `splitri <https://github.com/ratnania/splitri>`_)
+
 GUI-Usage
 =========
 
