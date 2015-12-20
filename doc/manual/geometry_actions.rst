@@ -4,9 +4,6 @@
 .. role:: ref(title-reference)
 .. _geometry_actions:
 
-Geometry Actions
-================
-
 New
 ***
 

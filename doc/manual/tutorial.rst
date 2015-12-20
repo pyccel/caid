@@ -8,11 +8,6 @@ Tutorial
 **Objective:** At the end of this tutorial you will understand how to
 run, manipulate and mesh 2D objects.
 
-.. **Assumptions:** I assume that you have both IgaKit and CAID configured and compiled.
-
-Introducing CAID
--------------------------
-
 You can launch **CAID** by running ::
 
   caid

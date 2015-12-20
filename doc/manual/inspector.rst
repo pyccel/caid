@@ -1,17 +1,19 @@
-.. role:: envvar(literal)
-.. role:: command(literal)
+.. role:: option(literal)
 .. role:: file(literal)
-.. role:: ref(title-reference)
 .. _inspector:
 
 Inspector
 =========
 
-.. toctree:: 
-   :maxdepth: 2
+Geometry Actions
+----------------
 
-   geometry_actions
-   patch_actions
+.. include:: geometry_actions.txt
+
+Patch Actions
+-------------
+
+.. include:: patch_actions.txt
 
 .. Local Variables:
 .. mode: rst

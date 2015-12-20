@@ -1,11 +1,6 @@
-.. role:: envvar(literal)
-.. role:: command(literal)
+.. role:: option(literal)
 .. role:: file(literal)
-.. role:: ref(title-reference)
 .. _patch_actions:
-
-Patch Actions
-================
 
 Approximate
 ***********

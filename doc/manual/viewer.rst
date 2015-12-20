@@ -1,7 +1,5 @@
-.. role:: envvar(literal)
-.. role:: command(literal)
+.. role:: option(literal)
 .. role:: file(literal)
-.. role:: ref(title-reference)
 .. _viewer:
 
 Viewer

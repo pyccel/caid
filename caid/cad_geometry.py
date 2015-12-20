@@ -561,7 +561,10 @@ def annulus(rmin=0.5, rmax=1.0, center=None, n=None, p=None):
         for axis in range(0,cad_nrb.dim):
             ub = cad_nrb.knots[axis][0]
             ue = cad_nrb.knots[axis][-1]
-            list_t.append(np.linspace(ub,ue,n[axis]+2)[1:-1])
+            U = np.linspace(ub,ue,n[axis]+2)[1:-1]
+            if axis==1:
+                U = [u for u in U if u not in [0.25, 0.5, 0.75]]
+            list_t.append(U)
 
     list_p = None
     if p is not None:

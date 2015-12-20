@@ -12,19 +12,12 @@ Contents
 ========
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 2 
 
    overview
    install
-   tutorial
-   inspector
-   viewer
-   fields
-   spaces
-   pyshell
-   macrorecording
-   pythoneditor
-   macros
+   caid-package
+   caid-gui
 
 .. include:: links.txt
 
