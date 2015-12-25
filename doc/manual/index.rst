@@ -17,6 +17,7 @@ Contents
    overview
    install
    caid-package
+   gallery
    caid-gui
 
 .. include:: links.txt

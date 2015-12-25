@@ -790,6 +790,103 @@ def pinched_circle_5mp(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, n=None, p=N
 
     return geo
 
+def miller_equilibrium(rmin=0.5, rmax=1.0, n=None, p=None, params_shape=None,
+                       params_eq=None, n_sampling=400):
+    """
+
+    Kwargs:
+        rmin (float): Minimal radius of the quart-circle. default 0.5
+
+        rmax (float): Maximal radius of the quart-circle. default 1.0
+
+    Returns:
+       A cad_geometry object.
+
+    """
+    from scipy.interpolate import splev, splrep
+    from numpy import pi, sin, cos, sinh, linspace, ones_like, log, sqrt, meshgrid
+
+    # ...
+    if params_shape is None:
+        params_shape = {}
+        params_shape['A']         = 3.17
+        params_shape['psi_tilde'] = 0.77
+        params_shape['kappa0']    = 1.66
+        params_shape['delta0']    = 0.416
+        params_shape['alpha']     = 1.22
+    # ...
+
+    # ...
+    if params_eq is None:
+        params_eq = {}
+        params_eq['sk']  = 0.7
+        params_eq['sd']  = 1.37
+        params_eq['dR0'] =-0.354
+        params_eq['q']   = 3.03
+        params_eq['s']   = 2.47
+    # ...
+
+    # ...
+    A         = params_shape['A']
+    psi_tilde = params_shape['psi_tilde']
+    kappa0    = params_shape['kappa0']
+    delta0    = params_shape['delta0']
+    alpha     = params_shape['alpha']
+    # ...
+
+    # ...
+    sk  = params_eq['sk']
+    sd  = params_eq['sd']
+    dR0 = params_eq['dR0']
+    q   = params_eq['q']
+    s   = params_eq['s']
+    # ...
+
+    R0 = A * psi_tilde
+
+    t = linspace(0., 2. * pi, n_sampling)
+
+    if p is None:
+        p = [1, 2]
+    degree = p[1]
+
+    if n is None:
+        n = [17, 17]
+    Nu = n[0] ; Nv = n[1]
+
+    r_grid = linspace(rmin, rmax, Nu+2)
+    T = np.linspace(0.,2*pi,Nv+2)[1:-1]
+
+    list_crv = []
+    for r in r_grid:
+        kappa = kappa0 * (1. + sk * log(r/psi_tilde))
+        delta = delta0 + sd * sqrt(1.-delta0**2) * log(r/psi_tilde)
+
+        R = R0 + r * cos(t + sinh(delta) * sin(t))
+        Z = kappa * r * sin(t)
+
+        tck_R = splrep(t,R, k=degree, xb=0., xe=2*pi, task=-1, s=None, t=T, full_output=0,
+                     per=1, quiet=1)
+        tck_Z = splrep(t,Z, k=degree, xb=0., xe=2*pi, task=-1, s=None, t=T, full_output=0,
+                     per=1, quiet=1)
+        u = tck_R[0]
+        _n =len(u)-degree-1
+        P = np.zeros((_n,2))
+        P[:,0] = tck_R[1][:_n]
+        P[:,1] = tck_Z[1][:_n]
+        crv = cad_nurbs([u], P)
+        crv = crv.clamp(0)
+        list_crv.append(crv)
+
+    geo = square(n=[Nu,Nv], p=[1,degree])
+    nrb = geo[0]
+    points = np.zeros_like(nrb.points)
+    for i, crv in enumerate(list_crv):
+        points[i,:,:] = crv.points[:,:]
+    nrb.set_points(points)
+    geo.refine(list_p=[p[0]-1,0])
+    return geo
+
 
 def trilinear(points=None, n=None, p=None):
     from igakit.cad import trilinear as nrb_trilinear
