@@ -885,6 +885,7 @@ def miller_equilibrium(rmin=0.5, rmax=1.0, n=None, p=None, params_shape=None,
         points[i,:,:] = crv.points[:,:]
     nrb.set_points(points)
     geo.refine(list_p=[p[0]-1,0])
+    geo.update()
     return geo
 
 
