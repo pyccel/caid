@@ -2,6 +2,14 @@ import numpy as np
 from igakit.nurbs import NURBS
 from numpy.linalg import inv as matrix_inverse
 
+# ...
+try:
+    import f90nml
+    F90NML=True
+except ImportError:
+    F90NML=False
+# ...
+
 __all__ = ['XML', 'formatter', 'TXT', 'BZR','NML', "geopdes"]
 
 class formatter(object):
@@ -754,30 +762,110 @@ class NML(object):
     def __init__(self):
         pass
 
+    def read(self, filename, geo):
+        if not F90NML:
+            print "f90nml not installed. Please use another input/output driver."
+            raise()
+
+        nml = f90nml.read(filename)
+        p_dim = len(nml['degree'])
+
+        if p_dim >=1:
+            p_u = nml['degree']['spline_deg1']
+        if p_dim >=2:
+            p_v = nml['degree']['spline_deg2']
+        if p_dim >=3:
+            p_w = nml['degree']['spline_deg3']
+
+        if p_dim >=1:
+            n_u = nml['shape']['num_pts1']
+        if p_dim >=2:
+            n_v = nml['shape']['num_pts2']
+        if p_dim >=3:
+            n_w = nml['shape']['num_pts3']
+
+        if p_dim >=1:
+            knots_u = nml['knots_1']['knots1']
+        if p_dim >=2:
+            knots_v = nml['knots_2']['knots2']
+        if p_dim >=3:
+            knots_w = nml['knots_3']['knots3']
+
+        knots = []
+        if p_dim >=1:
+            knots_u = np.array(knots_u)
+            knots.append(knots_u)
+        if p_dim >=2:
+            knots_v = np.array(knots_v)
+            knots.append(knots_v)
+        if p_dim >=3:
+            knots_w = np.array(knots_w)
+            knots.append(knots_w)
+
+        if p_dim >=1:
+            ctrl_pts_x = nml['control_points']['control_pts1']
+            print ctrl_pts_x
+        if p_dim >=2:
+            ctrl_pts_y = nml['control_points']['control_pts2']
+        if p_dim >=3:
+            ctrl_pts_z = nml['control_points']['control_pts3']
+
+        weights = nml['pt_weights']['weights']
+
+        if p_dim ==1:
+            control_points = np.zeros((n_u, 1))
+            control_points[:,0] = np.array(ctrl_pts_x).reshape((n_u))
+
+            weights = np.array(weights).reshape((n_u))
+
+        if p_dim ==2:
+            control_points = np.zeros((n_u, n_v, 2))
+            control_points[:,:,0] = np.array(ctrl_pts_x).reshape((n_u,n_v))
+            control_points[:,:,1] = np.array(ctrl_pts_y).reshape((n_u,n_v))
+
+            weights = np.array(weights).reshape((n_u,n_v))
+
+        if p_dim ==3:
+            control_points = np.zeros((n_u, n_v, n_w, 3))
+            control_points[:,:,:,0] = np.array(ctrl_pts_x).reshape((n_u,n_v,n_w))
+            control_points[:,:,:,1] = np.array(ctrl_pts_y).reshape((n_u,n_v,n_w))
+            control_points[:,:,:,2] = np.array(ctrl_pts_z).reshape((n_u,n_v,n_w))
+
+            weights = np.array(weights).reshape((n_u,n_v,n_w))
+
+        from caid.cad_geometry import cad_nurbs
+        nrb = cad_nurbs(knots, control=control_points, weights=weights)
+        geo.append(nrb)
+
     def write(self, name, geo):
         # ...
         def exportPatch(nrb, filename):
-
             fo = open(filename, "w")
 
+            # ...
             fo.write("&transf_label\n")
             fo.write("    label = "+"\""+filename+"\""+"\n")
             fo.write("/" + "\n\n")
+            # ...
 
             # ... write degree
             fo.write("&degree\n")
             fo.write("    spline_deg1 = " +str(nrb.degree[0])  +"\n")
-            fo.write("    spline_deg2 = " + str(nrb.degree[1]) +"\n")
+            if nrb.dim >= 2:
+                fo.write("    spline_deg2 = " + str(nrb.degree[1]) +"\n")
+            if nrb.dim == 3:
+                fo.write("    spline_deg3 = " + str(nrb.degree[2]) +"\n")
             fo.write("/" + "\n\n")
-
             # ...
 
             # ... write shape
             fo.write("&shape\n")
             fo.write("    num_pts1 = " + str(nrb.shape[0]) +"\n")
-            fo.write("    num_pts2 = " + str(nrb.shape[1])+"\n")
+            if nrb.dim >= 2:
+                fo.write("    num_pts2 = " + str(nrb.shape[1])+"\n")
+            if nrb.dim == 3:
+                fo.write("    num_pts3 = " + str(nrb.shape[2])+"\n")
             fo.write("/" + "\n\n")
-
             # ...
 
             # ... write rational
@@ -791,8 +879,6 @@ class NML(object):
             # ...
 
             # ... write knots
-
-
             txt = str(nrb.knots[0])[1:-1]
 
             cartesian_mesh_locations1=remove_duplicates(nrb.knots[0])
@@ -824,10 +910,9 @@ class NML(object):
             x3 = []
 
             if nrb.dim == 1:
-                fo.write("    control_pts1 = ")
                 for i in range(0, n[0]):
-                    txt = str(nrb.points[i,:])[1:-1]
-                    fo.write("  "+txt)
+                    x1.append(str(nrb.points[i,0])+' ')
+                fo.write("    control_pts1 = "+" ".join(x1)+"\n")
 
             if nrb.dim == 2:
                 for i in range(0, n[0]):
@@ -849,7 +934,6 @@ class NML(object):
                 fo.write("    control_pts2 = "+" ".join(x2)+"\n")
                 fo.write("    control_pts3 = "+" ".join(x3)+"\n")
             fo.write("/" + "\n\n")
-
             # ...
 
             # ... write weights
@@ -878,11 +962,21 @@ class NML(object):
 
             # ...
             # add information relevant to the construction of the logical mesh.
-            fo.write("&cartesian_mesh_2d\n")
+            if nrb.dim == 1:
+                fo.write("&cartesian_mesh_1d\n")
+            if nrb.dim == 2:
+                fo.write("&cartesian_mesh_2d\n")
+            if nrb.dim == 3:
+                fo.write("&cartesian_mesh_3d\n")
+
             nc1 = len(cartesian_mesh_locations1) - 1
             fo.write("    number_cells1 = " + str(nc1) + "\n")
-            nc2 = len(cartesian_mesh_locations2) - 1
-            fo.write("    number_cells2 = " + str(nc2) + "\n")
+            if nrb.dim >= 2:
+                nc2 = len(cartesian_mesh_locations2) - 1
+                fo.write("    number_cells2 = " + str(nc2) + "\n")
+            if nrb.dim == 3:
+                nc3 = len(cartesian_mesh_locations3) - 1
+                fo.write("    number_cells3 = " + str(nc3) + "\n")
             fo.write("/" + "\n\n")
 
             fo.close()
