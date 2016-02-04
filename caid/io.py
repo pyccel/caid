@@ -837,7 +837,7 @@ class NML(object):
                 weights = _weights
 
         if p_dim ==2:
-            control_points = np.zeros((n_u, n_v, d_dim))
+            control_points = np.zeros((n_u, n_v, 3))
             I = 0
             for j in range(0, n_v):
                 for i in range(0, n_u):
@@ -867,7 +867,7 @@ class NML(object):
             weights = np.array(weights).reshape((n_u,n_v))
 
         if p_dim ==3:
-            control_points = np.zeros((n_u, n_v, n_w, d_dim))
+            control_points = np.zeros((n_u, n_v, n_w, 3))
             I = 0
             for k in range(0, n_w):
                 for j in range(0, n_v):
