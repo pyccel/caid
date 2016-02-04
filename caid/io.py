@@ -768,6 +768,7 @@ class NML(object):
             raise()
 
         nml = f90nml.read(filename)
+        d_dim = nml['d_dimension']['d_dim']
         p_dim = len(nml['degree'])
 
         if p_dim >=1:
@@ -802,36 +803,102 @@ class NML(object):
             knots_w = np.array(knots_w)
             knots.append(knots_w)
 
-        if p_dim >=1:
-            ctrl_pts_x = nml['control_points']['control_pts1']
-            print ctrl_pts_x
-        if p_dim >=2:
-            ctrl_pts_y = nml['control_points']['control_pts2']
-        if p_dim >=3:
-            ctrl_pts_z = nml['control_points']['control_pts3']
+        print "knots : ", knots
 
-        weights = nml['pt_weights']['weights']
+        if d_dim >=1:
+            ctrl_pts_x = nml['control_points_1']['control_pts1']
+            ctrl_pts_x = np.array(ctrl_pts_x)
+        if d_dim >=2:
+            ctrl_pts_y = nml['control_points_2']['control_pts2']
+            ctrl_pts_y = np.array(ctrl_pts_y)
+        if d_dim >=3:
+            ctrl_pts_z = nml['control_points_3']['control_pts3']
+            ctrl_pts_z = np.array(ctrl_pts_z)
+
+        _weights = None
+        try:
+            _weights = nml['pt_weights']['weights']
+            _weights = np.array(_weights)
+        except:
+            if p_dim ==1:
+                weights = np.ones(n_u)
+            if p_dim ==2:
+                weights = np.ones((n_u,n_v))
+            if p_dim ==3:
+                weights = np.ones((n_u,n_v,n_w))
 
         if p_dim ==1:
-            control_points = np.zeros((n_u, 1))
-            control_points[:,0] = np.array(ctrl_pts_x).reshape((n_u))
+            control_points = np.zeros((n_u, d_dim))
+            control_points[:,0] = ctrl_pts_x
+            if d_dim > 1:
+                control_points[:,1] = ctrl_pts_y
+            if d_dim > 2:
+                control_points[:,2] = ctrl_pts_z
 
-            weights = np.array(weights).reshape((n_u))
+            if _weights is not None:
+                weights = _weights
 
         if p_dim ==2:
-            control_points = np.zeros((n_u, n_v, 2))
-            control_points[:,:,0] = np.array(ctrl_pts_x).reshape((n_u,n_v))
-            control_points[:,:,1] = np.array(ctrl_pts_y).reshape((n_u,n_v))
+            control_points = np.zeros((n_u, n_v, d_dim))
+            I = 0
+            for j in range(0, n_v):
+                for i in range(0, n_u):
+                    control_points[i,j,0] = ctrl_pts_x[I]
+                    I += 1
+            if d_dim > 1:
+                I = 0
+                for j in range(0, n_v):
+                    for i in range(0, n_u):
+                        control_points[i,j,1] = ctrl_pts_y[I]
+                        I += 1
+            if d_dim > 2:
+                I = 0
+                for j in range(0, n_v):
+                    for i in range(0, n_u):
+                        control_points[i,j,2] = ctrl_pts_z[I]
+                        I += 1
+
+            if _weights is not None:
+                weights = np.zeros((n_u, n_v))
+                I = 0
+                for j in range(0, n_v):
+                    for i in range(0, n_u):
+                        weights[i,j] = _weights[I]
+                        I += 1
 
             weights = np.array(weights).reshape((n_u,n_v))
 
         if p_dim ==3:
-            control_points = np.zeros((n_u, n_v, n_w, 3))
-            control_points[:,:,:,0] = np.array(ctrl_pts_x).reshape((n_u,n_v,n_w))
-            control_points[:,:,:,1] = np.array(ctrl_pts_y).reshape((n_u,n_v,n_w))
-            control_points[:,:,:,2] = np.array(ctrl_pts_z).reshape((n_u,n_v,n_w))
+            control_points = np.zeros((n_u, n_v, n_w, d_dim))
+            I = 0
+            for k in range(0, n_w):
+                for j in range(0, n_v):
+                    for i in range(0, n_u):
+                        control_points[i,j,k,0] = ctrl_pts_x[I]
+                        I += 1
+            if d_dim > 1:
+                I = 0
+                for k in range(0, n_w):
+                    for j in range(0, n_v):
+                        for i in range(0, n_u):
+                            control_points[i,j,k,1] = ctrl_pts_y[I]
+                            I += 1
+            if d_dim > 2:
+                I = 0
+                for k in range(0, n_w):
+                    for j in range(0, n_v):
+                        for i in range(0, n_u):
+                            control_points[i,j,k,2] = ctrl_pts_z[I]
+                            I += 1
 
-            weights = np.array(weights).reshape((n_u,n_v,n_w))
+            if _weights is not None:
+                weights = np.zeros((n_u, n_v, n_w))
+                I = 0
+                for k in range(0, n_w):
+                    for j in range(0, n_v):
+                        for i in range(0, n_u):
+                            weights[i,j,k] = _weights[I]
+                            I += 1
 
         from caid.cad_geometry import cad_nurbs
         nrb = cad_nurbs(knots, control=control_points, weights=weights)
@@ -839,12 +906,19 @@ class NML(object):
 
     def write(self, name, geo):
         # ...
+        d_dim = geo.Rd
         def exportPatch(nrb, filename):
             fo = open(filename, "w")
 
             # ...
             fo.write("&transf_label\n")
             fo.write("    label = "+"\""+filename+"\""+"\n")
+            fo.write("/" + "\n\n")
+            # ...
+
+            # ...
+            fo.write("&d_dimension\n")
+            fo.write("    d_dim = "+str(d_dim)+"\n")
             fo.write("/" + "\n\n")
             # ...
 
@@ -902,8 +976,6 @@ class NML(object):
             # ...
 
             # ... write Control Points
-            fo.write("&control_points\n")
-            fo.write("\n")
             n = nrb.shape
             x1 = []
             x2 = []
@@ -912,33 +984,90 @@ class NML(object):
             if nrb.dim == 1:
                 for i in range(0, n[0]):
                     x1.append(str(nrb.points[i,0])+' ')
+                fo.write("&control_points_1\n")
+                fo.write("\n")
                 fo.write("    control_pts1 = "+" ".join(x1)+"\n")
+                fo.write("/" + "\n\n")
+
+                if d_dim > 1:
+                    for i in range(0, n[0]):
+                        x2.append(str(nrb.points[i,1])+' ')
+                    fo.write("&control_points_2\n")
+                    fo.write("\n")
+                    fo.write("    control_pts2 = "+" ".join(x2)+"\n")
+                    fo.write("/" + "\n\n")
+
+                if d_dim > 2:
+                    for i in range(0, n[0]):
+                        x3.append(str(nrb.points[i,2])+' ')
+                    fo.write("&control_points_3\n")
+                    fo.write("\n")
+                    fo.write("    control_pts3 = "+" ".join(x3)+"\n")
+                    fo.write("/" + "\n\n")
+
 
             if nrb.dim == 2:
-                for i in range(0, n[0]):
-                    for j in range(0, n[1]):
+                for j in range(0, n[1]):
+                    for i in range(0, n[0]):
                         x1.append(str(nrb.points[i,j,0])+' ')
-                        x2.append(str(nrb.points[i,j,1])+' ')
+                fo.write("&control_points_1\n")
+                fo.write("\n")
                 fo.write("    control_pts1 = "+" ".join(x1)+"\n")
-                fo.write("    control_pts2 = "+" ".join(x2)+"\n")
+                fo.write("/" + "\n\n")
+
+                if d_dim > 1:
+                    for j in range(0, n[1]):
+                        for i in range(0, n[0]):
+                            x2.append(str(nrb.points[i,j,1])+' ')
+                    fo.write("&control_points_2\n")
+                    fo.write("\n")
+                    fo.write("    control_pts2 = "+" ".join(x2)+"\n")
+                    fo.write("/" + "\n\n")
+
+                if d_dim > 2:
+                    for j in range(0, n[1]):
+                        for i in range(0, n[0]):
+                            x3.append(str(nrb.points[i,j,1])+' ')
+                    fo.write("&control_points_3\n")
+                    fo.write("\n")
+                    fo.write("    control_pts3 = "+" ".join(x3)+"\n")
+                    fo.write("/" + "\n\n")
 
             if nrb.dim == 3:
-                for i in range(0, n[0]):
+                for k in range(0, n[2]):
                     for j in range(0, n[1]):
-                        for k in range(0, n[2]):
+                        for i in range(0, n[0]):
                             txt = str(nrb.points[i,j,k,:])[1:-1]
                             x1.append(str(nrb.points[i,j,k,0])+' ')
-                            x2.append(str(nrb.points[i,j,k,1])+' ')
-                            x3.append(str(nrb.points[i,j,k,2])+' ')
+                fo.write("&control_points_1\n")
+                fo.write("\n")
                 fo.write("    control_pts1 = "+" ".join(x1)+"\n")
-                fo.write("    control_pts2 = "+" ".join(x2)+"\n")
-                fo.write("    control_pts3 = "+" ".join(x3)+"\n")
-            fo.write("/" + "\n\n")
+                fo.write("/" + "\n\n")
+
+                if d_dim > 1:
+                    for k in range(0, n[2]):
+                        for j in range(0, n[1]):
+                            for i in range(0, n[0]):
+                                txt = str(nrb.points[i,j,k,:])[1:-1]
+                                x2.append(str(nrb.points[i,j,k,1])+' ')
+                    fo.write("&control_points_2\n")
+                    fo.write("\n")
+                    fo.write("    control_pts2 = "+" ".join(x2)+"\n")
+                    fo.write("/" + "\n\n")
+
+                if d_dim > 2:
+                    for k in range(0, n[2]):
+                        for j in range(0, n[1]):
+                            for i in range(0, n[0]):
+                                txt = str(nrb.points[i,j,k,:])[1:-1]
+                                x3.append(str(nrb.points[i,j,k,2])+' ')
+                    fo.write("&control_points_3\n")
+                    fo.write("\n")
+                    fo.write("    control_pts3 = "+" ".join(x3)+"\n")
+                    fo.write("/" + "\n\n")
             # ...
 
             # ... write weights
-            fo.write("&pt_weights\n")
-            fo.write("\n")
             n = nrb.shape
             wgts = []
             if nrb.dim == 1:
@@ -946,16 +1075,19 @@ class NML(object):
                     txt = str(nrb.weights[i])
                     wgts.append(txt)
             if nrb.dim == 2:
-                for i in range(0, n[0]):
-                    for j in range(0, n[1]):
+                for j in range(0, n[1]):
+                    for i in range(0, n[0]):
                         txt = str(nrb.weights[i,j])
                         wgts.append(txt)
             if nrb.dim == 3:
-                for i in range(0, n[0]):
+                for k in range(0, n[2]):
                     for j in range(0, n[1]):
-                        for k in range(0, n[2]):
+                        for i in range(0, n[0]):
                             txt = str(nrb.weights[i,j,k])
                             wgts.append(txt)
+
+            fo.write("&pt_weights\n")
+            fo.write("\n")
             fo.write("    weights = "+" ".join(wgts)+"\n")
             fo.write("/" + "\n\n")
             # ...

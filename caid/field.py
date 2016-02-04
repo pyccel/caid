@@ -136,16 +136,51 @@ class field(object):
         V.main(colormap=colormap, colorbar=colorbar, n=n)
 
     def VertexBuffer(self,n=None):
-        if self.dim == 2:
-            if self.fieldtype == "scalar":
-                return self.VertexBufferScalarSurface(n=n)
-            else:
-                raise("Field type not yet used")
+        if self.fieldtype == "scalar":
+            return self.VertexBufferScalar(n=n)
         else:
-            raise("Only 2D VertexBuffer are implemented for the moment.")
+            raise("Field type not yet used")
 
+    def VertexBufferScalar(self,n=None):
+        if self.dim == 1:
+            return self.VertexBufferScalar_1d(n=n)
+        if self.dim == 2:
+            return self.VertexBufferScalar_2d(n=n)
+        if self.dim == 3:
+            return self.VertexBufferScalar_3d(n=n)
 
-    def VertexBufferScalarSurface(self,n=None):
+    def VertexBufferScalar_1d(self,n=None):
+        list_arrays = []
+        for id in range(0, self.geometry.npatchs):
+            nrb = self.geometry[id]
+            srf = self.values[id]
+            if n is not None:
+                nx = n[0]
+            else:
+                nx = nrb.shape
+            ub = nrb.knots[0][0] ; ue = nrb.knots[0][-1]
+            u = linspace(ub,ue,nx)
+
+            array_vertex = zeros((2*(nx-1),4))
+            P = nrb(u)
+            A = srf(u)
+            vertex_ID = 0
+            for i in range(0,nx-1):
+                x = P[i+1,0] ; y = P[i+1,1] ; z = P[i+1,2]
+                a = A[i+1,0]
+                array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                vertex_ID += 1
+
+                x = P[i,0] ; y = P[i,1] ; z = P[i,2]
+                a = A[i,0]
+                array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                vertex_ID += 1
+            if self.surface:
+                array_vertex[:,2] = array_vertex[:,3]
+            list_arrays.append(array_vertex)
+        return list_arrays
+
+    def VertexBufferScalar_2d(self,n=None):
         list_arrays = []
         for id in range(0, self.geometry.npatchs):
             nrb = self.geometry[id]
@@ -184,6 +219,78 @@ class field(object):
                     a = A[i,j,0]
                     array_vertex[vertex_ID,:] = np.array([x,y,z,a])
                     vertex_ID += 1
+            if self.surface:
+                array_vertex[:,2] = array_vertex[:,3]
+            list_arrays.append(array_vertex)
+        return list_arrays
+
+    def VertexBufferScalar_3d(self,n=None):
+        list_arrays = []
+        for id in range(0, self.geometry.npatchs):
+            nrb = self.geometry[id]
+            srf = self.values[id]
+            if n is not None:
+                nx = n[0] ; ny = n[1] ; nz = n[2]
+            else:
+                nx,ny = nrb.shape
+            ub = nrb.knots[0][0] ; ue = nrb.knots[0][-1]
+            u = linspace(ub,ue,nx)
+            vb = nrb.knots[1][0] ; ve = nrb.knots[1][-1]
+            v = linspace(vb,ve,ny)
+            wb = nrb.knots[2][0] ; we = nrb.knots[2][-1]
+            w = linspace(wb,we,ny)
+
+            array_vertex = zeros((8*(nx-1)*(ny-1)*(nz-1),4))
+            P = nrb(u,v,w)
+            A = srf(u,v,w)
+            vertex_ID = 0
+            for k in range(0,nz-1):
+                for j in range(0,ny-1):
+                    for i in range(0,nx-1):
+                        # ... first face
+                        x = P[i+1,j,k,0] ; y = P[i+1,j,k,1] ; z = P[i+1,j,k,2]
+                        a = A[i+1,j,k,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+
+                        x = P[i+1,j+1,k,0] ; y = P[i+1,j+1,k,1] ; z = P[i+1,j+1,k,2]
+                        a = A[i+1,j+1,k,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+
+                        x = P[i,j+1,k,0] ; y = P[i,j+1,k,1] ; z = P[i,j+1,k,2]
+                        a = A[i,j+1,k,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+
+                        x = P[i,j,k,0] ; y = P[i,j,k,1] ; z = P[i,j,k,2]
+                        a = A[i,j,k,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+                        # ...
+
+                        # ... second face
+                        x = P[i+1,j,k+1,0] ; y = P[i+1,j,k+1,1] ; z = P[i+1,j,k+1,2]
+                        a = A[i+1,j,k+1,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+
+                        x = P[i+1,j+1,k+1,0] ; y = P[i+1,j+1,k+1,1] ; z = P[i+1,j+1,k+1,2]
+                        a = A[i+1,j+1,k+1,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+
+                        x = P[i,j+1,k+1,0] ; y = P[i,j+1,k+1,1] ; z = P[i,j+1,k+1,2]
+                        a = A[i,j+1,k+1,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+
+                        x = P[i,j,k+1,0] ; y = P[i,j,k+1,1] ; z = P[i,j,k+1,2]
+                        a = A[i,j,k+1,0]
+                        array_vertex[vertex_ID,:] = np.array([x,y,z,a])
+                        vertex_ID += 1
+                        # ...
+
             if self.surface:
                 array_vertex[:,2] = array_vertex[:,3]
             list_arrays.append(array_vertex)

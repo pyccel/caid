@@ -1562,6 +1562,7 @@ class cad_nurbs(cad_object, NURBS):
 
     #
     def evalMesh(self, npts=3):
+        print "npts : ", npts
         # ...
         def _refine_array(x, nref):
             u0 = x[0] ; u1 = x[-1]
@@ -1579,21 +1580,62 @@ class cad_nurbs(cad_object, NURBS):
         # ...
         breaks = self.breaks()
 
+        list_lines = []
         if self.dim == 1:
-            list_xref = []
-            for u in breaks:
-                list_xref.append(_refine_array(np.asarray(u), npts))
-            return [self(list_xref)]
+            u = _refine_array(breaks[0], npts)
+
+            n_u = u.shape[0]
+
+            Q = self(u)
+
+            L = Q[:,:]
+            list_lines.append(L)
+
         if self.dim == 2:
-            list_lines = []
-            for i in range(0,2):
-                xref = _refine_array(breaks[self.dim-i-1], npts)
-                for brk in breaks[i]:
-                    crv = self.extract(i, brk)
-                    list_lines.append(crv(xref))
-            return list_lines
+            u = _refine_array(breaks[0], npts)
+            v = _refine_array(breaks[1], npts)
+
+            n_u = u.shape[0]
+            n_v = v.shape[0]
+
+            Q = self(u,v)
+
+            for i in range(0, n_u):
+                L = Q[i,:,:]
+                list_lines.append(L)
+
+            for j in range(0, n_v):
+                L = Q[:,j,:]
+                list_lines.append(L)
+
         if self.dim == 3:
-            print("Not yet implemented")
+            list_lines = []
+
+            u = _refine_array(breaks[0], npts)
+            v = _refine_array(breaks[1], npts)
+            w = _refine_array(breaks[2], npts)
+
+            n_u = u.shape[0]
+            n_v = v.shape[0]
+            n_w = w.shape[0]
+
+            Q = self(u,v,w)
+
+            for i in range(0, n_u):
+                for j in range(0, n_v):
+                    L = Q[i,j,:,:]
+                    list_lines.append(L)
+
+            for j in range(0, n_v):
+                for k in range(0, n_w):
+                    L = Q[:,j,k,:]
+                    list_lines.append(L)
+
+            for i in range(0, n_u):
+                for k in range(0, n_w):
+                    L = Q[i,:,k,:]
+                    list_lines.append(L)
+        return list_lines
 
     def evaluate_deriv(self, *args, **kwargs):
         """
@@ -3306,8 +3348,16 @@ class cad_geometry(object):
                 mesh color
 
         """
-        from matplotlib.pyplot import plot
+        from mpl_toolkits.mplot3d import Axes3D
+        import matplotlib.pyplot as plt
+
         geo = self
+        if self.dim == 3:
+            fig = plt.figure()
+#            ax = fig.gca(projection='3d')
+            ax = fig.add_subplot(111, projection='3d')
+
+
         for patch_id in range(0, geo.npatchs):
             list_Lines = geo.evalMesh(npts=MeshResolution)[patch_id]
             for Line in list_Lines:
@@ -3316,9 +3366,16 @@ class cad_geometry(object):
                 for (i,i_1) in zip(list_iS, list_iE):
                     P   = Line[i  ,:]
                     P_1 = Line[i_1,:]
-                    x  = P[0]   ; y  = P[1]
-                    x1 = P_1[0] ; y1 = P_1[1]
-                    plot([x,x1], [y,y1], '-'+str(color))
+                    x  = P[0]   ; y  = P[1]    ; z  = P[2]
+                    x1 = P_1[0] ; y1 = P_1[1]  ; z1 = P_1[2]
+                    if self.dim < 3:
+                        plt.plot([x,x1], [y,y1], '-'+str(color))
+            if self.dim == 3:
+                for Line in list_Lines:
+                    x = Line[:,0]
+                    y = Line[:,1]
+                    z = Line[:,2]
+                    ax.plot(x,y,z, c='k')
 
     def plotJacobians(self, MeshResolution=10, vmin=None, vmax=None):
         """
