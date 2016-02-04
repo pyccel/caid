@@ -345,15 +345,19 @@ class inspectorTree(wx.TreeCtrl):
                                      -1,wx.TreeItemData(None) )
 
         if (nrb.dim > 1) and (nrb.__class__.__name__ in ["cad_nurbs"]):
-            for face in range(0,nrb.nFaces):
-                nrb_bnd = nrb.extract_face(face)
-                geo_bnd = cad_geometry()
-                geo_bnd.append(nrb_bnd)
-                _geo = geometry(geo_bnd)
-                _geo.face = face
-                faceItem  = self.AppendItem(facesItem, 'Face' \
-                                             , -1,
-                                            -1,wx.TreeItemData(_geo) )
+            face = 0
+            for axis in range(0, nrb.dim):
+                for i_bnd in range(0,1):
+
+                    nrb_bnd = nrb.extract_face(axis, i_bnd)
+                    geo_bnd = cad_geometry()
+                    geo_bnd.append(nrb_bnd)
+                    _geo = geometry(geo_bnd)
+                    _geo.face = face
+                    faceItem  = self.AppendItem(facesItem, 'Face' \
+                                                 , -1,
+                                                -1,wx.TreeItemData(_geo) )
+                    face += 1
 
         return patchItem
 

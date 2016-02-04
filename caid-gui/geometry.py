@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from caid.cad_geometry import cad_geometry
-from evaluator import CurveEvaluator, PatchEvaluator
+from evaluator import CurveEvaluator, SurfaceEvaluator, VolumeEvaluator
 from numpy import array, asarray
 from OpenGL.GL import *
 from theme import theme as Theme
@@ -315,7 +315,13 @@ class geometry(cad_geometry):
                                        , alpha=alpha\
                                        , steps=steps)
         if nrb.dim == 2:
-            evaluator = PatchEvaluator(nrb\
+            evaluator = SurfaceEvaluator(nrb\
+                                       , MeshColor=MeshColor\
+                                       , NurbsColor=NurbsColor\
+                                       , alpha=alpha\
+                                       , steps=steps)
+        if nrb.dim == 3:
+            evaluator = VolumeEvaluator(nrb\
                                        , MeshColor=MeshColor\
                                        , NurbsColor=NurbsColor\
                                        , alpha=alpha\

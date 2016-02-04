@@ -306,6 +306,7 @@ class GeometryActionsNew(ClassActions):
         self.CR5_ID = wx.NewId() ; CR5_TAG = "Circle 5 patchs"
         self.PC5_ID = wx.NewId() ; PC5_TAG = "Pinched Circle 5 patchs"
         self.TRL_ID = wx.NewId() ; TRL_TAG = "Triangle"
+        self.CUB_ID = wx.NewId() ; CUB_TAG = "Cube"
 
         list_buttonsInfo = []
         list_buttonsInfo.append([self.EMP_ID, EMP_TAG])
@@ -321,6 +322,7 @@ class GeometryActionsNew(ClassActions):
         list_buttonsInfo.append([self.CR5_ID, CR5_TAG])
         list_buttonsInfo.append([self.PC5_ID, PC5_TAG])
         list_buttonsInfo.append([self.TRL_ID, TRL_TAG])
+        list_buttonsInfo.append([self.CUB_ID, CUB_TAG])
         # ...
 
         ClassActions.__init__(self, parent, parentPanel, parentBox,
@@ -396,7 +398,11 @@ class GeometryActionsNew(ClassActions):
         if ID == self.TRL_ID:
             self.parent.objectActionsCreateTriangle.asGeometry()
             self.parent.ShowAction(self.parent.objectActionsCreateTriangle)
-
+        if ID == self.CUB_ID:
+#            from caid.cad_geometry import cube as domain
+            from caid.cad_geometry import trilinear as domain
+            geo = domain()
+            wk.add_geometry(geometry(geo))
 
 class GeometryActionsAdd(ClassActions):
     def __init__(self, parent, parentPanel, parentBox):
@@ -412,6 +418,7 @@ class GeometryActionsAdd(ClassActions):
         self.CR5_ID = wx.NewId() ; CR5_TAG = "Circle 5 patchs"
         self.PC5_ID = wx.NewId() ; PC5_TAG = "Pinched Circle 5 patchs"
         self.TRL_ID = wx.NewId() ; TRL_TAG = "Triangle"
+        self.CUB_ID = wx.NewId() ; CUB_TAG = "Cube"
 
         list_buttonsInfo = []
         list_buttonsInfo.append([self.LIN_ID, LIN_TAG])
@@ -426,6 +433,7 @@ class GeometryActionsAdd(ClassActions):
         list_buttonsInfo.append([self.CR5_ID, CR5_TAG])
         list_buttonsInfo.append([self.PC5_ID, PC5_TAG])
         list_buttonsInfo.append([self.TRL_ID, TRL_TAG])
+        list_buttonsInfo.append([self.CUB_ID, CUB_TAG])
         # ...
 
         ClassActions.__init__(self, parent, parentPanel, parentBox, list_buttonsInfo, backButton=True)
@@ -527,6 +535,16 @@ class GeometryActionsAdd(ClassActions):
                 macro_script.append("wk.add_patch(geoItem, geo, cad_nrb)")
                 macro_script.append("wk.Refresh(inspector=True)")
                 macro_script.append("# ...")
+
+        if ID == self.CUB_ID:
+#            from caid.cad_geometry import cube as domain
+            from caid.cad_geometry import trilinear as domain
+            nrb = domain()[0]
+            # inspector = self.parent
+            wk = self.parent.WorkGroup
+            geo = wk.inspector.currentGeometry
+            geoItem = wk.inspector.currentGeometryItem
+            wk.add_patch(geoItem, geo, nrb)
 
             wk.Refresh(inspector=True)
 

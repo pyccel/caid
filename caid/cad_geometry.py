@@ -948,6 +948,29 @@ def trilinear(points=None, n=None, p=None):
 
     return geo
 
+def cube(n=None, p=None, m=None):
+    """Creates a unit cube cad_geometry object.
+
+    Kwargs:
+        n (list int): This is a list containing the number of interior knots to insert. default None
+
+        p (list int): This is a list containing the spline degree of the line. default None
+
+    Returns:
+       A cad_geometry object.
+    """
+    points = np.zeros((2,2,2,3))
+    points[0,0,0,:] = np.asarray([0.,0.,0.])
+    points[0,0,1,:] = np.asarray([0.,0.,1.])
+    points[0,1,0,:] = np.asarray([0.,1.,0.])
+    points[0,1,1,:] = np.asarray([0.,1.,1.])
+    points[1,0,0,:] = np.asarray([1.,0.,0.])
+    points[1,0,1,:] = np.asarray([1.,0.,1.])
+    points[1,1,0,:] = np.asarray([1.,1.,0.])
+    points[1,1,1,:] = np.asarray([1.,1.,1.])
+
+    return trilinear(points=points, n=n, p=p, m=m)
+
 def merge(list_geo, npts=5):
     """
     merge a list of cad_geometries and update internal/external faces and connectivities
@@ -1562,7 +1585,6 @@ class cad_nurbs(cad_object, NURBS):
 
     #
     def evalMesh(self, npts=3):
-        print "npts : ", npts
         # ...
         def _refine_array(x, nref):
             u0 = x[0] ; u1 = x[-1]
@@ -1715,7 +1737,7 @@ class cad_nurbs(cad_object, NURBS):
         kwargs['rationalize'] = rationalize
         return NURBS.evaluate_deriv(self, *args, **kwargs)
 
-    def extract_face(self, face):
+    def extract_face(self, axis, face):
         """
         Extracts a face from the current cad_nurbs object.
 
@@ -1728,28 +1750,25 @@ class cad_nurbs(cad_object, NURBS):
         -------
             a cad_nurbs object
         """
-        dim = self.dim
-        if dim > 2:
-            print("extract_face : not yet implemeted")
-            raise
 
         # ...
-        nfaces =  4
-        list_sgn = [1]*4
-
+        n = self.shape[axis]
+        p = self.degree[axis]
+        i_bnd = 0
         if face == 0:
-            axis = 1
-            ubound = self.knots[axis][0]
-        if face == 1:
-            axis = 0
-            ubound = self.knots[axis][0]
-        if face == 2:
-            axis = 1
-            ubound = self.knots[axis][-1]
-        if face == 3:
-            axis = 0
-            ubound = self.knots[axis][-1]
+            i_bnd = p
+        elif face == 1:
+            i_bnd = n + 1
+        else:
+            print "wrong argument"
+            raise()
+        # ...
 
+        # ...
+        ubound = self.knots[axis][i_bnd]
+        # ...
+
+        # ...
         nrb_bnd = self.extract(axis,ubound)
         cad_nrb = cad_nurbs.__new__(type(self))
         cad_nrb._array = nrb_bnd.array
@@ -1761,6 +1780,7 @@ class cad_nurbs(cad_object, NURBS):
             pass
         cad_nrb._attributs = self._attributs
         cad_nrb.face = face
+        # ...
 
         return cad_nrb
 
@@ -1807,22 +1827,28 @@ class cad_nurbs(cad_object, NURBS):
             # ...
 
             plt.figure()
-            list_faces  = [0, 1, 2, 3]
-            list_colors = ['r', 'g', 'b', 'k']
-            for (face, color) in zip(list_faces, list_colors):
-                if face in [0,2]:
-                    axis = 0
-                else:
-                    axis = 1
+            list_colors = ['r', 'g', 'b', 'k', 'y', 'c']
 
+            i = 0
+            for axis in range(0, self.dim):
                 t1b = nrb.knots[axis][0] ; t1e = nrb.knots[axis][-1]
                 t2b = nrb.knots[axis][0] ; t2e = nrb.knots[axis][-1]
+
                 t1 = np.linspace(t1b,t1e,10)
                 t2 = np.linspace(t2b,t2e,100)
-                nrb_bnd = nrb.extract_face(face)
-                plot_crv(nrb_bnd, t1, t2, tangent=False, normal=True, color=color,
-                         label='Face '+str(face),scale=1.e-1, width='0.00001')
+                for i_face in range(0, 2):
+                    nrb_bnd = nrb.extract_face(axis, i_face)
+
+                    color = list_colors[i]
+
+                    plot_crv(nrb_bnd, t1, t2, tangent=False, normal=True, color=color,
+                             label='Face '+str(face),scale=1.e-1, width='0.00001')
+
+                    i += 1
             plt.legend()
+        else:
+            print "not yet implemented"
+            raise()
 
     def evaluate_deriv(self, u=None, v=None, w=None \
                        , fields=None, nderiv=1, rationalize=0):
@@ -2175,7 +2201,7 @@ class cad_op_nurbs(opNURBS, cad_object):
         kwargs['rationalize'] = rationalize
         return self._nrb.evaluate_deriv(*args, **kwargs)
 
-    def extract_face(self, face):
+    def extract_face(self, axis, face):
         """
         Extracts a face from the current cad_nurbs object.
 
@@ -2188,27 +2214,23 @@ class cad_op_nurbs(opNURBS, cad_object):
         -------
             a cad_nurbs object
         """
-        dim = self.dim
-        if dim > 2:
-            print("extract_face : not yet implemeted")
-            raise
 
         # ...
-        nfaces =  4
-        list_sgn = [1]*4
-
+        n = self.shape[axis]
+        p = self.degree[axis]
+        i_bnd = 0
         if face == 0:
-            axis = 1
-            ubound = self.knots[0][0]
-        if face == 1:
-            axis = 0
-            ubound = self.knots[1][0]
-        if face == 2:
-            axis = 1
-            ubound = self.knots[0][-1]
-        if face == 3:
-            axis = 0
-            ubound = self.knots[1][-1]
+            i_bnd = p
+        elif face == 1:
+            i_bnd = n + 1
+        else:
+            print "wrong argument"
+            raise()
+        # ...
+
+        # ...
+        ubound = self.knots[axis][i_bnd]
+        # ...
 
         nrb_bnd = self.extract(axis,ubound)
         cad_nrb = cad_nurbs.__new__(type(self))
@@ -2268,12 +2290,23 @@ class cad_op_nurbs(opNURBS, cad_object):
             t2 = np.linspace(t2b,t2e,100)
 
             plt.figure()
-            list_faces  = [0, 1, 2, 3]
-            list_colors = ['r', 'g', 'b', 'k']
-            for (face, color) in zip(list_faces, list_colors):
-                nrb_bnd = nrb.extract_face(face)
-                plot_crv(nrb_bnd, t1, t2, tangent=False, normal=True, color=color,
-                         label='Face '+str(face),scale=1.e-1, width='0.00001')
+            list_colors = ['r', 'g', 'b', 'k', 'y', 'c']
+            i = 0
+            for axis in range(0, self.dim):
+                t1b = nrb.knots[axis][0] ; t1e = nrb.knots[axis][-1]
+                t2b = nrb.knots[axis][0] ; t2e = nrb.knots[axis][-1]
+
+                t1 = np.linspace(t1b,t1e,10)
+                t2 = np.linspace(t2b,t2e,100)
+                for i_face in range(0, 2):
+                    nrb_bnd = nrb.extract_face(axis, i_face)
+
+                    color = list_colors[i]
+
+                    plot_crv(nrb_bnd, t1, t2, tangent=False, normal=True, color=color,
+                             label='Face '+str(face),scale=1.e-1, width='0.00001')
+
+                    i += 1
             plt.legend()
 
 class cad_grad_nurbs(cad_op_nurbs):
@@ -2942,13 +2975,6 @@ class cad_geometry(object):
         for i_s in range(0, geo_s.npatchs):
             geo.append(geo_s[i_s])
 
-        if geo_m.dim == 1:
-            nfaces = 2
-        if geo_m.dim == 2:
-            nfaces = 4
-        if geo_m.dim == 3:
-            nfaces = 6
-
         connectivity   = []
         for dict_con in geo_m._connectivity:
             connectivity.append(dict_con)
@@ -2960,6 +2986,7 @@ class cad_geometry(object):
             _dict_con['clone']    = [i_s+geo_m.npatchs,f_s]
             connectivity.append(_dict_con)
 
+        nFaces = 2 * geo_m.dim
         intext_faces_m = np.zeros((geo_m.npatchs, nfaces), dtype=np.int)
         intext_faces_s = np.zeros((geo_s.npatchs, nfaces), dtype=np.int)
         for i_m in range(0, geo_m.npatchs):
@@ -2967,29 +2994,38 @@ class cad_geometry(object):
             for i_s in range(0, geo_s.npatchs):
                 nrb_s = geo_s[i_s]
 
-                for f_m in range(0, nfaces):
-                    bnd_m = nrb_m.extract_face(f_m).clone()
-                    u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
-                    P_m = bnd_m(u_m)
-                    for f_s in range(0, nfaces):
-                        bnd_s = nrb_s.extract_face(f_s).clone()
-                        u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
-                        P_s = bnd_s(u_s)
+                f_m = 0
+                for axis_m in range(0, nrb_m.dim):
+                    for i_bnd_m in range(0, 2):
+                        f_m += 1
 
-                        isSameFace = np.allclose(P_m, P_s, rtol=0, atol=tol)
-                        isInvertFace = np.allclose(P_m[::-1], P_s, rtol=0, atol=tol)
-                        if isSameFace:
-                            dict_con = {}
-                            dict_con['original'] = [i_m,f_m]
-                            dict_con['clone']    = [i_s+geo_m.npatchs,f_s]
-                            connectivity.append(dict_con)
-                            intext_faces_m[i_m, f_m] = 1
-                            intext_faces_s[i_s, f_s] = 1
-                        if isInvertFace:
-                            print("Merging Error: Found uncorrect orientation. Please change the orientation of the patchs (master,slave): ("\
-                                    ,i_m,",",i_s,").")
+                        bnd_m = nrb_m.extract_face(axis_m, i_bnd_m).clone()
+                        u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
+                        P_m = bnd_m(u_m)
 
-                            print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
+                        f_s = 0
+                        for axis_s in range(0, nrb_s.dim):
+                            for i_bnd_s in range(0, 2):
+                                f_s += 1
+
+                                bnd_s = nrb_s.extract_face(axis_s, i_bnd_s).clone()
+                                u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
+                                P_s = bnd_s(u_s)
+
+                                isSameFace = np.allclose(P_m, P_s, rtol=0, atol=tol)
+                                isInvertFace = np.allclose(P_m[::-1], P_s, rtol=0, atol=tol)
+                                if isSameFace:
+                                    dict_con = {}
+                                    dict_con['original'] = [i_m,f_m]
+                                    dict_con['clone']    = [i_s+geo_m.npatchs,f_s]
+                                    connectivity.append(dict_con)
+                                    intext_faces_m[i_m, f_m] = 1
+                                    intext_faces_s[i_s, f_s] = 1
+                                if isInvertFace:
+                                    print("Merging Error: Found uncorrect orientation. Please change the orientation of the patchs (master,slave): ("\
+                                            ,i_m,",",i_s,").")
+
+                                    print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
 
 
         for intFace in geo_m._internal_faces:
@@ -3081,39 +3117,43 @@ class cad_geometry(object):
         """
         geo_m = self
 
-        if geo_m.dim == 1:
-            nfaces = 2
-        if geo_m.dim == 2:
-            nfaces = 4
-        if geo_m.dim == 3:
-            nfaces = 6
-
         connectivity   = []
 
+        nFaces = 2 * geo_m.dim
         intext_faces_m = np.zeros((geo_m.npatchs, nfaces), dtype=np.int)
         nrb_m = geo_m[i_m]
 
-        for f_m in range(0, nfaces):
-            bnd_m = nrb_m.extract_face(f_m).clone()
-            u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
-            P_m = bnd_m(u_m)
-            for f_s in range(f_m+1, nfaces):
-                bnd_s = nrb_m.extract_face(f_s).clone()
-                u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
-                P_s = bnd_s(u_s)
+        f_m = 0
+        for axis_m in range(0, nrb_m.dim):
+            for i_bnd_m in range(0, 2):
+                f_m += 1
 
-                isSameFace = np.allclose(P_m, P_s)
-                isInvertFace = np.allclose(P_m[::-1], P_s)
-                if isSameFace:
-                    dict_con = {}
-                    dict_con['original'] = [i_m,f_m]
-                    dict_con['clone']    = [i_m,f_s]
-                    connectivity.append(dict_con)
-                    intext_faces_m[i_m, f_m] = 1
-                    intext_faces_m[i_m, f_s] = 1
-                if isInvertFace:
-                    print("Merging Error: Found uncorrect orientation.")
-                    print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
+                bnd_m = nrb_m.extract_face(axis_m, i_bnd_m).clone()
+                u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
+                P_m = bnd_m(u_m)
+
+                f_s = 0
+                for axis_s in range(0, nrb_s.dim):
+                    for i_bnd_s in range(0, 2):
+                        f_s += 1
+
+                        bnd_s = nrb_s.extract_face(axis_s, i_bnd_s).clone()
+
+                        u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
+                        P_s = bnd_s(u_s)
+
+                        isSameFace = np.allclose(P_m, P_s)
+                        isInvertFace = np.allclose(P_m[::-1], P_s)
+                        if isSameFace:
+                            dict_con = {}
+                            dict_con['original'] = [i_m,f_m]
+                            dict_con['clone']    = [i_m,f_s]
+                            connectivity.append(dict_con)
+                            intext_faces_m[i_m, f_m] = 1
+                            intext_faces_m[i_m, f_s] = 1
+                        if isInvertFace:
+                            print("Merging Error: Found uncorrect orientation.")
+                            print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
 
 
         internalFaces = []
@@ -3289,6 +3329,10 @@ class cad_geometry(object):
         hole- to a 5 patchs
         description. the user must provide the internal face
         """
+        # TODO must be updated with the new signature of extract_face
+        print "Not yet implemented"
+        raise()
+
         if self.dim in [1,3]:
             print("This functions is only for 2D domains")
             raise
