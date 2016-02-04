@@ -803,8 +803,6 @@ class NML(object):
             knots_w = np.array(knots_w)
             knots.append(knots_w)
 
-        print "knots : ", knots
-
         if d_dim >=1:
             ctrl_pts_x = nml['control_points_1']['control_pts1']
             ctrl_pts_x = np.array(ctrl_pts_x)
@@ -828,7 +826,7 @@ class NML(object):
                 weights = np.ones((n_u,n_v,n_w))
 
         if p_dim ==1:
-            control_points = np.zeros((n_u, d_dim))
+            control_points = np.zeros((n_u, 3))
             control_points[:,0] = ctrl_pts_x
             if d_dim > 1:
                 control_points[:,1] = ctrl_pts_y
@@ -901,6 +899,9 @@ class NML(object):
                             I += 1
 
         from caid.cad_geometry import cad_nurbs
+
+#        print "knots : ", knots
+#        print "points : ", control_point
         nrb = cad_nurbs(knots, control=control_points, weights=weights)
         geo.append(nrb)
 
