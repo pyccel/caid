@@ -815,7 +815,7 @@ class NML(object):
 
         _weights = None
         try:
-            _weights = nml['pt_weights']['weights']
+            _weights = nml['control_weights']['weights']
             _weights = np.array(_weights)
         except:
             if p_dim ==1:
@@ -1087,7 +1087,7 @@ class NML(object):
                             txt = str(nrb.weights[i,j,k])
                             wgts.append(txt)
 
-            fo.write("&pt_weights\n")
+            fo.write("&control_weights\n")
             fo.write("\n")
             fo.write("    weights = "+" ".join(wgts)+"\n")
             fo.write("/" + "\n\n")

@@ -3380,7 +3380,7 @@ class cad_geometry(object):
 
         return geo_f
 
-    def plotMesh(self, MeshResolution=3, color='k'):
+    def plotMesh(self, MeshResolution=3, color='k', ax=None):
         """
         plot the corresponding mesh of the current cad_geometry.
 
@@ -3396,11 +3396,11 @@ class cad_geometry(object):
         import matplotlib.pyplot as plt
 
         geo = self
-        if self.dim == 3:
-            fig = plt.figure()
-#            ax = fig.gca(projection='3d')
-            ax = fig.add_subplot(111, projection='3d')
+        if ax is None:
+            _fig = plt.figure()
 
+            if self.dim == 3:
+                ax = _fig.add_subplot(111, projection='3d')
 
         for patch_id in range(0, geo.npatchs):
             list_Lines = geo.evalMesh(npts=MeshResolution)[patch_id]
