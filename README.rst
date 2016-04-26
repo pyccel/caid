@@ -10,6 +10,8 @@ For more details, please read [**CAID**](http://ratnani.org/caid_doc/)
 
 * as a GUI modeler: for a better interactive use
 
+In order to follow related developments to CAID, please visit our JOREK-Django project on  (https://tree.taiga.io/project/ratnani-jorek-django/)
+
 Common requierements
 ====================
 
