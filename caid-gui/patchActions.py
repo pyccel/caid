@@ -2,6 +2,7 @@
 import wx
 from geometry import geometry
 from caid.cad_geometry import cad_geometry, cad_nurbs
+from caid.cad_geometry import couple_vers_entier, entier_vers_couple
 from viewer import Viewer
 from numpy import pi, linspace, array, zeros
 import numpy as np
@@ -1221,7 +1222,9 @@ class PatchActionsExtract(ClassActions):
             patchItem = wk.inspector.currentPatchItem
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
             geo = wk.inspector.tree.GetPyData(geoItem)
-            nrb = patch.extract_face(self.face)
+
+            axis, side = entier_vers_couple(self.face)
+            nrb = patch.extract_face(axis, side)
             wk.add_patch(geoItem, geo, nrb)
             # macro recording
             if wk.macroRecording:

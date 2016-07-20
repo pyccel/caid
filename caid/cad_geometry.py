@@ -11,6 +11,30 @@ _bsp = bsplinelib.bsp
 
 from numpy import pi, sqrt, array, zeros
 
+# ... TODO to move from here
+def couple_vers_entier(x,y):
+    if (x == 0) :
+        if (y == 0) :
+            return 1
+        else :
+            return 3
+    else :
+        if (y == 0) :
+            return 0
+        else :
+            return 2
+
+def entier_vers_couple(x):
+    if (x == 0) :
+        return [1,0]
+    elif (x == 1) :
+        return [0,0]
+    elif (x == 2) :
+        return [1,1]
+    elif (x == 3) :
+        return [0,1]
+# ...
+
 def line(n=None, p=None):
     """Creates a unit line cad_geometry object.
 
@@ -1737,13 +1761,14 @@ class cad_nurbs(cad_object, NURBS):
         kwargs['rationalize'] = rationalize
         return NURBS.evaluate_deriv(self, *args, **kwargs)
 
-    def extract_face(self, axis, face):
+    def extract_face(self, axis, side):
         """
         Extracts a face from the current cad_nurbs object.
 
         Parameters
         ----------
-        face : int
+        axis : int
+        side : int
             the ID of the boundary when want to extract
 
         Returns
@@ -1755,9 +1780,9 @@ class cad_nurbs(cad_object, NURBS):
         n = self.shape[axis]
         p = self.degree[axis]
         i_bnd = 0
-        if face == 0:
+        if side == 0:
             i_bnd = p
-        elif face == 1:
+        elif side == 1:
             i_bnd = n + 1
         else:
             print "wrong argument"
@@ -1766,6 +1791,7 @@ class cad_nurbs(cad_object, NURBS):
 
         # ...
         ubound = self.knots[axis][i_bnd]
+        face = couple_vers_entier(axis, side)
         # ...
 
         # ...
@@ -1836,8 +1862,9 @@ class cad_nurbs(cad_object, NURBS):
 
                 t1 = np.linspace(t1b,t1e,10)
                 t2 = np.linspace(t2b,t2e,100)
-                for i_face in range(0, 2):
-                    nrb_bnd = nrb.extract_face(axis, i_face)
+                for side in range(0, 2):
+                    nrb_bnd = nrb.extract_face(axis, side)
+                    face = couple_vers_entier(axis, side)
 
                     color = list_colors[i]
 
@@ -2201,13 +2228,14 @@ class cad_op_nurbs(opNURBS, cad_object):
         kwargs['rationalize'] = rationalize
         return self._nrb.evaluate_deriv(*args, **kwargs)
 
-    def extract_face(self, axis, face):
+    def extract_face(self, axis, side):
         """
         Extracts a face from the current cad_nurbs object.
 
         Parameters
         ----------
-        face : int
+        axis : int
+        side : int
             the ID of the boundary when want to extract
 
         Returns
@@ -2219,9 +2247,9 @@ class cad_op_nurbs(opNURBS, cad_object):
         n = self.shape[axis]
         p = self.degree[axis]
         i_bnd = 0
-        if face == 0:
+        if side == 0:
             i_bnd = p
-        elif face == 1:
+        elif side == 1:
             i_bnd = n + 1
         else:
             print "wrong argument"
@@ -2230,6 +2258,7 @@ class cad_op_nurbs(opNURBS, cad_object):
 
         # ...
         ubound = self.knots[axis][i_bnd]
+        face = couple_vers_entier(axis, side)
         # ...
 
         nrb_bnd = self.extract(axis,ubound)
@@ -2298,8 +2327,9 @@ class cad_op_nurbs(opNURBS, cad_object):
 
                 t1 = np.linspace(t1b,t1e,10)
                 t2 = np.linspace(t2b,t2e,100)
-                for i_face in range(0, 2):
-                    nrb_bnd = nrb.extract_face(axis, i_face)
+                for side in range(0, 2):
+                    nrb_bnd = nrb.extract_face(axis, side)
+                    face = couple_vers_entier(axis, side)
 
                     color = list_colors[i]
 
@@ -3337,10 +3367,8 @@ class cad_geometry(object):
             print("This functions is only for 2D domains")
             raise
 
-        if face in [0,2]:
-            axis = 0
-        if face in [1,3]:
-            axis = 1
+        axis, side = entier_vers_couple(face)
+
         geo = self.clone()
         list_t = [0.25,0.5,0.75]
         for i,t in enumerate(list_t[:-1]):
@@ -3353,12 +3381,12 @@ class cad_geometry(object):
         geo = _geo
 
         # ... Import the circle domain
-        c0 = geo[0].extract_face(face)
-        c1 = geo[1].extract_face(face)
+        c0 = geo[0].extract_face(axis, side)
+        c1 = geo[1].extract_face(axis, side)
         c1.reverse(0)
-        c2 = geo[2].extract_face(face)
+        c2 = geo[2].extract_face(axis, side)
         c2.reverse(0)
-        c3 = geo[3].extract_face(face)
+        c3 = geo[3].extract_face(axis, side)
 
         from igakit.cad import coons
         curves = [[c1,c3],[c0,c2]]

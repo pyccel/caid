@@ -4,6 +4,7 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 from geometry import geometry
 from caid.cad_geometry import cad_geometry
+from caid.cad_geometry import couple_vers_entier, entier_vers_couple
 from viewer import Viewer
 from numpy import pi, linspace
 import numpy as np
@@ -345,19 +346,16 @@ class inspectorTree(wx.TreeCtrl):
                                      -1,wx.TreeItemData(None) )
 
         if (nrb.dim > 1) and (nrb.__class__.__name__ in ["cad_nurbs"]):
-            face = 0
-            for axis in range(0, nrb.dim):
-                for i_bnd in range(0,1):
-
-                    nrb_bnd = nrb.extract_face(axis, i_bnd)
-                    geo_bnd = cad_geometry()
-                    geo_bnd.append(nrb_bnd)
-                    _geo = geometry(geo_bnd)
-                    _geo.face = face
-                    faceItem  = self.AppendItem(facesItem, 'Face' \
-                                                 , -1,
-                                                -1,wx.TreeItemData(_geo) )
-                    face += 1
+            for face in range(0, 2 * nrb.dim):
+                axis, i_bnd = entier_vers_couple(face)
+                nrb_bnd = nrb.extract_face(axis, i_bnd)
+                geo_bnd = cad_geometry()
+                geo_bnd.append(nrb_bnd)
+                _geo = geometry(geo_bnd)
+                _geo.face = face
+                faceItem  = self.AppendItem(facesItem, 'Face' \
+                                             , -1,
+                                            -1,wx.TreeItemData(_geo) )
 
         return patchItem
 
@@ -906,7 +904,8 @@ class inspectorTree(wx.TreeCtrl):
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
             patch     = self.GetPyData(patchItem)
             face_id = face.face
-            nrb = patch.extract_face(face_id)
+            axis, side = entier_vers_couple(face_id)
+            nrb = patch.extract_face(axis, side)
             geoItem = self.inspector.tree.GetItemParent(patchItem)
             geo = self.inspector.tree.GetPyData(geoItem)
             wk.add_patch(geoItem, geo, nrb)
@@ -918,7 +917,8 @@ class inspectorTree(wx.TreeCtrl):
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
             patch     = self.GetPyData(patchItem)
             face_id = face.face
-            nrb = patch.extract_face(face_id)
+            axis, side = entier_vers_couple(face_id)
+            nrb = patch.extract_face(axis, side)
             from geometry import controlToList
             X,Y,Z,W = controlToList(nrb.control)
             for x,y,z,w in zip(X,Y,Z,W):
