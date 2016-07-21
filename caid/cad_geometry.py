@@ -3016,7 +3016,7 @@ class cad_geometry(object):
             _dict_con['clone']    = [i_s+geo_m.npatchs,f_s]
             connectivity.append(_dict_con)
 
-        nFaces = 2 * geo_m.dim
+        nfaces = 2 * geo_m.dim
         intext_faces_m = np.zeros((geo_m.npatchs, nfaces), dtype=np.int)
         intext_faces_s = np.zeros((geo_s.npatchs, nfaces), dtype=np.int)
         for i_m in range(0, geo_m.npatchs):
@@ -3027,7 +3027,6 @@ class cad_geometry(object):
                 f_m = 0
                 for axis_m in range(0, nrb_m.dim):
                     for i_bnd_m in range(0, 2):
-                        f_m += 1
 
                         bnd_m = nrb_m.extract_face(axis_m, i_bnd_m).clone()
                         u_m = np.linspace(bnd_m.knots[0][0],bnd_m.knots[0][-1],npts)
@@ -3036,7 +3035,6 @@ class cad_geometry(object):
                         f_s = 0
                         for axis_s in range(0, nrb_s.dim):
                             for i_bnd_s in range(0, 2):
-                                f_s += 1
 
                                 bnd_s = nrb_s.extract_face(axis_s, i_bnd_s).clone()
                                 u_s = np.linspace(bnd_s.knots[0][0],bnd_s.knots[0][-1],npts)
@@ -3056,6 +3054,8 @@ class cad_geometry(object):
                                             ,i_m,",",i_s,").")
 
                                     print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
+                                f_s += 1
+                        f_m += 1
 
 
         for intFace in geo_m._internal_faces:
@@ -3149,7 +3149,7 @@ class cad_geometry(object):
 
         connectivity   = []
 
-        nFaces = 2 * geo_m.dim
+        nfaces = 2 * geo_m.dim
         intext_faces_m = np.zeros((geo_m.npatchs, nfaces), dtype=np.int)
         nrb_m = geo_m[i_m]
 
