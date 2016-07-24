@@ -1878,14 +1878,13 @@ class cad_nurbs(cad_object, NURBS):
             raise()
 
     def evaluate_deriv(self, u=None, v=None, w=None \
-                       , fields=None, nderiv=1, rationalize=0):
+                       , nderiv=1):
         """
         Evaluate the NURBS object at the given parametric values.
 
         Parameters
         ----------
         u, v, w : float or array_like
-        fields : bool or array_like, optional
 
         Examples
         --------
@@ -1936,26 +1935,13 @@ class cad_nurbs(cad_object, NURBS):
         #
 
         #
-        if fields is None or isinstance(fields, bool):
-            F = None
-        else:
-            F = np.asarray(fields, dtype='d')
-            shape = self.shape
-            if F.shape == shape:
-                F = F[...,np.newaxis]
-            else:
-                assert F.ndim-1 == len(shape)
-                assert F.shape[:-1] == shape
-            fields = True
-        #
-        if F is not None:
-            Cw = self.control
-            w = Cw[...,3,np.newaxis]
-            CwF = np.concatenate([Cw, F*w], axis=-1)
-            array = np.ascontiguousarray(CwF)
-        else:
-            array = self.array
+        array = self.array
+        d_norm = np.linalg.norm(self.weights - np.ones_like(self.weights))
+        rationalize = 0
+        if d_norm > 1.e-7:
+            rationalize = 1
         arglist = [nderiv, nderivatives, rationalize]
+        print " rationalize ", rationalize
         for p, U in zip(self.degree, self.knots):
             arglist.extend([p, U])
         arglist.append(array)

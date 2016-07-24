@@ -1213,7 +1213,7 @@ subroutine EvaluateDeriv2(nderiv,N,rationalize,d,nx,px,Ux,ny,py,Uy,Pw,rx,X,ry,Y,
   integer(kind=4), intent(in)  :: nderiv
   integer(kind=4), intent(in)  :: N 
   integer(kind=4), intent(in)  :: rationalize 
-  integer(kind=4), intent(in)  :: d
+  integer(kind=4), intent(in)  :: d ! is d+1 : if P in IR^3 then d = 4 
   integer(kind=4), intent(in)  :: nx, ny
   integer(kind=4), intent(in)  :: px, py
   integer(kind=4), intent(in)  :: rx, ry
@@ -1221,7 +1221,7 @@ subroutine EvaluateDeriv2(nderiv,N,rationalize,d,nx,px,Ux,ny,py,Uy,Pw,rx,X,ry,Y,
   real   (kind=8), intent(in)  :: Uy(0:ny+py+1)
   real   (kind=8), intent(in)  :: Pw(d,0:ny,0:nx)
   real   (kind=8), intent(in)  :: X(0:rx), Y(0:ry)
-  real   (kind=8), intent(out) :: Cw(d,0:ry,0:rx,0:N)
+  real   (kind=8), intent(out) :: Cw(d,0:ry,0:rx,0:N) !TODO d to change to d-1
   integer(kind=4) :: ix, jx, iy, jy, ox, oy, deriv
   integer(kind=4) :: spanx(0:rx), spany(0:ry)
   real   (kind=8) :: dbasisx(0:px,0:nderiv,0:rx)
@@ -1230,7 +1230,7 @@ subroutine EvaluateDeriv2(nderiv,N,rationalize,d,nx,px,Ux,ny,py,Uy,Pw,rx,X,ry,Y,
   ! Rdbasis(1) => dx Rij
   ! Rdbasis(2) => dy Rij
   real   (kind=8) :: Rdbasis(0:N)  
-  real   (kind=8) :: C(d,0:N)
+  real   (kind=8) :: C(d-1,0:N)
   real   (kind=8) :: weight 
   real   (kind=8) :: M, Mx, My, Mxy, Mxx, Myy
   real   (kind=8) :: w, wx, wy, wxy, wxx, wyy
@@ -1295,7 +1295,11 @@ subroutine EvaluateDeriv2(nderiv,N,rationalize,d,nx,px,Ux,ny,py,Uy,Pw,rx,X,ry,Y,
         do jx = 0, px
         do jy = 0, py     
            M   = dbasisx(jx,0,ix) * dbasisy(jy,0,iy)
-           Rdbasis(0) = M  / w
+           if (rationalize==1) then
+              Rdbasis(0) = M  / w
+           else
+              Rdbasis(0) = M  
+           end if
 
            if (nderiv >= 1) then
               Mx  = dbasisx(jx,1,ix) * dbasisy(jy,0,iy)
@@ -1337,12 +1341,12 @@ subroutine EvaluateDeriv2(nderiv,N,rationalize,d,nx,px,Ux,ny,py,Uy,Pw,rx,X,ry,Y,
            end if
 
            do deriv=0,N
-              C(:,deriv) = C(:,deriv) + Rdbasis(deriv) * Pw(:,oy+jy,ox+jx)
+              C(1:d-1,deriv) = C(1:d-1,deriv) + Rdbasis(deriv) * Pw(1:d-1,oy+jy,ox+jx)
            end do
         end do
         end do
 
-        Cw(1:d,iy,ix,0:N) = C(1:d,0:N)
+        Cw(1:d-1,iy,ix,0:N) = C(1:d-1,0:N)
      ! ---
 
   end do
