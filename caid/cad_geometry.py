@@ -1941,7 +1941,7 @@ class cad_nurbs(cad_object, NURBS):
         if d_norm > 1.e-7:
             rationalize = 1
         arglist = [nderiv, nderivatives, rationalize]
-        print " rationalize ", rationalize
+
         for p, U in zip(self.degree, self.knots):
             arglist.extend([p, U])
         arglist.append(array)
