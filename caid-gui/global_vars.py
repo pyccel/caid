@@ -1,6 +1,6 @@
 import os
 
-CAIDwildcard = "CAID file (*.xml; *.txt; *.zip)|*.xml;*.txt;*.zip|"
+CAIDwildcard = "CAID file (*.xml; *.txt; *.zip)|*.xml;*.txt;*.zip"
 CAIDWorkGroupwildcard = "CAID WorkGroup file (*.wkl)|*.wkl|"
 CAIDViewerWildcard = "Image (*.png; *.jpeg)|*.png;*.jpeg|"
 CAIDConnectivityWildcard = "Connectivity (*.zip)|*.zip|"
