@@ -1,12 +1,12 @@
 import os
 
 CAIDwildcard = "CAID file (*.xml; *.txt; *.zip)|*.xml;*.txt;*.zip"
-CAIDWorkGroupwildcard = "CAID WorkGroup file (*.wkl)|*.wkl|"
-CAIDViewerWildcard = "Image (*.png; *.jpeg)|*.png;*.jpeg|"
-CAIDConnectivityWildcard = "Connectivity (*.zip)|*.zip|"
-CAIDFieldWildcard = "Field (*.pfl)|*.pfl|"
-CAIDMarkerswildcard = "Markers (*.txt)|*.txt|"
-CAIDThemewildcard = "CAID Theme file (*.xml)|*.xml|"
+CAIDWorkGroupwildcard = "CAID WorkGroup file (*.wkl)|*.wkl"
+CAIDViewerWildcard = "Image (*.png; *.jpeg)|*.png;*.jpeg"
+CAIDConnectivityWildcard = "Connectivity (*.zip)|*.zip"
+CAIDFieldWildcard = "Field (*.pfl)|*.pfl"
+CAIDMarkerswildcard = "Markers (*.txt)|*.txt"
+CAIDThemewildcard = "CAID Theme file (*.xml)|*.xml"
 
 DIM_PROJECT = 0
 
