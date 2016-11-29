@@ -3,7 +3,7 @@ import numpy as np
 from numpy import linspace
 from igakit.nurbs import NURBS
 from .op_nurbs import opNURBS
-from .io import XML, TXT
+from .io import XML, TXT, NML
 import sys
 from caid.core import bspline as bsplinelib
 
@@ -1114,8 +1114,8 @@ class cad_io:
             print("cad_io : mode must be r or w")
             raise
 
-        if self.__format__ not in ["xml","zip","txt"]:
-            print("cad_io : format must be xml, zip or txt")
+        if self.__format__ not in ["xml","zip","txt", "nml"]:
+            print("cad_io : format must be xml, nml, zip or txt")
             raise
 
     def read(self, geo):
@@ -1137,6 +1137,16 @@ class cad_io:
         if self.__format__=="xml":
             try:
                 rw = XML()
+                return rw.read(self.__filename__, geo)
+            except IOError as e:
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+
+        if self.__format__=="nml":
+            try:
+                rw = NML()
                 return rw.read(self.__filename__, geo)
             except IOError as e:
                 print("I/O error({0}): {1}".format(e.errno, e.strerror))
