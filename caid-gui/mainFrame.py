@@ -153,7 +153,7 @@ class Frame(wx.Frame):
     #                V = wk.fields_viewer
     #                V.Show(True)
 
-                if ext == "xml":
+                if ext in  ["xml", "nml"]:
                     print(filename)
                     print((os.path.isfile(filename)))
                     if os.path.isfile(filename):
