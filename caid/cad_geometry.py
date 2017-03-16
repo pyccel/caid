@@ -914,6 +914,7 @@ def miller_equilibrium(rmin=0.5, rmax=1.0, n=None, p=None, params_shape=None,
 
 
 def trilinear(points=None, n=None, p=None):
+    # TODO add multiplicity
     from igakit.cad import trilinear as nrb_trilinear
     """Creates a Trilinear cad_geometry object. TODO: needs to be updated
 
@@ -993,7 +994,10 @@ def cube(n=None, p=None, m=None):
     points[1,1,0,:] = np.asarray([1.,1.,0.])
     points[1,1,1,:] = np.asarray([1.,1.,1.])
 
-    return trilinear(points=points, n=n, p=p, m=m)
+    if m is not None:
+        print ("TODO add multiplicity in cube and trilinear")
+
+    return trilinear(points=points, n=n, p=p)
 
 def merge(list_geo, npts=5):
     """
