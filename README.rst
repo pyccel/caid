@@ -140,3 +140,5 @@ Runing **CAID** can be done in different ways.
 
 TODO
 ====
+
+- update setup file, using pip to install all dependencies.
