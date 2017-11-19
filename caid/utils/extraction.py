@@ -152,8 +152,8 @@ class BezierExtraction():
         geo.append(nrb)
 
         if verbose:
-            print("== shape before ", nrb.shape)
-            print(nrb.knots)
+            print(("== shape before ", nrb.shape))
+            print((nrb.knots))
 
         list_t = []
         for axis in range(0, nrb.dim):
@@ -190,14 +190,14 @@ class BezierExtraction():
             if check:
                 if nrb.dim == 1:
                     if verbose:
-                        print("matrix shape ", M.shape)
+                        print(("matrix shape ", M.shape))
                     R = M.dot(nrb.points[:,0])
 
 #                    geo.refine(id=0, list_t=[list_r])
                     nrb     = geo[0]
                     if verbose:
-                        print("== shape after ", nrb.shape)
-                        print(nrb.knots)
+                        print(("== shape after ", nrb.shape))
+                        print((nrb.knots))
 
                     P = np.asarray(nrb.points[:,0])
                     assert(np.allclose(P,R))

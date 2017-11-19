@@ -22,7 +22,7 @@ for d in range(0,degree+1):
     allBinom.append(values)
 
 for d in range(0, degree+1):
-    print(len(allBinom[d]))
+    print((len(allBinom[d])))
 
 def binom(n,i):
     return allBinom[n][i]

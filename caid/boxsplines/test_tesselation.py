@@ -101,7 +101,7 @@ if __name__ == "__main__":
     tess.scale(h)
     tess.plot()
 
-    print(point_inside_polygon(0.25,0.25,tess))
+    print((point_inside_polygon(0.25,0.25,tess)))
 
     patches.append(tess.polygon)
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 #        patches.append(tess.polygon)
 #        tess.plot()
 
-    print(len(patches))
+    print((len(patches)))
 
     colors = 100*np.random.rand(len(patches))
     p = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.4)

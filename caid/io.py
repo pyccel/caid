@@ -1797,7 +1797,7 @@ class BZR(object):
 
     def write(self, geo, fmt="txt", basename=None, dirname=None, basis_only=False):
         # ...
-        print("xxxxx degree " , geo[0].degree)
+        print(("xxxxx degree " , geo[0].degree))
         if geo.dim == 1:
             raise NotImplementedError("Not yet implemented")
 
@@ -2063,7 +2063,7 @@ class Writer_geopdes(object):
         for enum, interface in enumerate(geo.connectivity):
             line = "INTERFACE " + str(enum+1) + "\n"
             writer.add_line(line, dtype='s')
-            for key, value in interface.items():
+            for key, value in list(interface.items()):
                 i_patch = value[0]+1
                 i_face = geopdes_to_caid_faces_2d(value[1])
                 data = [i_patch, i_face]
@@ -2267,7 +2267,7 @@ class geopdes(object):
         for i_line,line in enumerate(lines):
             r = line.find(text)
             if r != -1:
-                print(">> find patch ", i_patch, " at the line number ", i_line)
+                print((">> find patch ", i_patch, " at the line number ", i_line))
                 return i_line
         return None
     # ...

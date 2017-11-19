@@ -342,8 +342,7 @@ class connectivity:
             is_periodic_uniform_bspline = is_periodic_uniform_bspline or condition
 
         if is_periodic_uniform_bspline and (len(geometry) > 1):
-            print ("periodic uniform bsplines works only for 1 patch")
-            raise()
+            raise ValueError("periodic uniform bsplines works only for 1 patch")
         if is_periodic_uniform_bspline:
             if geometry.dim == 1:
                 nrb = geometry[0]
@@ -369,8 +368,7 @@ class connectivity:
                 self.LM = []
                 self.init_LM()
             if geometry.dim == 3:
-                print ("not yet implemented")
-                raise()
+                raise NotImplementedError("not yet implemented")
 
     def init_ID(self, bound_cond):
         list_n = self.list_n
@@ -432,19 +430,19 @@ class connectivity:
         print("*******************************")
         print(" global informations ")
         print("*******************************")
-        print(" number of patchs :", self.npatch)
-        print(" nnp :", self.nnp)
+        print((" number of patchs :", self.npatch))
+        print((" nnp :", self.nnp))
         print("*******************************")
         if (with_IEN or with_LM):
             for li_id in range(0, self.npatch):
                 print("*******************************")
-                print(" Current Patch-id =", li_id)
+                print((" Current Patch-id =", li_id))
                 li_nel = self.list_nel[li_id]
                 li_nen = self.list_nen[li_id]
                 li_nnp = self.list_nnp[li_id]
-                print("-- nel =", li_nel)
-                print("-- nen =", li_nen)
-                print("-- nnp =", li_nnp)
+                print(("-- nel =", li_nel))
+                print(("-- nen =", li_nen))
+                print(("-- nnp =", li_nnp))
                 print("*******************************")
 
                 if with_IEN:
@@ -452,8 +450,8 @@ class connectivity:
                     print(" IEN ")
                     print("======")
                     for li_e in range(0, li_nel):
-                        print("     elt =", li_e)
-                        print("          ", self.IEN[li_id][:, li_e])
+                        print(("     elt =", li_e))
+                        print(("          ", self.IEN[li_id][:, li_e]))
                     print("======")
 
                 if with_LM:
@@ -461,8 +459,8 @@ class connectivity:
                     print(" LM ")
                     print("======")
                     for li_e in range(0, li_nel):
-                        print("     elt =", li_e)
-                        print("          ", self.LM[li_id][:, li_e])
+                        print(("     elt =", li_e))
+                        print(("          ", self.LM[li_id][:, li_e]))
                     print("======")
 
                 print("*******************************")
@@ -471,7 +469,7 @@ class connectivity:
             print("===============================")
             print(" ID ")
             print("===============================")
-            print(" ", self.ID[:])
+            print((" ", self.ID[:]))
             print("===============================")
 
     def save(self, etiq="", fmt='zip', name=None):

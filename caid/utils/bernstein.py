@@ -46,8 +46,7 @@ if __name__ == "__main__":
         py = int(sys.argv[2])
         nderiv = int(sys.argv[3])
     except:
-        raise("Error: you should run this script as: python bernstein.py px py nderiv." \
-              "Where px and py are the Bernstein polynomial degrees")
+        raise "Error: you should run this script as: python bernstein.py px py nderiv."
 
     # ... create a Bezier patch of the given polynomial degrees
     Bx = bernstein(px)

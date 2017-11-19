@@ -20,7 +20,7 @@ class colorbar(field):
         self._colormap = colormap
         self._C = C
         self._side = side
-        print("> create colorbar with ", len(C), " side ", side)
+        print(("> create colorbar with ", len(C), " side ", side))
 
         if side == 'right':
             scale = [0.25, 2.]

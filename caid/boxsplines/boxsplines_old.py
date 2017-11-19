@@ -32,7 +32,7 @@ def boxspline(x,y,n):
 
 
 def boxspline_gen(x1,x2,n,r1,r2):
-    print(x1[5,5], x2[5,5])
+    print((x1[5,5], x2[5,5]))
 
     det = r1[0]*r2[1]-r1[1]*r2[0]
     x1 = -abs(x1); x2 = abs(x2);
@@ -46,7 +46,7 @@ def boxspline_gen(x1,x2,n,r1,r2):
     ind = where(v>u/2)
     v[ind]=u[ind]-v[ind]
 
-    print(u[5,5], v[5,5])
+    print((u[5,5], v[5,5]))
 
     val=np.zeros(np.shape(x1))
     for K in range(-n,n+1) :#mceil(u.max())):
@@ -62,7 +62,7 @@ def boxspline_gen(x1,x2,n,r1,r2):
                         * aux2**(2*n-1+d)
 
 
-    print(val[4:7,4:7])
+    print((val[4:7,4:7]))
     return val
 
 
@@ -211,8 +211,8 @@ Xi1 = boxspline(X,Y,3)
 #
 from scipy.spatial import Delaunay
 import matplotlib.tri as mtri
-print(X.shape)
-print(X.size)
+print((X.shape))
+print((X.size))
 points = np.zeros((X.size, 2))
 points[:,0] = X.reshape(X.size)
 points[:,1] = Y.reshape(Y.size)
