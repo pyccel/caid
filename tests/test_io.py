@@ -9,7 +9,7 @@ import sys
 
 
 def test1():
-    print "====== test 1  ====="
+    print("====== test 1  =====")
     nx = 3
     px = 3
     geo = line(n=[nx], p=[px])
@@ -27,14 +27,14 @@ def test2():
     #list_lmatrices = geo.bezier_extract()
 
     nrb = geo[0]
-    print(">>> shape ", nrb.shape)
-    print(">>> ux    ", nrb.knots[0])
-    print(">>> uy    ", nrb.knots[1])
+    print((">>> shape ", nrb.shape))
+    print((">>> ux    ", nrb.knots[0]))
+    print((">>> uy    ", nrb.knots[1]))
     filename = "bezier"
     geo.to_bezier_patchs(filename)
 
 def test3():
-    print "====== test 3 : bezier patchs  ====="
+    print("====== test 3 : bezier patchs  =====")
     geo = square(p=[px,py])
     u = np.linspace(0., 1.0, nx+2)[1:-1]
     v = np.linspace(0., 1.0, ny+2)[1:-1]
@@ -51,7 +51,7 @@ def test3():
     geo.to_bezier_patchs(filename)
 
 def test4():
-    print "====== test 4  ====="
+    print("====== test 4  =====")
     nx = 3 ; px = 3
     geo = periodic_line(n=[nx], p=[px])
 
@@ -72,7 +72,7 @@ def test4():
     rw.write(geo, fmt="txt", basename=basename, dirname=dirname, basis_only=basis_only)
 
 def test5():
-    print "====== test 5  ====="
+    print("====== test 5  =====")
 #    nx = 3 ; px = 2
 #    ny = 3 ; py = 2
 #    nx = 7 ; px = 2
