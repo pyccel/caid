@@ -309,7 +309,7 @@ def init_ID_object_uniform_2d(list_n, list_p):
                 for ind_u in range(0, p_u+1):
                     i_u = IEN_u[elmt_u, ind_u]
                     i_v = IEN_v[elmt_v, ind_v]
-                    print(i_u, i_v)
+                    print((i_u, i_v))
                     IEN[elmt, ind] = i_u + (i_v-1) * n_u
 
                     ind += 1
@@ -461,14 +461,14 @@ if __name__ == '__main__':
         k = 3
 
         con_1d = ID_object_uniform_1d(n, k-1)
-        print(con_1d.ID[0].shape)
+        print((con_1d.ID[0].shape))
     #    print con_1d.ID_extended
-        print(con_1d.ID)
+        print((con_1d.ID))
 
         con_2d = ID_object_uniform_2d([n, n], [k-1, k-1])
     #    con_2d = ID_object_uniform_2d([n, n+1], [k-1, k])
-        print(con_2d.ID[0].shape)
+        print((con_2d.ID[0].shape))
     #    print con_2d.ID_extended.transpose()[::-1, :]
-        print(con_2d.local_ID[0].transpose()[::-1, :])
-        print(con_2d.ID)
+        print((con_2d.local_ID[0].transpose()[::-1, :]))
+        print((con_2d.ID))
 
