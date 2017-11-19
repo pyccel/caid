@@ -386,8 +386,7 @@ class VolumeEvaluator(GLEvaluator):
             evaluator.drawNurbs(blend=blend)
 
     def drawNurbsByCell(self, blend=False):
-        print "drawNurbsByCell: not yet implemented"
-        raise()
+        raise NotImplementedError("drawNurbsByCell: not yet implemented")
 
     def draw(self, mesh=False, nurbs=True, blend=False):
         if nurbs:
