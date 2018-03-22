@@ -713,7 +713,7 @@ def pinched_quart_circle(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, degree=0.
 
         cad_nrb.rotate(degree)
     else:
-        print " ERROR  in pinched_quart_circle : epsilon should be in between 0 and 1"
+        print (" ERROR  in pinched_quart_circle : epsilon should be in between 0 and 1")
         STOP
     return geo
 
@@ -764,7 +764,7 @@ def pinched_circle(radius=0.5, epsilon=0.5, center=None, n=None, p=None):
         cad_nrb.control[7,7,1] += epsilon
         cad_nrb.control[6,7,1] += epsilon/2.
     else:
-        print " ERROR  in pinched_circle : epsilon should be in between 0 and 1"
+        print (" ERROR  in pinched_circle : epsilon should be in between 0 and 1")
         STOP
     return geo
 
@@ -1644,7 +1644,7 @@ class cad_nurbs(cad_object, NURBS):
             arr_npts[:] = npts
         else:
             if len(arr_npts) != self.dim:
-                print "wrong length argument"
+                print ("wrong length argument")
                 raise()
 
         breaks = self.breaks()
@@ -1808,7 +1808,7 @@ class cad_nurbs(cad_object, NURBS):
         elif side == 1:
             i_bnd = n + 1
         else:
-            print "wrong argument"
+            print ("wrong argument")
             raise()
         # ...
 
@@ -1897,7 +1897,7 @@ class cad_nurbs(cad_object, NURBS):
                     i += 1
             plt.legend()
         else:
-            print "not yet implemented"
+            print ("not yet implemented")
             raise()
 
     def evaluate_deriv(self, u=None, v=None, w=None \
@@ -2261,7 +2261,7 @@ class cad_op_nurbs(opNURBS, cad_object):
         elif side == 1:
             i_bnd = n + 1
         else:
-            print "wrong argument"
+            print ("wrong argument")
             raise()
         # ...
 
@@ -3369,7 +3369,7 @@ class cad_geometry(object):
         description. the user must provide the internal face
         """
         # TODO must be updated with the new signature of extract_face
-        print "Not yet implemented"
+        print ("Not yet implemented")
         raise()
 
         if self.dim in [1,3]:

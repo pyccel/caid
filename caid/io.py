@@ -764,7 +764,7 @@ class NML(object):
 
     def read(self, filename, geo):
         if not F90NML:
-            print "f90nml not installed. Please use another input/output driver."
+            print ("f90nml not installed. Please use another input/output driver.")
             raise()
 
         nml = f90nml.read(filename)
@@ -1799,7 +1799,7 @@ class BZR(object):
 
     def write(self, geo, fmt="txt", basename=None, dirname=None, basis_only=False):
         # ...
-        print "xxxxx degree " , geo[0].degree
+        print ("xxxxx degree " , geo[0].degree)
         if geo.dim == 1:
             print ("Not yet implemented")
             raise()
@@ -2231,7 +2231,7 @@ class geopdes(object):
         if n_dim == 2:
             self._n_lines_per_patch = 2 + 2 + 3
         else:
-            print "Only 2d patchs are used for the moment"
+            print ("Only 2d patchs are used for the moment")
 
             raise()
         self._list_begin_line = self._get_begin_line(lines, n_patchs)
@@ -2272,7 +2272,7 @@ class geopdes(object):
         for i_line,line in enumerate(lines):
             r = line.find(text)
             if r != -1:
-                print ">> find patch ", i_patch, " at the line number ", i_line
+                print (">> find patch ", i_patch, " at the line number ", i_line)
                 return i_line
         return None
     # ...
@@ -2285,7 +2285,7 @@ class geopdes(object):
             if r is not None:
                 list_begin_line.append(r)
             else:
-                print "Seriours error while parsing the input file"
+                print ("Seriours error while parsing the input file")
                 raise()
         return list_begin_line
     # ...
