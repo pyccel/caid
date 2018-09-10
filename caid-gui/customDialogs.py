@@ -512,7 +512,7 @@ class edtControlPoints(wx.Dialog):
         patch       = wk.inspector.currentPatch
         patchItem   = wk.inspector.currentPatchItem
         geoItem     = wk.inspector.tree.GetItemParent(patchItem)
-        geo         = wk.inspector.tree.GetPyData(geoItem)
+        geo         = wk.inspector.tree.GetItemData(geoItem)
         patch_id    = geo.index(patch)
         patchInfo   = geo.list_patchInfo[patch_id]
         patchInfo.showPoints = True

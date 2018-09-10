@@ -106,7 +106,7 @@ class ObjectActionsCreateCircle(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -263,7 +263,7 @@ class ObjectActionsCreateQuartCircle(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -424,7 +424,7 @@ class ObjectActionsCreateAnnulus(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -584,7 +584,7 @@ class ObjectActionsCreateCircle_5mp(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -762,7 +762,7 @@ class ObjectActionsCreatePinched_Circle_5mp(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -885,7 +885,7 @@ class ObjectActionsTranslate(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -997,7 +997,7 @@ class ObjectActionsRotate(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -1103,7 +1103,7 @@ class ObjectActionsScale(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -1223,7 +1223,7 @@ class ObjectActionsCreateLinear(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -1384,7 +1384,7 @@ class ObjectActionsCreateBilinear(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -1548,7 +1548,7 @@ class ObjectActionsCreateTriangle(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -1707,7 +1707,7 @@ class ObjectActionsCreateArc(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -1839,7 +1839,7 @@ class ObjectActionsPolarExtrude(ObjectClassActions):
                 patch = wk.inspector.currentObject
                 patchItem = wk.inspector.currentPatchItem
                 geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                geo = wk.inspector.tree.GetPyData(geoItem)
+                geo = wk.inspector.tree.GetItemData(geoItem)
 
                 geo_t = cad_geometry()
                 geo_t.append(patch)
@@ -1856,7 +1856,7 @@ class ObjectActionsPolarExtrude(ObjectClassActions):
                     patch = wk.inspector.currentObject
                     patchItem = wk.inspector.currentPatchItem
                     geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                    geo = wk.inspector.tree.GetPyData(geoItem)
+                    geo = wk.inspector.tree.GetItemData(geoItem)
                     geo_id   = wk.list_geo.index(geo)
                     patch_id = geo.index(patch)
                     macro_script.append("geo_id = "+str(geo_id))
@@ -2138,7 +2138,7 @@ class ObjectActionsJoin(ObjectClassActions):
             from igakit.cad import join
             list_patchs = []
             for item in wk.inspector.tree.selectionsItems:
-                patch = wk.inspector.tree.GetPyData(item)
+                patch = wk.inspector.tree.GetItemData(item)
                 list_patchs.append(patch)
 
             nrb_new = list_patchs[0]
@@ -2155,9 +2155,9 @@ class ObjectActionsJoin(ObjectClassActions):
                 macro_script.append("# ... join algorithm")
                 list_gp = []
                 for item in wk.inspector.tree.selectionsItems:
-                    patch   = wk.inspector.tree.GetPyData(item)
+                    patch   = wk.inspector.tree.GetItemData(item)
                     geoItem = wk.inspector.tree.GetItemParent(item)
-                    geo     = wk.inspector.tree.GetPyData(geoItem)
+                    geo     = wk.inspector.tree.GetItemData(geoItem)
                     list_gp.append([geo, patch])
 
                 macro_script.append("list_patchs = []")

@@ -572,7 +572,7 @@ class Viewer (GLCanvas):
     #
     def OnSize (self, event):
         # Note these are ints, not floats, for glViewport
-        self.width, self.height = self.GetSizeTuple()
+        self.width, self.height = self.GetSize()
     #
     def initGL (self):
         colorBg = list(self.color_background) + [self.alpha_bg]
@@ -622,7 +622,7 @@ class Viewer (GLCanvas):
         if patch is not None:
             patchItem = wk.inspector.currentPatchItem
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
-            geo = wk.inspector.tree.GetPyData(geoItem)
+            geo = wk.inspector.tree.GetItemData(geoItem)
 
             # Redraw the geometry
             MeshColorGeo    = self.color_selectedGeoMesh

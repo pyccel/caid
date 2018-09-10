@@ -49,7 +49,7 @@ class MenuCAIDTools(wx.Menu):
         self.m_MacroTokaMesh = self.sm_Macros.Append(self.MacroTokaMeshID,  'Tokamesh', kind=wx.ITEM_RADIO)
         self.m_MacroMetric = self.sm_Macros.Append(self.MacroMetricID, 'Metric', kind=wx.ITEM_RADIO)
         self.m_MacroConnectivity = self.sm_Macros.Append(self.MacroConnectivityID, 'Connectivity', kind=wx.ITEM_RADIO)
-        self.AppendMenu(self.MacroID, 'Macro', self.sm_Macros)
+        self.Append(self.MacroID, 'Macro', self.sm_Macros)
         # ...
 
         self.ExecuteEditorID = wx.NewId()

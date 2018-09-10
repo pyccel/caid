@@ -78,18 +78,13 @@ class fieldsTree(wx.TreeCtrl):
         # ...
 
     def add_field(self, field):
-        fieldItem = self.AppendItem(self.root, 'field', -1,
-                                  -1,wx.TreeItemData(field) )
-
-        geoItem  = self.AppendItem(fieldItem,'geometry', -1,
-                                             -1,wx.TreeItemData(field.geometry))
-
-        cItem  = self.AppendItem(fieldItem,'coefficients', -1,
-                                             -1,wx.TreeItemData(field.coefficients))
+        fieldItem = self.AppendItem( self.root, 'field'       , -1, -1, field              )
+        geoItem   = self.AppendItem( fieldItem, 'geometry'    , -1, -1, field.geometry     )
+        cItem     = self.AppendItem( fieldItem, 'coefficients', -1, -1, field.coefficients )
 
 
     def GetItemText(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         if obj.__class__.__name__=="field":
             txt = "field"
         elif obj.__class__.__name__=="field_scalar":
@@ -99,7 +94,7 @@ class fieldsTree(wx.TreeCtrl):
         return txt
 
     def SelectedField(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
 #            Parent = self.GetItemParent(item)
             if (obj.__class__.__name__ in ["field", "field_scalar"]):
@@ -112,7 +107,7 @@ class fieldsTree(wx.TreeCtrl):
 
     def GetCurrentField(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
 #            Parent = self.GetItemParent(item)
             if (obj.__class__.__name__ in ["field","field_scalar"]):

@@ -144,7 +144,7 @@ class directActions(object):
         try:
             list_patchs = []
             for item in wk.inspector.tree.selectionsItems:
-                patch = wk.inspector.tree.GetPyData(item)
+                patch = wk.inspector.tree.GetItemData(item)
                 if patch.dim > 1:
                     print("cut curves algorithm only works with curves")
                     return
@@ -242,7 +242,7 @@ class directActions(object):
         patchItem = wk.inspector.currentPatchItem
         if patch is not None:
             geoItem     = wk.inspector.tree.GetItemParent(patchItem)
-            geo         = wk.inspector.tree.GetPyData(geoItem)
+            geo         = wk.inspector.tree.GetItemData(geoItem)
             patch_id    = geo.index(patch)
             patchInfo   = geo.list_patchInfo[patch_id]
 
