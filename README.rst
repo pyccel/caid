@@ -15,82 +15,134 @@ For more details, please read [**CAID**](http://ratnani.org/caid_doc/)
 
 In order to follow related developments to CAID, please visit our JOREK-Django project on  (https://tree.taiga.io/project/ratnani-jorek-django/)
 
-Common requierements
-====================
 
-**numpy**
----------
+Common requirements
+*******************
 
-[**NumPy**](http://www.numpy.org/) is the fundamental package for scientific computing with Python
+- **Python3** interpreter (https://docs.python.org/3)::
 
-Installation can be done using
+    sudo apt-get install python3 python3-dev
 
-   `sudo apt-get install python-numpy`
+- **pip** package manager for Python (https://pypi.python.org/pypi/pip)::
 
-**scipy**
----------
+    sudo apt-get install python3-pip
 
-[**SciPy**](http://www.scipy.org/) is a Python-based ecosystem of open-source software for mathematics, science, and engineering.
+- *Python* dependencies (Numpy, Scipy, Matplotlib) can be installed using::
 
-Installation can be done using
+    python3 -m pip install --user -r requirements.txt
 
-   `sudo apt-get install python-scipy`
+- **igakit** (http://bitbucket.org/dalcinl/igakit) is a Python package that implements many of the NURBS routines from Piegl's book using Fortran and Python::
 
-You can install both **numpy** and **scipy** using 
+    python3 -m pip install --user hg+https://bitbucket.org/dalcinl/igakit
 
-   `sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose`
 
-**matplotlib**
---------------
+Additional GUI requirements
+***************************
 
-[**Matplotlib**](http://www.matplotlib.org/) is a python 2D plotting library which produces publication quality figures in a variety of hardcopy formats and interactive environments across platforms. matplotlib can be used in python scripts, the python and ipython shell (ala MATLAB or Mathematica)
+- **wxPython** (https://wxpython.org), a cross-platform GUI toolkit for the Python language.
 
-Installation can be done using
+    To install on Windows and Mac OS X::
 
-   `sudo apt-get install python-matplotlib`
+        python3 -m pip install --user wxPython
 
-**igakit**
-----------
+    To install on Linux, correct binaries must be selected depending on distribution (check availability at https://extras.wxpython.org/wxPython4/extras/linux/gtk3). For example::
 
-[**igakit**](http://bitbucket.org/dalcinl/igakit) is a package that implements many of the NURBS routines from Piegl's book using Fortran and Python.
+        python3 -m pip install --user -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxPython
 
-GUI Requierements
-=================
+- **PyOpenGL** (http://pyopengl.sourceforge.net/), the most common cross platform Python binding to OpenGL and related APIs::
 
-**wxPython**
-------------
+        python3 -m pip install --user PyOpenGL PyOpenGL_accelerate
 
-Install *wxGTK 2.8* with the command
 
-   `sudo apt-get install python-wxgtk2.8`
+Installing CAID
+***************
 
-Verify that everything is OK::
+- **Standard mode**::
 
-    import wx
-    import wxversion
+    python3 -m pip install --user .
 
-**PyOpenGL**
-------------
+- **Developer mode**::
 
-[**PyOpenGL**](http://pyopengl.sourceforge.net/) is the most common cross platform Python binding to OpenGL and related APIs.
+    python3 -m pip install --user -e .
 
-Installation can be done using [**pip**](https://pypi.python.org/pypi/pip)
 
-   `sudo pip install PyOpenGL PyOpenGL_accelerate`
+.. Common requierements
+.. ====================
+.. 
+.. **numpy**
+.. ---------
+.. 
+.. [**NumPy**](http://www.numpy.org/) is the fundamental package for scientific computing with Python
+.. 
+.. Installation can be done using
+.. 
+..    `sudo apt-get install python-numpy`
+.. 
+.. **scipy**
+.. ---------
+.. 
+.. [**SciPy**](http://www.scipy.org/) is a Python-based ecosystem of open-source software for mathematics, science, and engineering.
+.. 
+.. Installation can be done using
+.. 
+..    `sudo apt-get install python-scipy`
+.. 
+.. You can install both **numpy** and **scipy** using 
+.. 
+..    `sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose`
+.. 
+.. **matplotlib**
+.. --------------
+.. 
+.. [**Matplotlib**](http://www.matplotlib.org/) is a python 2D plotting library which produces publication quality figures in a variety of hardcopy formats and interactive environments across platforms. matplotlib can be used in python scripts, the python and ipython shell (ala MATLAB or Mathematica)
+.. 
+.. Installation can be done using
+.. 
+..    `sudo apt-get install python-matplotlib`
+.. 
+.. **igakit**
+.. ----------
+.. 
+.. [**igakit**](http://bitbucket.org/dalcinl/igakit) is a package that implements many of the NURBS routines from Piegl's book using Fortran and Python.
+.. 
+.. GUI Requierements
+.. =================
+.. 
+.. **wxPython**
+.. ------------
+.. 
+.. Install *wxGTK 2.8* with the command
+.. 
+..    `sudo apt-get install python-wxgtk2.8`
+.. 
+.. Verify that everything is OK::
+.. 
+..     import wx
+..     import wxversion
+.. 
+.. **PyOpenGL**
+.. ------------
+.. 
+.. [**PyOpenGL**](http://pyopengl.sourceforge.net/) is the most common cross platform Python binding to OpenGL and related APIs.
+.. 
+.. Installation can be done using [**pip**](https://pypi.python.org/pypi/pip)
+.. 
+..    `sudo pip install PyOpenGL PyOpenGL_accelerate`
+.. 
+.. Installation
+.. ============
+.. 
+.. Installation can be done by runing the following command, giving **PATH_FOR_INSTALLATION**
+.. 
+..     python setup.py install --prefix=PATH_FOR_INSTALLATION 
+.. 
+.. Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_CAID_SRC**
+.. 
+..     `alias caid="python $PATH_TO_CAID_SRC/caid-gui/main.py"`
 
-Installation
-============
-
-Installation can be done by runing the following command, giving **PATH_FOR_INSTALLATION**
-
-    python setup.py install --prefix=PATH_FOR_INSTALLATION 
-
-Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_CAID_SRC**
-
-    `alias caid="python $PATH_TO_CAID_SRC/caid-gui/main.py"`
 
 Package-Usage
-=============
+*************
 
 Start by import the **CAID** package::
 
@@ -120,10 +172,16 @@ A *cad_geometry* object contains a list of *cad_nurbs* (more generally any class
 
 In the future, the *cad_geometry* class will also contain Splines on triangulations (using  `splitri <https://github.com/ratnania/splitri>`_)
 
-GUI-Usage
-=========
 
-Runing **CAID** can be done in different ways.
+GUI-Usage
+*********
+
+Add the following lines in your *.bashrc/.bash_profile* by replacing **PATH_TO_CAID_SRC** with the correct path to the project source directory::
+
+    alias caid="python3 $PATH_TO_CAID_SRC/caid-gui/main.py"
+
+
+Running **CAID** can be done in different ways.
 
 * without any argument
 
@@ -141,7 +199,8 @@ Runing **CAID** can be done in different ways.
 
    `caid U.pfl`
 
+
 TODO
-====
+****
 
 - update setup file, using pip to install all dependencies.
