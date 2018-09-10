@@ -1,4 +1,5 @@
-import os
+from os      import environ
+from os.path import abspath, dirname
 
 CAIDwildcard = "CAID file (*.xml; *.txt; *.zip)|*.xml;*.txt;*.zip"
 CAIDWorkGroupwildcard = "CAID WorkGroup file (*.wkl)|*.wkl"
@@ -29,10 +30,10 @@ DIM_PROJECT = 0
 #COLOR_SELECTIONRECTANGLE = [0.65,0.65,0.65]
 
 try:
-    CAID_DIR = os.environ['CAID_DIR']
+    CAID_DIR = environ['CAID_DIR']
 except:
-    print ("Before running CAID, you must define the path to it, using the environement variable CAID_DIR")
-    raise
+    CAID_DIR = dirname( dirname( abspath( __file__ ) ) )
+    print ("WARNING: Environmental variable CAID_DIR not set... Falling back to parent directory '{}'.".format( CAID_DIR ) )
 
 DATA_DIRECTORY       = CAID_DIR+"/data"
 MODELS_DIRECTORY     = CAID_DIR+"/models"
