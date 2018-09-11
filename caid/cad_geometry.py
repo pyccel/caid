@@ -1609,7 +1609,7 @@ class cad_nurbs(cad_object, NURBS):
         return cad_nrb
 
     #
-    def evalMesh(self, npts=3):
+    def evalMesh(self, npts=3, arr_npts=None):
         # ...
         def _refine_array(x, nref):
             u0 = x[0] ; u1 = x[-1]
@@ -1625,11 +1625,20 @@ class cad_nurbs(cad_object, NURBS):
 
             return xref
         # ...
+
+        if arr_npts is None:
+            arr_npts = np.arange(self.dim)
+            arr_npts[:] = npts
+        else:
+            if len(arr_npts) != self.dim:
+                print ("wrong length argument")
+                raise()
+
         breaks = self.breaks()
 
         list_lines = []
         if self.dim == 1:
-            u = _refine_array(breaks[0], npts)
+            u = _refine_array(breaks[0], arr_npts[0])
 
             n_u = u.shape[0]
 
@@ -1639,8 +1648,8 @@ class cad_nurbs(cad_object, NURBS):
             list_lines.append(L)
 
         if self.dim == 2:
-            u = _refine_array(breaks[0], npts)
-            v = _refine_array(breaks[1], npts)
+            u = _refine_array(breaks[0], arr_npts[0])
+            v = _refine_array(breaks[1], arr_npts[1])
 
             n_u = u.shape[0]
             n_v = v.shape[0]
@@ -1658,9 +1667,9 @@ class cad_nurbs(cad_object, NURBS):
         if self.dim == 3:
             list_lines = []
 
-            u = _refine_array(breaks[0], npts)
-            v = _refine_array(breaks[1], npts)
-            w = _refine_array(breaks[2], npts)
+            u = _refine_array(breaks[0], arr_npts[0])
+            v = _refine_array(breaks[1], arr_npts[1])
+            w = _refine_array(breaks[2], arr_npts[2])
 
             n_u = u.shape[0]
             n_v = v.shape[0]
@@ -2810,7 +2819,7 @@ class cad_geometry(object):
             list_cad_geo.append(tmp)
         return list_cad_geo
 
-    def evalMesh(self, id=None, npts=3):
+    def evalMesh(self, id=None, npts=3, arr_npts=None):
         """
         Evaluate and return the mesh
 
@@ -2833,7 +2842,7 @@ class cad_geometry(object):
             geo = self._list[i]
             type_geo = geo.__class__.__name__
             if type_geo == "cad_nurbs" :
-                list_Mesh.append(geo.evalMesh(npts))
+                list_Mesh.append(geo.evalMesh(npts, arr_npts))
 
         return list_Mesh
 
@@ -3387,7 +3396,7 @@ class cad_geometry(object):
 
         return geo_f
 
-    def plotMesh(self, MeshResolution=3, color='k', ax=None):
+    def plotMesh(self, MeshResolution=3, color='k', ax=None, arr_npts=None):
         """
         plot the corresponding mesh of the current cad_geometry.
 
@@ -3397,6 +3406,9 @@ class cad_geometry(object):
 
             color (string):
                 mesh color
+
+            arr_npts (np.array):
+                Table containig the number of points inside element in each direction
 
         """
         from mpl_toolkits.mplot3d import Axes3D
@@ -3410,7 +3422,7 @@ class cad_geometry(object):
                 ax = _fig.add_subplot(111, projection='3d')
 
         for patch_id in range(0, geo.npatchs):
-            list_Lines = geo.evalMesh(npts=MeshResolution)[patch_id]
+            list_Lines = geo.evalMesh(npts=MeshResolution, arr_npts=arr_npts)[patch_id]
             for Line in list_Lines:
                 npts = Line.shape[0]
                 list_iS = list(range(0,npts-1)) ; list_iE = list(range(1, npts))
