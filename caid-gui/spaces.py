@@ -173,9 +173,10 @@ class spacesTree(wx.TreeCtrl):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbConnectivity)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbConnectivity, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak

@@ -340,9 +340,10 @@ class Viewer (GLCanvas):
                and (title=="3D view"):
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCb)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCb, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.frame.PopupMenu( menu)
         menu.Destroy() # destroy to avoid mem leak

@@ -594,9 +594,10 @@ class inspectorTree(wx.TreeCtrl):
                 if (title=="Dirichlet Boundary Condition"):
                     toAppend = True
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbGeometry )
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbGeometry, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak
@@ -630,9 +631,10 @@ class inspectorTree(wx.TreeCtrl):
                          , "Create Vectorial Space"]:
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbPatch )
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbPatch, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak
@@ -663,9 +665,10 @@ class inspectorTree(wx.TreeCtrl):
                              , "Neumann"]):
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbFace)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbFace, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak

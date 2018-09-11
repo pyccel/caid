@@ -788,9 +788,10 @@ class edtControlPoints(wx.Dialog):
         for (id,title) in list(self.menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
-            menu.Append( id, title )
+            title_id = menu.Append( id, title )
             ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-            wx.EVT_MENU( menu, id, self.MenuSelectionCb)
+            menu.Bind( wx.EVT_MENU, self.MenuSelectionCb, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.PopupMenu( menu)
         menu.Destroy() # destroy to avoid mem leak
