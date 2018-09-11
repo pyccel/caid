@@ -78,18 +78,13 @@ class fieldsTree(wx.TreeCtrl):
         # ...
 
     def add_field(self, field):
-        fieldItem = self.AppendItem(self.root, 'field', -1,
-                                  -1,wx.TreeItemData(field) )
-
-        geoItem  = self.AppendItem(fieldItem,'geometry', -1,
-                                             -1,wx.TreeItemData(field.geometry))
-
-        cItem  = self.AppendItem(fieldItem,'coefficients', -1,
-                                             -1,wx.TreeItemData(field.coefficients))
+        fieldItem = self.AppendItem( self.root, 'field'       , -1, -1, field              )
+        geoItem   = self.AppendItem( fieldItem, 'geometry'    , -1, -1, field.geometry     )
+        cItem     = self.AppendItem( fieldItem, 'coefficients', -1, -1, field.coefficients )
 
 
     def GetItemText(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         if obj.__class__.__name__=="field":
             txt = "field"
         elif obj.__class__.__name__=="field_scalar":
@@ -99,7 +94,7 @@ class fieldsTree(wx.TreeCtrl):
         return txt
 
     def SelectedField(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
 #            Parent = self.GetItemParent(item)
             if (obj.__class__.__name__ in ["field", "field_scalar"]):
@@ -112,7 +107,7 @@ class fieldsTree(wx.TreeCtrl):
 
     def GetCurrentField(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
 #            Parent = self.GetItemParent(item)
             if (obj.__class__.__name__ in ["field","field_scalar"]):
@@ -175,9 +170,10 @@ class fieldsTree(wx.TreeCtrl):
             if field.surface and (title=="3D mode"):
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbField)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbField, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak

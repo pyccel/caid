@@ -572,7 +572,7 @@ class Viewer (GLCanvas):
     #
     def OnSize (self, event):
         # Note these are ints, not floats, for glViewport
-        self.width, self.height = self.GetSizeTuple()
+        self.width, self.height = self.GetSize()
     #
     def initGL (self):
         colorBg = list(self.color_background) + [self.alpha_bg]
@@ -622,7 +622,7 @@ class Viewer (GLCanvas):
         if patch is not None:
             patchItem = wk.inspector.currentPatchItem
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
-            geo = wk.inspector.tree.GetPyData(geoItem)
+            geo = wk.inspector.tree.GetItemData(geoItem)
 
             # Redraw the geometry
             MeshColorGeo    = self.color_selectedGeoMesh
@@ -910,9 +910,10 @@ class Viewer (GLCanvas):
                and (title=="Clear Selected Points"):
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCb)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCb, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.frame.PopupMenu( menu)
         menu.Destroy() # destroy to avoid mem leak

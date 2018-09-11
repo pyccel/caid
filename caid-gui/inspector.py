@@ -214,8 +214,7 @@ class inspectorTree(wx.TreeCtrl):
             geo_name = "Geometry"
         geo_name = geo_name + " [id: " + str(self._geometry_index) + "]"
 
-        geoItem = self.AppendItem(self.root, geo_name, -1,
-                                  -1,wx.TreeItemData(geo) )
+        geoItem = self.AppendItem( self.root, geo_name, -1, -1, geo )
 
         if not geo.show:
             color = theme.color_inspector('hide_text')
@@ -258,12 +257,9 @@ class inspectorTree(wx.TreeCtrl):
             self.add_patch(geoItem, geo, nrb)
             self._patch_index += 1
 
-        internalFacesItem  = self.AppendItem(geoItem,'Internal-Faces', -1,
-                                             -1,wx.TreeItemData(showInternalFaces(geo)))
-        externalFacesItem  = self.AppendItem(geoItem, 'External-Faces', -1,
-                                             -1,wx.TreeItemData(showExternalFaces(geo)))
-        connectivityItem  = self.AppendItem(geoItem, 'Connectivity', -1,
-                                            -1,wx.TreeItemData(showConnectivity(geo)))
+        self.AppendItem( geoItem, 'Internal-Faces', -1, -1, showInternalFaces(geo) )
+        self.AppendItem( geoItem, 'External-Faces', -1, -1, showExternalFaces(geo) )
+        self.AppendItem( geoItem, 'Connectivity'  , -1, -1, showConnectivity (geo) )
 
         return geoItem
 
@@ -276,8 +272,7 @@ class inspectorTree(wx.TreeCtrl):
             patch_name = "Patch"
 
         patch_name = patch_name + " [id: " + str(self._patch_index) + "]"
-        patchItem  = self.AppendItem(geoItem, patch_name \
-                                     , -1, -1,wx.TreeItemData(nrb) )
+        patchItem  = self.AppendItem( geoItem, patch_name, -1, -1, nrb )
 
         if not patchInfo.show:
             color = theme.color_inspector('hide_text')
@@ -312,38 +307,31 @@ class inspectorTree(wx.TreeCtrl):
                 color = wx.Colour(color[0],color[1],color[2])
                 self.SetItemBackgroundColour(patchItem, color)
 
-        rationalItem = self.AppendItem(patchItem, 'rational', -1, -1,wx.TreeItemData(nrb.rational) )
-        dimensionItem = self.AppendItem(patchItem, 'dimension' \
-                                     , -1, -1,wx.TreeItemData(nrb.dim) )
-        shapeItem = self.AppendItem(patchItem, 'shape' \
-                                     , -1, -1,wx.TreeItemData(nrb.shape) )
-        degreeItem = self.AppendItem(patchItem, 'degree' \
-                                     , -1, -1,wx.TreeItemData(nrb.degree) )
-        knotsItem  = self.AppendItem(patchItem, 'knots', -1,
-                                     -1,wx.TreeItemData(showKnots(nrb)) )
-        pointsItem  = self.AppendItem(patchItem, 'points', -1, -1,wx.TreeItemData(nrb.points) )
-        weightsItem  = self.AppendItem(patchItem, 'weights', -1, -1,wx.TreeItemData(nrb.weights) )
-        orientatinItem  = self.AppendItem(patchItem, 'orientation', -1, -1,wx.TreeItemData(nrb.orientation) )
+        self.AppendItem( patchItem, 'rational'   , -1, -1, nrb.rational    )
+        self.AppendItem( patchItem, 'dimension'  , -1, -1, nrb.dim         )
+        self.AppendItem( patchItem, 'shape'      , -1, -1, nrb.shape       )
+        self.AppendItem( patchItem, 'degree'     , -1, -1, nrb.degree      )
+        self.AppendItem( patchItem, 'knots'      , -1, -1, showKnots(nrb)  )
+        self.AppendItem( patchItem, 'points'     , -1, -1, nrb.points      )
+        self.AppendItem( patchItem, 'weights'    , -1, -1, nrb.weights     )
+        self.AppendItem( patchItem, 'orientation', -1, -1, nrb.orientation )
         try:
             color = nrb.get_attributs("color")
-            colorItem  = self.AppendItem(patchItem, 'color', -1, -1,wx.TreeItemData(color) )
+            self.AppendItem( patchItem, 'color', -1, -1, color )
         except:
             pass
         try:
             name = nrb.get_attributs("name")
-            nameItem  = self.AppendItem(patchItem, 'name', -1,
-                                        -1,wx.TreeItemData(name) )
+            self.AppendItem( patchItem, 'name', -1, -1, name )
         except:
             pass
         try:
             geoattr = nrb.get_attributs("geometry")
-            geoattrItem  = self.AppendItem(patchItem, 'geometry', -1,
-                                           -1,wx.TreeItemData(geoattr) )
+            self.AppendItem( patchItem, 'geometry', -1, -1, geoattr )
         except:
             pass
 
-        facesItem  = self.AppendItem(patchItem, 'faces', -1,
-                                     -1,wx.TreeItemData(None) )
+        facesItem  = self.AppendItem( patchItem, 'faces', -1, -1, None )
 
         if (nrb.dim > 1) and (nrb.__class__.__name__ in ["cad_nurbs"]):
             for face in range(0, 2 * nrb.dim):
@@ -353,14 +341,12 @@ class inspectorTree(wx.TreeCtrl):
                 geo_bnd.append(nrb_bnd)
                 _geo = geometry(geo_bnd)
                 _geo.face = face
-                faceItem  = self.AppendItem(facesItem, 'Face' \
-                                             , -1,
-                                            -1,wx.TreeItemData(_geo) )
+                faceItem  = self.AppendItem( facesItem, 'Face', -1, -1, _geo )
 
         return patchItem
 
     def GetItemText(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         if obj.__class__.__name__=="geometry":
             txt = "cad_geometry"
         elif obj.__class__.__name__=="cad_nurbs":
@@ -374,7 +360,7 @@ class inspectorTree(wx.TreeCtrl):
         return txt
 
     def SelectedGeometry(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
             Parent = self.GetItemParent(item)
             if (not self.SelectedPatch(Parent)) \
@@ -386,7 +372,7 @@ class inspectorTree(wx.TreeCtrl):
             return False
 
     def SelectedPatch(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
             if obj.__class__.__name__ in ["cad_nurbs", "cad_op_nurbs", "cad_grad_nurbs"]:
                 return True
@@ -396,7 +382,7 @@ class inspectorTree(wx.TreeCtrl):
             return False
 
     def SelectedFace(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
             Parent = self.GetItemParent(item)
             Ancestor = self.GetItemParent(Parent)
@@ -410,7 +396,7 @@ class inspectorTree(wx.TreeCtrl):
 
     def GetCurrentGeometry(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
             Parent = self.GetItemParent(item)
             if (not self.SelectedPatch(Parent)) \
@@ -423,7 +409,7 @@ class inspectorTree(wx.TreeCtrl):
 
     def GetCurrentPatch(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
             if obj.__class__.__name__ in ["cad_nurbs", "cad_op_nurbs", "cad_grad_nurbs"]:
                 return obj, item
@@ -434,7 +420,7 @@ class inspectorTree(wx.TreeCtrl):
 
     def GetCurrentFace(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         try:
             Parent = self.GetItemParent(item)
             Ancestor = self.GetItemParent(Parent)
@@ -509,7 +495,7 @@ class inspectorTree(wx.TreeCtrl):
 ##                patch = wk.inspector.currentObject
 ##                patchItem = wk.inspector.currentPatchItem
 ##                geoItem = wk.inspector.tree.GetItemParent(patchItem)
-##                geo = wk.inspector.tree.GetPyData(geoItem)
+##                geo = wk.inspector.tree.GetItemData(geoItem)
 ##                print "Starting drag'n'drop with %s..." % repr(id(patch))
 ##                geo = cad_geometry()
 ##                geo.append(patch)
@@ -563,7 +549,7 @@ class inspectorTree(wx.TreeCtrl):
         if patch is not None:
             patchItem   = self.inspector.currentPatchItem
             geoItem     = self.inspector.tree.GetItemParent(patchItem)
-            geo         = self.inspector.tree.GetPyData(geoItem)
+            geo         = self.inspector.tree.GetItemData(geoItem)
             patch_id    = geo.index(patch)
             patchInfo   = geo.list_patchInfo[patch_id]
             self.OnRightMouseClickPatch(event, patchInfo)
@@ -608,9 +594,10 @@ class inspectorTree(wx.TreeCtrl):
                 if (title=="Dirichlet Boundary Condition"):
                     toAppend = True
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbGeometry )
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbGeometry, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak
@@ -644,9 +631,10 @@ class inspectorTree(wx.TreeCtrl):
                          , "Create Vectorial Space"]:
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbPatch )
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbPatch, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak
@@ -677,9 +665,10 @@ class inspectorTree(wx.TreeCtrl):
                              , "Neumann"]):
                 toAppend = False
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbFace)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbFace, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak
@@ -693,40 +682,40 @@ class inspectorTree(wx.TreeCtrl):
 #            geo.Show()
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     geo.Show()
             self.Refresh()
         if operation == "Hide":
 #            geo.Hide()
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     geo.Hide()
             self.Refresh()
         if operation == "Show Control Points":
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     geo.showPoints = True
         if operation == "Hide Control Points":
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     geo.showPoints = False
         if operation == "Show Mesh":
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     geo.showMesh = True
         if operation == "Hide Mesh":
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     geo.showMesh = False
         if operation == "Mesh steps":
             for Item in self.selectionsItems:
                 if self.SelectedGeometry(Item):
-                    geo = self.GetPyData(Item)
+                    geo = self.GetItemData(Item)
                     self.ChooseMeshStepsGeometry(event)
         if operation == "Paste":
             self.inspector.pastePatchs()
@@ -791,17 +780,17 @@ class inspectorTree(wx.TreeCtrl):
         patch       = self.inspector.currentPatch
         patchItem   = self.inspector.currentPatchItem
         geoItem     = self.inspector.tree.GetItemParent(patchItem)
-        geo         = self.inspector.tree.GetPyData(geoItem)
+        geo         = self.inspector.tree.GetItemData(geoItem)
         patch_id    = geo.index(patch)
         patchInfo   = geo.list_patchInfo[patch_id]
         operation   = self.menu_title_by_id[ event.GetId() ]
         if operation == "Show":
             for Item in self.selectionsItems:
                 if self.SelectedPatch(Item):
-                    patch = self.GetPyData(Item)
+                    patch = self.GetItemData(Item)
                     patchItem = Item
                     geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                    geo         = self.inspector.tree.GetPyData(geoItem)
+                    geo         = self.inspector.tree.GetItemData(geoItem)
                     patch_id    = geo.index(patch)
                     patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -809,10 +798,10 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Hide":
             for Item in self.selectionsItems:
                 if self.SelectedPatch(Item):
-                    patch = self.GetPyData(Item)
+                    patch = self.GetItemData(Item)
                     patchItem = Item
                     geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                    geo         = self.inspector.tree.GetPyData(geoItem)
+                    geo         = self.inspector.tree.GetItemData(geoItem)
                     patch_id    = geo.index(patch)
                     patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -820,10 +809,10 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Show Control Points":
             for Item in self.selectionsItems:
                 if self.SelectedPatch(Item):
-                    patch = self.GetPyData(Item)
+                    patch = self.GetItemData(Item)
                     patchItem = Item
                     geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                    geo         = self.inspector.tree.GetPyData(geoItem)
+                    geo         = self.inspector.tree.GetItemData(geoItem)
                     patch_id    = geo.index(patch)
                     patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -831,10 +820,10 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Hide Control Points":
             for Item in self.selectionsItems:
                 if self.SelectedPatch(Item):
-                    patch = self.GetPyData(Item)
+                    patch = self.GetItemData(Item)
                     patchItem = Item
                     geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                    geo         = self.inspector.tree.GetPyData(geoItem)
+                    geo         = self.inspector.tree.GetItemData(geoItem)
                     patch_id    = geo.index(patch)
                     patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -842,10 +831,10 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Show Mesh":
             for Item in self.selectionsItems:
                 if self.SelectedPatch(Item):
-                    patch = self.GetPyData(Item)
+                    patch = self.GetItemData(Item)
                     patchItem = Item
                     geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                    geo         = self.inspector.tree.GetPyData(geoItem)
+                    geo         = self.inspector.tree.GetItemData(geoItem)
                     patch_id    = geo.index(patch)
                     patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -853,10 +842,10 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Hide Mesh":
             for Item in self.selectionsItems:
                 if self.SelectedPatch(Item):
-                    patch = self.GetPyData(Item)
+                    patch = self.GetItemData(Item)
                     patchItem = Item
                     geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                    geo         = self.inspector.tree.GetPyData(geoItem)
+                    geo         = self.inspector.tree.GetItemData(geoItem)
                     patch_id    = geo.index(patch)
                     patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -902,12 +891,12 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Extract":
             wk = self.inspector.WorkGroup
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
-            patch     = self.GetPyData(patchItem)
+            patch     = self.GetItemData(patchItem)
             face_id = face.face
             axis, side = entier_vers_couple(face_id)
             nrb = patch.extract_face(axis, side)
             geoItem = self.inspector.tree.GetItemParent(patchItem)
-            geo = self.inspector.tree.GetPyData(geoItem)
+            geo = self.inspector.tree.GetItemData(geoItem)
             wk.add_patch(geoItem, geo, nrb)
             wk.Refresh()
         if operation == "Stick-C1":
@@ -915,7 +904,7 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Mark":
             wk = self.inspector.WorkGroup
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
-            patch     = self.GetPyData(patchItem)
+            patch     = self.GetItemData(patchItem)
             face_id = face.face
             axis, side = entier_vers_couple(face_id)
             nrb = patch.extract_face(axis, side)
@@ -928,7 +917,7 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Clone from Markers":
             wk = self.inspector.WorkGroup
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
-            patch     = self.GetPyData(patchItem)
+            patch     = self.GetItemData(patchItem)
             face_id = face.face
 
             n = len(wk.viewer.MarkerPoints)
@@ -956,27 +945,27 @@ class inspectorTree(wx.TreeCtrl):
         if operation == "Homogeneous Dirichlet":
             wk = self.inspector.WorkGroup
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
-            patch     = self.GetPyData(patchItem)
+            patch     = self.GetItemData(patchItem)
             geoItem = self.inspector.tree.GetItemParent(patchItem)
-            geo = self.inspector.tree.GetPyData(geoItem)
+            geo = self.inspector.tree.GetItemData(geoItem)
             patch_id = geo.index(patch)
             face_id = face.face
             self.inspector.boundaryConditions.set_dirichlet_homogeneous(patch_id,face_id)
         if operation == "non Homogeneous Dirichlet":
             wk = self.inspector.WorkGroup
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
-            patch     = self.GetPyData(patchItem)
+            patch     = self.GetItemData(patchItem)
             geoItem = self.inspector.tree.GetItemParent(patchItem)
-            geo = self.inspector.tree.GetPyData(geoItem)
+            geo = self.inspector.tree.GetItemData(geoItem)
             patch_id = geo.index(patch)
             face_id = face.face
             self.inspector.boundaryConditions.set_dirichlet_non_homogeneous(patch_id,face_id)
         if operation == "Neumann":
             wk = self.inspector.WorkGroup
             patchItem = self.GetItemParent(self.GetItemParent(faceItem))
-            patch     = self.GetPyData(patchItem)
+            patch     = self.GetItemData(patchItem)
             geoItem = self.inspector.tree.GetItemParent(patchItem)
-            geo = self.inspector.tree.GetPyData(geoItem)
+            geo = self.inspector.tree.GetItemData(geoItem)
             patch_id = geo.index(patch)
             face_id = face.face
             self.inspector.boundaryConditions.set_neumann(patch_id,face_id)
@@ -1003,7 +992,7 @@ class inspectorTree(wx.TreeCtrl):
 
         for Item in self.selectionsItems:
             if self.SelectedGeometry(Item):
-                geo = self.GetPyData(Item)
+                geo = self.GetItemData(Item)
                 geo.set_nurbsColor(values)
 
         self.Refresh()
@@ -1013,7 +1002,7 @@ class inspectorTree(wx.TreeCtrl):
         patch       = self.inspector.currentPatch
         patchItem   = self.inspector.currentPatchItem
         geoItem     = self.inspector.tree.GetItemParent(patchItem)
-        geo         = self.inspector.tree.GetPyData(geoItem)
+        geo         = self.inspector.tree.GetItemData(geoItem)
         patch_id    = geo.index(patch)
         patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -1037,10 +1026,10 @@ class inspectorTree(wx.TreeCtrl):
 
         for Item in self.selectionsItems:
             if self.SelectedPatch(Item):
-                patch = self.GetPyData(Item)
+                patch = self.GetItemData(Item)
                 patchItem = Item
                 geoItem     = self.inspector.tree.GetItemParent(patchItem)
-                geo         = self.inspector.tree.GetPyData(geoItem)
+                geo         = self.inspector.tree.GetItemData(geoItem)
                 patch_id    = geo.index(patch)
                 patchInfo   = geo.list_patchInfo[patch_id]
                 patchInfo.set_nurbsColor(values)
@@ -1074,7 +1063,7 @@ class inspectorTree(wx.TreeCtrl):
         patch       = self.inspector.currentPatch
         patchItem   = self.inspector.currentPatchItem
         geoItem     = self.inspector.tree.GetItemParent(patchItem)
-        geo         = self.inspector.tree.GetPyData(geoItem)
+        geo         = self.inspector.tree.GetItemData(geoItem)
         patch_id    = geo.index(patch)
         patchInfo   = geo.list_patchInfo[patch_id]
 
@@ -1302,7 +1291,7 @@ class Inspector(wx.Frame):
         wk = self.WorkGroup
         for Item in self.tree.selectionsItems:
             if self.tree.SelectedPatch(Item):
-                patch = self.tree.GetPyData(Item)
+                patch = self.tree.GetItemData(Item)
                 self.list_copyPatchs.append(patch)
 
         # macro recording
@@ -1312,9 +1301,9 @@ class Inspector(wx.Frame):
             macro_script.append("# ... copy selected patchs")
             list_gp = []
             for item in wk.inspector.tree.selectionsItems:
-                patch   = wk.inspector.tree.GetPyData(item)
+                patch   = wk.inspector.tree.GetItemData(item)
                 geoItem = wk.inspector.tree.GetItemParent(item)
-                geo     = wk.inspector.tree.GetPyData(geoItem)
+                geo     = wk.inspector.tree.GetItemData(geoItem)
                 list_gp.append([geo, patch])
 
             macro_script.append("list_copyPatchs = []")

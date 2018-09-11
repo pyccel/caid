@@ -1,16 +1,15 @@
+import sys
+import os
+from glob import glob
+import wx
+import wx.html
+
 from aboutBox import *
 from MenuCAIDFile import MenuCAIDFile
 from MenuCAIDEdit import MenuCAIDEdit
 from MenuCAIDTools import MenuCAIDTools
 from workGroup import *
 from caid.field import field
-import sys
-import os
-from glob import glob
-import wx
-import wx.html
-import wxversion
-#wxversion.select("2.9")
 
 class Frame(wx.Frame):
     def __init__(self, title, filenames=[]):

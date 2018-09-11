@@ -121,7 +121,7 @@ class GeometryActions(ClassActions):
         if ID == self.EXP_ID:
             from global_vars import CAIDwildcard
             # Create a save file dialog
-            dialog = wx.FileDialog ( None, style = wx.SAVE | wx.OVERWRITE_PROMPT
+            dialog = wx.FileDialog ( None, style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
                                    , wildcard=CAIDwildcard)
             # Show the dialog and get user input
             if dialog.ShowModal() == wx.ID_OK:
@@ -204,7 +204,7 @@ class GeometryActions(ClassActions):
 
         if ID == self.IMP_ID:
             # Create an open file dialog
-            dialog = wx.FileDialog(None, style = wx.OPEN)
+            dialog = wx.FileDialog(None, style = wx.FD_OPEN)
             # Show the dialog and get user input
             if dialog.ShowModal() == wx.ID_OK:
                 filename = dialog.GetPath()
@@ -264,12 +264,12 @@ class GeometryActions(ClassActions):
             # inspector = self.parent
             wk = self.parent.WorkGroup
             item = wk.inspector.tree.GetSelection()
-            geo_bnd = wk.inspector.tree.GetPyData(item)
+            geo_bnd = wk.inspector.tree.GetItemData(item)
             face = geo_bnd.face
             faceItem = wk.inspector.tree.GetItemParent(item)
             patchItem = wk.inspector.tree.GetItemParent(faceItem)
             geoItem = wk.inspector.tree.GetItemParent(patchItem)
-            geo = wk.inspector.tree.GetPyData(geoItem)
+            geo = wk.inspector.tree.GetItemData(geoItem)
             _geo = cad_geometry()
             _geo.append(geo[0])
             geo_new = geometry(_geo.to5patchs(face))
@@ -491,7 +491,7 @@ class GeometryActionsAdd(ClassActions):
                 patch = wk.inspector.currentObject
                 patchItem = wk.inspector.currentPatchItem
                 geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                geo = wk.inspector.tree.GetPyData(geoItem)
+                geo = wk.inspector.tree.GetItemData(geoItem)
                 geo_id   = wk.list_geo.index(geo)
                 patch_id = geo.index(patch)
                 macro_script.append("geo_id = "+str(geo_id))
@@ -523,7 +523,7 @@ class GeometryActionsAdd(ClassActions):
                 patch = wk.inspector.currentObject
                 patchItem = wk.inspector.currentPatchItem
                 geoItem = wk.inspector.tree.GetItemParent(patchItem)
-                geo = wk.inspector.tree.GetPyData(geoItem)
+                geo = wk.inspector.tree.GetItemData(geoItem)
                 geo_id   = wk.list_geo.index(geo)
                 patch_id = geo.index(patch)
                 macro_script.append("geo_id = "+str(geo_id))

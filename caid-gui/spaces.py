@@ -69,7 +69,7 @@ class spacesTree(wx.TreeCtrl):
 
 
     def GetItemText(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         if obj.__class__.__name__=="space":
             txt = "space"
         if obj.__class__.__name__.split('_')[0]=="connectivity":
@@ -83,7 +83,7 @@ class spacesTree(wx.TreeCtrl):
         return txt
 
     def SelectedSpace(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         Parent = self.GetItemParent(item)
         if (obj.__class__.__name__ in ["space"]):
             return True
@@ -92,7 +92,7 @@ class spacesTree(wx.TreeCtrl):
 
     def GetCurrentSpace(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         Parent = self.GetItemParent(item)
         if (obj.__class__.__name__ in ["space"]):
             return obj, item
@@ -100,7 +100,7 @@ class spacesTree(wx.TreeCtrl):
             return None, None
 
     def SelectedConnectivity(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         Parent = self.GetItemParent(item)
         if (obj.__class__.__name__.split('_')[0]=="connectivity"):
             return True
@@ -109,7 +109,7 @@ class spacesTree(wx.TreeCtrl):
 
     def GetCurrentConnectivity(self, event):
         item = event.GetItem()
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         Parent = self.GetItemParent(item)
         if (obj.__class__.__name__.split('_')[0]=="connectivity"):
             return obj, item
@@ -162,7 +162,7 @@ class spacesTree(wx.TreeCtrl):
         if connectivity is not None:
             conItem     = self.inspector.currentConnectivityItem
             spaceItem   = self.inspector.tree.GetItemParent(conItem)
-            space       = self.inspector.tree.GetPyData(spaceItem)
+            space       = self.inspector.tree.GetItemData(spaceItem)
             self.OnRightMouseClickConnectivity(event, space)
 
     def OnRightMouseClickConnectivity(self, event, face):
@@ -173,9 +173,10 @@ class spacesTree(wx.TreeCtrl):
             ### 3. Launcher packs menu with Append. ###
             toAppend = True
             if toAppend:
-                menu.Append( id, title )
                 ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-                wx.EVT_MENU( menu, id, self.MenuSelectionCbConnectivity)
+                title_id = menu.Append( id, title )
+                menu.Bind( wx.EVT_MENU, self.MenuSelectionCbConnectivity, title_id )
+
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )
         menu.Destroy() # destroy to avoid mem leak

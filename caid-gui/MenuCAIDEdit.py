@@ -119,11 +119,11 @@ class MenuCAIDEdit(wx.Menu):
         # ...
         self.sm_preferences = wx.Menu()
         self.PreferencesID = wx.NewId()
-        self.sm_preferences.AppendMenu(self.PreferencesID, 'Theme', self.sm_theme)
-        self.sm_preferences.AppendMenu(self.PreferencesID, 'Intersection', self.sm_intersection)
-        self.sm_preferences.AppendMenu(self.PreferencesID, 'Coons', self.sm_coons)
+        self.sm_preferences.Append(self.PreferencesID, 'Theme', self.sm_theme)
+        self.sm_preferences.Append(self.PreferencesID, 'Intersection', self.sm_intersection)
+        self.sm_preferences.Append(self.PreferencesID, 'Coons', self.sm_coons)
 
-        self.AppendMenu(self.PreferencesID, 'Preferences', self.sm_preferences)
+        self.Append(self.PreferencesID, 'Preferences', self.sm_preferences)
         # ...
 
         # ... deactivate items

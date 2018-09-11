@@ -314,10 +314,8 @@ class WorkGroup(wx.Frame):
         # ...
 
         if filename is not None:
-            f = open(filename, 'wr')
-            s = doc.toprettyxml()
-            f.write(s)
-            f.close()
+            with open( filename, 'w' ) as f:
+                f.write( doc.toprettyxml() )
         else:
             print("No file was specified")
 
@@ -420,29 +418,23 @@ class WorkGroupTree(wx.TreeCtrl):
         self.dict_WorkGroup[id(wk)] = wk
         TAG = "-" + str(len(self.dict_WorkGroup))
 
-        wkItem = self.AppendItem(self.root, 'WorkGroup'+TAG, -1,
-                                  -1,wx.TreeItemData(wk) )
-        inspectorItem  = self.AppendItem(wkItem,'Inspector', -1,
-                                             -1,wx.TreeItemData(wk))
-        viewerItem  = self.AppendItem(wkItem,'Viewer', -1,
-                                             -1,wx.TreeItemData(wk))
-        spacesItem  = self.AppendItem(wkItem,'Spaces', -1,
-                                             -1,wx.TreeItemData(wk))
-        fieldsItem  = self.AppendItem(wkItem,'Fields', -1,
-                                             -1,wx.TreeItemData(wk))
-
+        wkItem = self.AppendItem( self.root, 'WorkGroup'+TAG, -1, -1, wk )
+        inspectorItem = self.AppendItem( wkItem, 'Inspector', -1, -1, wk )
+        viewerItem    = self.AppendItem( wkItem, 'Viewer'   , -1, -1, wk )
+        spacesItem    = self.AppendItem( wkItem, 'Spaces'   , -1, -1, wk )
+        fieldsItem    = self.AppendItem( wkItem, 'Fields'   , -1, -1, wk )
 
         return wk
 
     def SelectedViewer(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         if obj.__class__.__name__ in ["Viewer"]:
             return True
         else:
             return False
 
     def SelectedInspector(self, item):
-        obj = self.GetPyData( item )
+        obj = self.GetItemData( item )
         if obj.__class__.__name__ in ["Inspector"]:
             return True
         else:
@@ -454,7 +446,7 @@ class WorkGroupTree(wx.TreeCtrl):
         the selected item (viewer, inspector, workgroup)
         """
         item =  event.GetItem()
-        obj = self.GetPyData(item)
+        obj = self.GetItemData(item)
         txt = self.GetItemText(item)
         tag = txt.split("-")[0]
         if tag in ["WorkGroup","Inspector","Viewer"]:
@@ -476,9 +468,9 @@ class WorkGroupTree(wx.TreeCtrl):
         menu = wx.Menu()
         for (id,title) in list(self.menu_title_by_id.items()):
             ### 3. Launcher packs menu with Append. ###
-            menu.Append( id, title )
+            title_id = menu.Append( id, title )
             ### 4. Launcher registers menu handlers with EVT_MENU, on the menu. ###
-            wx.EVT_MENU( menu, id, self.MenuSelectionCb )
+            menu.Bind( wx.EVT_MENU, self.MenuSelectionCb, title_id )
 
         ### 5. Launcher displays menu with call to PopupMenu, invoked on the source component, passing event's GetPoint. ###
         self.parent.PopupMenu( menu, event.GetPoint() )

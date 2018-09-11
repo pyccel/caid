@@ -1,5 +1,3 @@
-import wxversion
-#wxversion.select("2.8")
 import wx, wx.html
 import sys
 
