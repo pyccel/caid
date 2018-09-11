@@ -204,7 +204,7 @@ class XML(object):
             return data
         except:
             if TAG not in ["orientation"]:
-                print("Exception _get_data, invalid tag : ", TAG)
+                print(("Exception _get_data, invalid tag : ", TAG))
             return None
 
     def read(self, filename, geo):
@@ -316,8 +316,7 @@ class XML(object):
                                 nrb = cad_op_nurbs(grad_nrb)
                                 print("Warning: creates a cad_op_nurbs instead of cad_grad_nurbs")
                             else:
-                                print("Operator not yet implemented")
-                                raise
+                                raise NotImplementedError("Operator not yet implemented")
 
                         nrb.set_attributs(attributs)
                         nrb.set_orientation(list_sgn)
@@ -379,7 +378,7 @@ class XML(object):
         generates xml doc from cad_geometry object
         """
         # ... sets geometry attributs
-        for TAG, txt in geo.attributs.items():
+        for TAG, txt in list(geo.attributs.items()):
             if txt is not None:
                 rootElt.setAttribute(TAG, str(txt))
         # ...
@@ -473,7 +472,7 @@ class XML(object):
             Text = doc.createTextNode(txt)
             Elt.appendChild(Text)
         except:
-            print("Warning: wrong or bad values for ", TAG)
+            print(("Warning: wrong or bad values for ", TAG))
 #        print TAG, txt
         # ...
 
@@ -489,7 +488,7 @@ class XML(object):
             rootElt.appendChild(maincard)
 
             # ... patch attributs
-            for TAG, txt in nrb.attributs.items():
+            for TAG, txt in list(nrb.attributs.items()):
                 if txt is not None:
                     maincard.setAttribute(TAG, txt)
             # ...
@@ -680,7 +679,7 @@ class TXT(object):
             fo.write("# connectivity")
             fo.write("\n")
             for dic in geo.connectivity:
-                for key, data in dic.items():
+                for key, data in list(dic.items()):
                     label = key
                     fo.write(label)
                     fo.write("\n")
@@ -764,8 +763,7 @@ class NML(object):
 
     def read(self, filename, geo):
         if not F90NML:
-            print ("f90nml not installed. Please use another input/output driver.")
-            raise()
+            raise ImportError("f90nml not installed. Please use another input/output driver.")
 
         nml = f90nml.read(filename)
         d_dim = nml['d_dimension']['d_dim']
@@ -1799,10 +1797,9 @@ class BZR(object):
 
     def write(self, geo, fmt="txt", basename=None, dirname=None, basis_only=False):
         # ...
-        print ("xxxxx degree " , geo[0].degree)
+        print(("xxxxx degree " , geo[0].degree))
         if geo.dim == 1:
-            print ("Not yet implemented")
-            raise()
+            raise NotImplementedError("Not yet implemented")
 
         if geo.dim == 2:
             if not basis_only:
@@ -1863,7 +1860,7 @@ class BZR(object):
             fo.write("# connectivity")
             fo.write("\n")
             for dic in geo.connectivity:
-                for key, data in dic.items():
+                for key, data in list(dic.items()):
                     label = key
                     fo.write(label)
                     fo.write("\n")
@@ -1899,8 +1896,7 @@ class BZR(object):
             # ...
             if fmt == "zip":
                 if dirname is None:
-                    print ("Erro: dirname must be given.")
-                    raise()
+                    raise ValueError("Error: dirname must be given.")
 
                 from contextlib import closing
                 from zipfile import ZipFile, ZIP_DEFLATED
@@ -2067,7 +2063,7 @@ class Writer_geopdes(object):
         for enum, interface in enumerate(geo.connectivity):
             line = "INTERFACE " + str(enum+1) + "\n"
             writer.add_line(line, dtype='s')
-            for key, value in interface.iteritems():
+            for key, value in list(interface.items()):
                 i_patch = value[0]+1
                 i_face = geopdes_to_caid_faces_2d(value[1])
                 data = [i_patch, i_face]
@@ -2085,7 +2081,7 @@ class Writer_geopdes(object):
         enum = 0
         line = "SUBDOMAIN " + str(enum+1) + "\n"
         writer.add_line(line, dtype='s')
-        list_patchs = range(1, geo.npatchs+1)
+        list_patchs = list(range(1, geo.npatchs+1))
         writer.add_line(list_patchs, dtype='i')
 
     def add_boundaries(self, tol=1.e-7):
@@ -2094,7 +2090,7 @@ class Writer_geopdes(object):
 
         # ...
         n_ext_bnd = len(geo.external_faces)
-        list_parent = range(0,n_ext_bnd)
+        list_parent = list(range(0,n_ext_bnd))
         list_is_master = np.ones(n_ext_bnd, dtype=np.int)
         list_global_bnd = []
         for i in range(0, n_ext_bnd):
@@ -2231,9 +2227,8 @@ class geopdes(object):
         if n_dim == 2:
             self._n_lines_per_patch = 2 + 2 + 3
         else:
-            print ("Only 2d patchs are used for the moment")
+            raise ValueError("Only 2d patchs are used for the moment")
 
-            raise()
         self._list_begin_line = self._get_begin_line(lines, n_patchs)
 
         for i_patch in range(0, n_patchs):
@@ -2272,7 +2267,7 @@ class geopdes(object):
         for i_line,line in enumerate(lines):
             r = line.find(text)
             if r != -1:
-                print (">> find patch ", i_patch, " at the line number ", i_line)
+                print((">> find patch ", i_patch, " at the line number ", i_line))
                 return i_line
         return None
     # ...
@@ -2285,8 +2280,7 @@ class geopdes(object):
             if r is not None:
                 list_begin_line.append(r)
             else:
-                print ("Seriours error while parsing the input file")
-                raise()
+                raise ValueError("Seriours error while parsing the input file")
         return list_begin_line
     # ...
 

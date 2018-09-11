@@ -713,7 +713,7 @@ def pinched_quart_circle(rmin=0.5, rmax=1.0, epsilon=0.5, center=None, degree=0.
 
         cad_nrb.rotate(degree)
     else:
-        print (" ERROR  in pinched_quart_circle : epsilon should be in between 0 and 1")
+        print(" ERROR  in pinched_quart_circle : epsilon should be in between 0 and 1")
         STOP
     return geo
 
@@ -764,7 +764,7 @@ def pinched_circle(radius=0.5, epsilon=0.5, center=None, n=None, p=None):
         cad_nrb.control[7,7,1] += epsilon
         cad_nrb.control[6,7,1] += epsilon/2.
     else:
-        print (" ERROR  in pinched_circle : epsilon should be in between 0 and 1")
+        print(" ERROR  in pinched_circle : epsilon should be in between 0 and 1")
         STOP
     return geo
 
@@ -1052,7 +1052,7 @@ def tcoons(curves, profile=0):
 
     # ...
     if profile==1:
-        raise("TCoons with profile 1 Not yet implemented")
+        raise NotImplementedError("TCoons with profile 1 Not yet implemented")
 #        A = c2.points[0,:]
 #
 #        P = np.zeros_like(c3.points)
@@ -1065,7 +1065,7 @@ def tcoons(curves, profile=0):
 
     # ...
     if profile==2:
-        raise("TCoons with profile 2 Not yet implemented")
+        raise NotImplementedError("TCoons with profile 2 Not yet implemented")
 #        A = c1.points[0,:]
 #
 #        P = np.zeros_like(c3.points)
@@ -1078,7 +1078,7 @@ def tcoons(curves, profile=0):
 
     # ...
     if profile==3:
-        raise("TCoons with profile 3 Not yet implemented")
+        raise NotImplementedError("TCoons with profile 3 Not yet implemented")
 #        A = c1.points[0,:]
 #
 #        P = np.zeros_like(c3.points)
@@ -1115,90 +1115,78 @@ class cad_io:
 
         self.mode = mode
         if self.mode not in ["r","w"]:
-            print("cad_io : mode must be r or w")
-            raise
+            raise ValueError("cad_io : mode must be r or w")
 
         if self.__format__ not in ["xml","zip","txt", "nml"]:
-            print("cad_io : format must be xml, nml, zip or txt")
-            raise
+            raise ValueError("cad_io : format must be xml, nml, zip or txt")
 
     def read(self, geo):
         """
         Write the given cad_geometry to the underlying stream
         """
         if self.mode != "r":
-            print("mode file must be set to r ")
-            raise
+            raise ValueError("mode file must be set to r ")
 
         if self.__format__=="vtk":
-            print("VTK import Not yet implemented")
-            raise
+            raise ValueError("VTK import Not yet implemented")
 
         if self.__format__=="hdf5":
-            print("DHF5 import Not yet implemented")
-            raise
+            raise ValueError("DHF5 import Not yet implemented")
 
         if self.__format__=="xml":
             try:
                 rw = XML()
                 return rw.read(self.__filename__, geo)
             except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
             except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="nml":
             try:
                 rw = NML()
                 return rw.read(self.__filename__, geo)
             except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
             except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
     def write(self, geo):
         """
         Write the given cad_geometry geo
         """
         if self.mode != "w":
-            print("mode file must be set to w ")
-            raise
+            raise ValueError("mode file must be set to w ")
 
         if self.__format__=="hdf5":
-            print("Not yet implemented")
-            raise
+            raise ValueError("Not yet implemented")
 
         if self.__format__=="xml":
             try:
                 rw = XML()
                 rw.write(self.__filename__, geo)
             except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
             except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="zip":
             try:
                 rw = TXT()
                 rw.write(self.__filename__, geo, fmt="zip")
             except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
             except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="txt":
             try:
                 rw = TXT()
                 rw.write(self.__filename__, geo, fmt="txt")
             except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
             except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
 class cad_object(object):
     def __new__(typ, *args, **kwargs):
@@ -1317,8 +1305,7 @@ class cad_object(object):
             jac = xdu * ydv - xdv * ydu
             xyz = [x,y]
         if self.dim == 3:
-            print("Not yet implemented")
-            raise
+            raise ValueError("Not yet implemented")
         return xyz, jac
 
 class cad_nurbs(cad_object, NURBS):
@@ -1808,8 +1795,7 @@ class cad_nurbs(cad_object, NURBS):
         elif side == 1:
             i_bnd = n + 1
         else:
-            print ("wrong argument")
-            raise()
+            raise ValueError("wrong argument")
         # ...
 
         # ...
@@ -1897,8 +1883,7 @@ class cad_nurbs(cad_object, NURBS):
                     i += 1
             plt.legend()
         else:
-            print ("not yet implemented")
-            raise()
+            raise NotImplementedError('')
 
     def evaluate_deriv(self, u=None, v=None, w=None \
                        , nderiv=1):
@@ -1964,7 +1949,7 @@ class cad_nurbs(cad_object, NURBS):
         if d_norm > 1.e-7:
             rationalize = 1
         arglist = [nderiv, nderivatives, rationalize]
-
+        print((" rationalize ", rationalize))
         for p, U in zip(self.degree, self.knots):
             arglist.extend([p, U])
         arglist.append(array)
@@ -2261,8 +2246,7 @@ class cad_op_nurbs(opNURBS, cad_object):
         elif side == 1:
             i_bnd = n + 1
         else:
-            print ("wrong argument")
-            raise()
+            raise ValueError("wrong argument")
         # ...
 
         # ...
@@ -2693,8 +2677,8 @@ class cad_geometry(object):
         if nrb.__class__.__name__ in list_objects:
             self._list.append(nrb)
         else:
-            print("Warning: inserted object is not in ", list_objects)
-            print("the current object is ", nrb.__class__.__name__)
+            print(("Warning: inserted object is not in ", list_objects))
+            print(("the current object is ", nrb.__class__.__name__))
             cad_nrb = cad_nurbs.__new__(cad_nurbs)
             cad_nrb._array = nrb.array
             cad_nrb._knots = nrb.knots
@@ -3059,10 +3043,10 @@ class cad_geometry(object):
                                     intext_faces_m[i_m, f_m] = 1
                                     intext_faces_s[i_s, f_s] = 1
                                 if isInvertFace:
-                                    print("Merging Error: Found uncorrect orientation. Please change the orientation of the patchs (master,slave): ("\
-                                            ,i_m,",",i_s,").")
+                                    print(("Merging Error: Found uncorrect orientation. Please change the orientation of the patchs (master,slave): ("\
+                                            ,i_m,",",i_s,")."))
 
-                                    print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
+                                    print(("Occured on the faces (master, slave): (",f_m,",",f_s,")."))
                                 f_s += 1
                         f_m += 1
 
@@ -3192,7 +3176,7 @@ class cad_geometry(object):
                             intext_faces_m[i_m, f_s] = 1
                         if isInvertFace:
                             print("Merging Error: Found uncorrect orientation.")
-                            print("Occured on the faces (master, slave): (",f_m,",",f_s,").")
+                            print(("Occured on the faces (master, slave): (",f_m,",",f_s,")."))
 
 
         internalFaces = []
@@ -3312,8 +3296,7 @@ class cad_geometry(object):
                 nrb_2 = cad_nurbs([u,v_2], P_2, weights=W_2)
 
         if nrb.dim == 3:
-            print("Not yet implemented for 3D objects")
-            raise
+            raise NotImplementedError("Not yet implemented for 3D objects")
 
         self.remove(nrb)
         self.append(nrb_1)
@@ -3333,8 +3316,7 @@ class cad_geometry(object):
         for i,t in enumerate(list_t):
             geo_t.split(i,t,axis)
         if nrb.dim == 1:
-            print("Not yet implemented")
-            raise
+            raise NotImplementedError("Not yet implemented")
         if nrb.dim == 2:
             geo_f = cad_geometry()
             for i in range(0,self.npatchs):
@@ -3351,8 +3333,7 @@ class cad_geometry(object):
                 for srf in _geo:
                     geo_f.append(srf)
         if nrb.dim == 3:
-            print("Not yet implemented")
-            raise
+            raise NotImplementedError("Not yet implemented")
 
         geo_f.initialize_info()
         return geo_f
@@ -3369,12 +3350,10 @@ class cad_geometry(object):
         description. the user must provide the internal face
         """
         # TODO must be updated with the new signature of extract_face
-        print ("Not yet implemented")
-        raise()
+        raise NotImplementedError("Not yet implemented")
 
         if self.dim in [1,3]:
-            print("This functions is only for 2D domains")
-            raise
+            raise ValueError("This functions is only for 2D domains")
 
         axis, side = entier_vers_couple(face)
 
@@ -3483,8 +3462,7 @@ class cad_geometry(object):
             Dw = nrb.evaluate_deriv(*list_t,nderiv=1)
 
             if self.dim in [1,3]:
-                print("Error: Not yet implemented.")
-                raise
+                raise NotImplementedError("Error: Not yet implemented.")
 
             x    = Dw[0,:,:,0]
             xdu  = Dw[1,:,:,0]
@@ -3496,13 +3474,13 @@ class cad_geometry(object):
 
             jac = xdu * ydv - xdv * ydu
             if np.abs(jac.max()) < 1.e-6:
-                print("=== patch ",i, " ===")
-                print("jacobian[0,0] : ", jac[0,0])
-                print("jacobian[0,-1] : ", jac[0,-1])
-                print("jacobian[-1,0] : ", jac[-1,0])
-                print("jacobian[-1,-1] : ", jac[-1,-1])
-                print("min(jacobian) : ", jac.min())
-                print("max(jacobian) : ", jac.max())
+                print(("=== patch ",i, " ==="))
+                print(("jacobian[0,0] : ", jac[0,0]))
+                print(("jacobian[0,-1] : ", jac[0,-1]))
+                print(("jacobian[-1,0] : ", jac[-1,0]))
+                print(("jacobian[-1,-1] : ", jac[-1,-1]))
+                print(("min(jacobian) : ", jac.min()))
+                print(("max(jacobian) : ", jac.max()))
             list_jac.append(jac)
             list_xyz.append([x,y])
 
@@ -3531,8 +3509,7 @@ class cad_geometry(object):
             is_periodic_uniform_bspline = is_periodic_uniform_bspline or condition
 
         if is_periodic_uniform_bspline and (len(self) > 1):
-            print ("periodic uniform bsplines works only for 1 patch")
-            raise()
+            raise ValueError("periodic uniform bsplines works only for 1 patch")
         if is_periodic_uniform_bspline:
             return self.bezier_extract_periodic()
         # ...
@@ -4528,8 +4505,8 @@ class cad_geometry(object):
 
                 if ((hu_00-hu)**2 +(hv_00-hv)**2 > 1.e-7) :
                     print("SERIOUS ERROR: hu_00 must be equal to hu and hv_00 to hv. But got the values")
-                    print(hu_00, hu)
-                    print(hv_00, hv)
+                    print((hu_00, hu))
+                    print((hv_00, hv))
 
                 elementData = [list_indexP \
                 , list_huhv \

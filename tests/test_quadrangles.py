@@ -123,7 +123,7 @@ def test_3():
     list_patchs = np.unique(quadrangles.colors)
     for color in list_patchs:
         elements = Sticker.tensor_elements(color)
-        print "color ", color, " size ", len(elements), len(elements[0])
+        print("color ", color, " size ", len(elements), len(elements[0]))
 
 #    plt.show()
 

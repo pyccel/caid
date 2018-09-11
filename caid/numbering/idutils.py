@@ -94,7 +94,7 @@ def print_id_1D(id):
     n, = id.shape
     for i in range(0,n):
         id_[i] = id[i]
-    print(id_.transpose())
+    print((id_.transpose()))
 
 def print_id_2D(id):
     id_ = np.zeros_like(id)
@@ -102,8 +102,8 @@ def print_id_2D(id):
     for j in range(0,m):
         for i in range(0,n):
             id_[i,j] = id[i,-j-1]
-    print(id_.transpose())
-    print(id.transpose().reshape(id.size))
+    print((id_.transpose()))
+    print((id.transpose().reshape(id.size)))
 # ...
 
 # ...
@@ -276,8 +276,8 @@ def computeGlobalID(list_id):
 def init_ID_object_uniform_1d(n, p):
     IEN = - (p-1) * np.ones((n, p+1), dtype=np.int)
     for elmt in range(0, n):
-        IEN[elmt, :] += np.asarray(range(elmt, elmt+p+1))
-    print (IEN)
+        IEN[elmt, :] += np.asarray(list(range(elmt, elmt+p+1)))
+    print(IEN)
     for elmt in range(0, p):
         IEN[elmt, 0:(p-elmt)] = IEN[-elmt-1, elmt+1:p+1]
     return IEN
@@ -287,10 +287,10 @@ def init_ID_object_uniform_1d(n, p):
 def init_ID_object_uniform_2d(list_n, list_p):
     IEN_u = init_ID_object_uniform_1d(list_n[0], list_p[0])
     IEN_v = init_ID_object_uniform_1d(list_n[1], list_p[1])
-    print ("IEN_u")
-    print (IEN_u)
-    print ("IEN_v")
-    print (IEN_v)
+    print("IEN_u")
+    print(IEN_u)
+    print("IEN_v")
+    print(IEN_v)
 
     n_u = list_n[0]
     n_v = list_n[1]
@@ -309,7 +309,7 @@ def init_ID_object_uniform_2d(list_n, list_p):
                 for ind_u in range(0, p_u+1):
                     i_u = IEN_u[elmt_u, ind_u]
                     i_v = IEN_v[elmt_v, ind_v]
-                    print (i_u, i_v)
+                    print((i_u, i_v))
                     IEN[elmt, ind] = i_u + (i_v-1) * n_u
 
                     ind += 1
@@ -367,7 +367,7 @@ class ID_object_uniform_1d(ID_object_uniform):
         return [self._ID_extended[self.p:]]
 
     def initialize_ID(self):
-        self._ID_extended[self.p:-self.p] = range(1, self.n+1)
+        self._ID_extended[self.p:-self.p] = list(range(1, self.n+1))
         self._ID_extended[:self.p] = self.ID[0][-self.p:]
         self._ID_extended[-self.p:] = self.ID[0][:self.p]
 
@@ -442,13 +442,13 @@ if __name__ == '__main__':
         if PRINT :
             print("--------------  FINAL ------------------")
             for i,id in enumerate(list_id):
-                print("...... patch id : ", i, " ......")
+                print(("...... patch id : ", i, " ......"))
                 print_id(id)
             print("--------------  ID ------------------")
             print(ID)
 
         t_end = time()
-        print("Elapsed time ", t_end - t_start)
+        print(("Elapsed time ", t_end - t_start))
 
 
 
@@ -461,14 +461,14 @@ if __name__ == '__main__':
         k = 3
 
         con_1d = ID_object_uniform_1d(n, k-1)
-        print (con_1d.ID[0].shape)
+        print((con_1d.ID[0].shape))
     #    print con_1d.ID_extended
-        print (con_1d.ID)
+        print((con_1d.ID))
 
         con_2d = ID_object_uniform_2d([n, n], [k-1, k-1])
     #    con_2d = ID_object_uniform_2d([n, n+1], [k-1, k])
-        print (con_2d.ID[0].shape)
+        print((con_2d.ID[0].shape))
     #    print con_2d.ID_extended.transpose()[::-1, :]
-        print (con_2d.local_ID[0].transpose()[::-1, :])
-        print (con_2d.ID)
+        print((con_2d.local_ID[0].transpose()[::-1, :]))
+        print((con_2d.ID))
 

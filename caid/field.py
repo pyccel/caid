@@ -566,7 +566,7 @@ class viewer(basic_viewer):
             self._field = field
             force = True
 
-        print("show_colorbar ", self.show_colorbar)
+        print(("show_colorbar ", self.show_colorbar))
         self.updateVertexBuffer(colormap=colormap, field=field, n=n, force=force)
 
         if self.show_colorbar:
@@ -599,7 +599,7 @@ class viewer(basic_viewer):
         if field is None:
             field = self.field
 
-        print("force ", force)
+        print(("force ", force))
 
         if not force:
             return

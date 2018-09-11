@@ -37,7 +37,7 @@ def _indices_face_1D(nrb, ai_face, shift):
         list_ind.append([li_i])
         return list_ind
 
-    print("Error _indices_face_1D: you gave a wrong face id. Given face ", ai_face)
+    print(("Error _indices_face_1D: you gave a wrong face id. Given face ", ai_face))
 
     import sys
     sys.exit(1)
@@ -78,7 +78,7 @@ def _indices_face_2D(nrb, ai_face, shift):
             list_ind.append([li_i,li_j])
         return list_ind
 
-    print("Error _indices_face_2D: you gave a wrong face id. Given face ", ai_face)
+    print(("Error _indices_face_2D: you gave a wrong face id. Given face ", ai_face))
     import sys
     sys.exit(1)
 
@@ -245,7 +245,7 @@ class boundary_conditions(object):
 
             self.list_Dirichlet_ind.append(list_Dirichlet_ind)
 
-            print("list_Dirichlet_ind=", list_Dirichlet_ind)
+            print(("list_Dirichlet_ind=", list_Dirichlet_ind))
 
     def all_dirichlet_3d(self, list_interior_ind=[[]]):
         """

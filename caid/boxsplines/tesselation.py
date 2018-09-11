@@ -728,7 +728,7 @@ if __name__ == "__main__":
 
     triang.extend()
 
-    print(len(sten_ref.neighbours))
+    print((len(sten_ref.neighbours)))
 
 #    for enum, simplex in enumerate(sten_ref.tri.simplices):
 #        T = triangle()
@@ -769,7 +769,7 @@ if __name__ == "__main__":
 #    for T in triang:
 #        print T
 
-    print(len(triang))
+    print((len(triang)))
 
 #    tess = sten_ref.expand(axis=0, bounds=[-7,7])
 #    tess.scale(h)

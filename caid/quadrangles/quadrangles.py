@@ -14,8 +14,7 @@ class Quadrangles(object):
         self._x = x
         self._y = y
         if quads is None:
-            print ("quadrangles automatic construction from vertices not yet implemented")
-            raise()
+            raise ValueError("quadrangles automatic construction from vertices not yet implemented")
         self._quads = quads
 
         self._triangles = None

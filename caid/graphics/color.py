@@ -439,5 +439,5 @@ if __name__ == '__main__':
               "Color('white')"]         # Normalized web color name
     for color in colors:
         c = eval(color)
-        print('%s : %s' %(color, c.rgba))
-    print('Color(1.) = %s ' % Color(1.).name())
+        print(('%s : %s' %(color, c.rgba)))
+    print(('Color(1.) = %s ' % Color(1.).name()))

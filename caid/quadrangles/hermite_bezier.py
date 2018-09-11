@@ -353,7 +353,7 @@ class CubicHermiteBezier(Quadrangles):
         n_elmts = self.quads.shape[0]
         elements = np.zeros((n_elmts, n_attributs), dtype=np.float)
 
-        list_elmts_id = range(1, n_elmts + 1)
+        list_elmts_id = list(range(1, n_elmts + 1))
 
         i_end = 0
         if with_id:
@@ -437,7 +437,7 @@ class CubicHermiteBezier(Quadrangles):
         n_nodes = self.x.shape[0]
         nodes = np.zeros((n_nodes, n_attributs), dtype=np.float)
 
-        list_nodes_id = range(1, n_nodes + 1)
+        list_nodes_id = list(range(1, n_nodes + 1))
 
         i_end = 0
         if with_id:

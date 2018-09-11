@@ -1,3 +1,6 @@
+CAID
+====
+
 CAID is a multi-platform software that has been designed for IsoGeometric Analysis Pre and Post Processing. Its design goal is to provide a fast, light and user-friendly designer and meshing tool.
 
 The Post-Processing and advanced visualization capabilities are still under development, as well as an optimized 3D computing engine.
@@ -140,3 +143,5 @@ Runing **CAID** can be done in different ways.
 
 TODO
 ====
+
+- update setup file, using pip to install all dependencies.

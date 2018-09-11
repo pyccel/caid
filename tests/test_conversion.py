@@ -26,22 +26,22 @@ def test1():
     points[1, 0:2] = [1.0, -1.0]
     points[2, 0:2] = [2.0, -2.0]
     c0.set_points(points)
-    print ">>> coeff for Bernstein curve"
+    print(">>> coeff for Bernstein curve")
     m = c0.shape[0]
     y0 = c0.points
     for i in range(0, m):
-        print c0.points[i, :]
+        print(c0.points[i, :])
 
     c1 = c0.copy().unclamp(0)
     m = c1.shape[0]
-    print ">>> coeff for Uniform-BSpline curve"
+    print(">>> coeff for Uniform-BSpline curve")
     for i in range(0, m):
-        print c1.points[i, 0:2]
+        print(c1.points[i, 0:2])
 
     x = c1.points[:, 0]
     y = S.dot(c1.points)
-    print "conversion using the conversion Matrix"
-    print y
+    print("conversion using the conversion Matrix")
+    print(y)
     assert (np.linalg.norm(y-y0) < 1.e-7)
     print ("==========================================")
     # ...
