@@ -1130,7 +1130,13 @@ class cad_io:
             raise ValueError("VTK import Not yet implemented")
 
         if self.__format__=="h5":
-            raise ValueError("HDF5 import Not yet implemented")
+            try:
+                rw = HDF5()
+                rw.read( self.__filename__, geo )
+            except IOError as e:
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
+            except:
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="xml":
             try:

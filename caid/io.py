@@ -1134,9 +1134,45 @@ class HDF5:
     def __init__( self ):
         pass
 
-    def read( self, name, geo ):
-        raise NotImplementedError( "HDF5.read()" )
+    # ...
+    def read( self, name, geo=None ):
 
+        from caid.cad_geometry import cad_geometry, cad_nurbs
+
+        if geo is None:
+            geo = cad_geometry()
+
+        h5  = h5py.File( name, mode='r' )
+        yml = yaml.load( h5['geometry.yml'].value )
+
+        for patch in yml['patches']:
+
+            group    = h5[patch['name']]
+            nrb_type = patch['type']
+            knots    = [group['knots_{}'.format( d )].value for d in range( yml['ldim'] )]
+            weights  = group['weights'].value if hasattr( group, 'weights' ) else None
+            points   = group['points' ].value
+
+            if nrb_type == 'cad_nurbs':
+                nrb = cad_nurbs(
+                    knots   = knots ,
+                    control = points,
+                    weights = weights
+                )
+            else:
+                raise NotImplementedError( 'Patch type = {}'.format( nrb_type ) )
+
+            geo.append( nrb )
+
+        geo.set_internal_faces( yml['internal_faces'] )
+        geo.set_external_faces( yml['external_faces'] )
+        geo.set_connectivity  ( yml['connectivity'  ] )
+
+        h5.close()
+
+        return geo
+
+    # ...
     def write( self, name, geo ):
 
         yml = OrderedDict()
