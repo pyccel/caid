@@ -1,4 +1,10 @@
 import numpy as np
+import h5py
+import yaml
+import yamlloader
+import warnings
+
+from collections  import OrderedDict
 from igakit.nurbs import NURBS
 from numpy.linalg import inv as matrix_inverse
 
@@ -10,7 +16,7 @@ except ImportError:
     F90NML=False
 # ...
 
-__all__ = ['XML', 'formatter', 'TXT', 'BZR','NML', "geopdes"]
+__all__ = ['XML', 'formatter', 'TXT', 'BZR','NML', 'HDF5', "geopdes"]
 
 class formatter(object):
     """
@@ -1121,6 +1127,57 @@ class NML(object):
             exportPatch(nrb, filename)
 
         # ...
+
+########################################################################
+class HDF5:
+
+    def __init__( self ):
+        pass
+
+    def read( self, name, geo ):
+        raise NotImplementedError( "HDF5.read()" )
+
+    def write( self, name, geo ):
+
+        yml = OrderedDict()
+        yml['ldim'] = geo.dim
+        yml['pdim'] = geo[0].points.ndim
+
+        yml['patches'] = [OrderedDict( [('name' , 'patch_{}'.format( i )  ),
+                                        ('type' , patch.attributs['type'] ),
+                                        ('color', 'None'                  )] )
+                          for i, patch in enumerate( geo )]
+
+        yml['internal_faces'] = geo.internal_faces
+        yml['external_faces'] = geo.external_faces
+        yml['connectivity'  ] = geo.connectivity
+
+        h5 = h5py.File( name, mode='w' )
+        h5['geometry.yml'] = yaml.dump(
+            data   = yml,
+            Dumper = yamlloader.ordereddict.Dumper,
+        )
+
+        for i, patch in enumerate( geo ):
+            group = h5.create_group( yml['patches'][i]['name'] )
+            group.attrs['degree'  ] = patch.degree
+            group.attrs['rational'] = patch.rational
+            group.attrs['periodic'] = HDF5.get_periodicity( patch )
+            for d in range( geo.dim ):
+                group['knots_{}'.format( d )] = patch.knots[d]
+            group['points'] = patch.points
+
+        h5.close()
+
+    @staticmethod
+    def get_periodicity( patch ):
+        if hasattr( patch, 'periodic' ):
+            return patch.periodic
+        else:
+            msg = "\n\nPatch does not have 'periodic' attribute: " + \
+                    "defaulting to 'False' along each direction.\n"
+            warnings.warn( msg, stacklevel=2 )
+            return tuple( False for d in range( patch.dim ) )
 
 ########################################################################
 # TODO to move to a directory io, in a file bezier

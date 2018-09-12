@@ -3,7 +3,7 @@ import numpy as np
 from numpy import linspace
 from igakit.nurbs import NURBS
 from .op_nurbs import opNURBS
-from .io import XML, TXT, NML
+from .io import XML, TXT, NML, HDF5
 import sys
 from caid.core import bspline as bsplinelib
 
@@ -1097,8 +1097,7 @@ def tcoons(curves, profile=0):
 class cad_io:
     def __init__(self, file, mode="r"):
         """Open file and return a corresponding stream. If the file cannot be opened, an IOError is raised.
-        file must be in ['xml', 'txt', 'zip']
-        TODO : add hdf5 format
+        file must be in ['xml', 'txt', 'zip', 'nml', 'h5']
 
         Args:
             file: file name.
@@ -1117,21 +1116,21 @@ class cad_io:
         if self.mode not in ["r","w"]:
             raise ValueError("cad_io : mode must be r or w")
 
-        if self.__format__ not in ["xml","zip","txt", "nml"]:
-            raise ValueError("cad_io : format must be xml, nml, zip or txt")
+        if self.__format__ not in ["xml", "zip", "txt", "nml", "h5"]:
+            raise ValueError("cad_io: file extension must be one of [xml, nml, zip, txt, h5]")
 
     def read(self, geo):
         """
         Write the given cad_geometry to the underlying stream
         """
         if self.mode != "r":
-            raise ValueError("mode file must be set to r ")
+            raise ValueError("mode file must be set to r")
 
         if self.__format__=="vtk":
             raise ValueError("VTK import Not yet implemented")
 
-        if self.__format__=="hdf5":
-            raise ValueError("DHF5 import Not yet implemented")
+        if self.__format__=="h5":
+            raise ValueError("HDF5 import Not yet implemented")
 
         if self.__format__=="xml":
             try:
@@ -1156,10 +1155,16 @@ class cad_io:
         Write the given cad_geometry geo
         """
         if self.mode != "w":
-            raise ValueError("mode file must be set to w ")
+            raise ValueError("mode file must be set to w")
 
-        if self.__format__=="hdf5":
-            raise ValueError("Not yet implemented")
+        if self.__format__=="h5":
+            try:
+                rw = HDF5()
+                rw.write( self.__filename__, geo )
+            except IOError as e:
+                print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
+            except:
+                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="xml":
             try:
