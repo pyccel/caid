@@ -1162,9 +1162,15 @@ class HDF5:
             else:
                 raise NotImplementedError( 'Patch type = {}'.format( nrb_type ) )
 
+            nrb.rational    = patch['rational'   ]
+            nrb.orientation = patch['orientation']
+            nrb.periodic    = patch['periodic'   ]
+
             geo.append( nrb )
 
-        geo.set_internal_faces( yml['internal_faces'] )
+        if hasattr( yml, 'internal_faces' ):
+            geo.set_internal_faces( yml['internal_faces'] )
+
         geo.set_external_faces( yml['external_faces'] )
         geo.set_connectivity  ( yml['connectivity'  ] )
 
@@ -1196,9 +1202,10 @@ class HDF5:
 
         for i, patch in enumerate( geo ):
             group = h5.create_group( yml['patches'][i]['name'] )
-            group.attrs['degree'  ] = patch.degree
-            group.attrs['rational'] = patch.rational
-            group.attrs['periodic'] = HDF5.get_periodicity( patch )
+            group.attrs['degree'     ] = patch.degree
+            group.attrs['rational'   ] = patch.rational
+            group.attrs['orientation'] = patch.orientation
+            group.attrs['periodic'   ] = HDF5.get_periodicity( patch )
             for d in range( geo.dim ):
                 group['knots_{}'.format( d )] = patch.knots[d]
             group['points'] = patch.points
