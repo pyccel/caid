@@ -1135,8 +1135,6 @@ class cad_io:
                 rw.read( self.__filename__, geo )
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="xml":
             try:
@@ -1144,8 +1142,6 @@ class cad_io:
                 return rw.read(self.__filename__, geo)
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="nml":
             try:
@@ -1153,8 +1149,6 @@ class cad_io:
                 return rw.read(self.__filename__, geo)
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
     def write(self, geo):
         """
@@ -1169,8 +1163,6 @@ class cad_io:
                 rw.write( self.__filename__, geo )
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="xml":
             try:
@@ -1178,8 +1170,6 @@ class cad_io:
                 rw.write(self.__filename__, geo)
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="zip":
             try:
@@ -1187,8 +1177,6 @@ class cad_io:
                 rw.write(self.__filename__, geo, fmt="zip")
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
         if self.__format__=="txt":
             try:
@@ -1196,8 +1184,6 @@ class cad_io:
                 rw.write(self.__filename__, geo, fmt="txt")
             except IOError as e:
                 print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
-            except:
-                raise ValueError("Unexpected error:", sys.exc_info()[0])
 
 class cad_object(object):
     def __new__(typ, *args, **kwargs):
