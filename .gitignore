@@ -44,6 +44,10 @@ nosetests.xml
 coverage.xml
 *,cover
 
+#F2py files
+caid/core/*f2pywrappers2.f90
+caid/core/*module.c
+
 # Translations
 *.mo
 *.pot
