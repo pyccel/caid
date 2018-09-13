@@ -2,5 +2,5 @@ numpy
 scipy
 matplotlib
 h5py
-yaml
+pyyaml
 yamlloader
