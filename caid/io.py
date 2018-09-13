@@ -1162,9 +1162,9 @@ class HDF5:
             else:
                 raise NotImplementedError( 'Patch type = {}'.format( nrb_type ) )
 
-            nrb.rational    = patch['rational'   ]
-            nrb.orientation = patch['orientation']
-            nrb.periodic    = patch['periodic'   ]
+            nrb.rational    = group.attrs['rational'   ]
+            nrb.orientation = group.attrs['orientation']
+            nrb.periodic    = group.attrs['periodic'   ]
 
             geo.append( nrb )
 
