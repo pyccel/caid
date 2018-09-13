@@ -576,11 +576,11 @@ class edtControlPoints(wx.Dialog):
         index = 0
         self.myRowDict = {}
         for row in self.rows:
-            self.list_ctrl.InsertStringItem(index, row.ijk)
-            self.list_ctrl.SetStringItem(index, 1, row.x)
-            self.list_ctrl.SetStringItem(index, 2, row.y)
-            self.list_ctrl.SetStringItem(index, 3, row.z)
-            self.list_ctrl.SetStringItem(index, 4, row.w)
+            self.list_ctrl.InsertItem( index, row.ijk )
+            self.list_ctrl.SetItem( index, 1, row.x )
+            self.list_ctrl.SetItem( index, 2, row.y )
+            self.list_ctrl.SetItem( index, 3, row.z )
+            self.list_ctrl.SetItem( index, 4, row.w )
             self.myRowDict[index] = row
             index += 1
 
@@ -676,11 +676,11 @@ class edtControlPoints(wx.Dialog):
     def insertData(self):
         index = 0
         for row in self.rows:
-            self.list_ctrl.InsertStringItem(index, row.ijk)
-            self.list_ctrl.SetStringItem(index, 1, row.x)
-            self.list_ctrl.SetStringItem(index, 2, row.y)
-            self.list_ctrl.SetStringItem(index, 3, row.z)
-            self.list_ctrl.SetStringItem(index, 4, row.w)
+            self.list_ctrl.InsertItem( index, row.ijk )
+            self.list_ctrl.SetItem( index, 1, row.x )
+            self.list_ctrl.SetItem( index, 2, row.y )
+            self.list_ctrl.SetItem( index, 3, row.z )
+            self.list_ctrl.SetItem( index, 4, row.w )
             index += 1
 
     def refreshList(self):
@@ -689,7 +689,7 @@ class edtControlPoints(wx.Dialog):
 
     def onItemSelected(self, event):
         wk = self.workGroup
-        self.currentItem = event.m_itemIndex
+        self.currentItem = event.GetIndex()
         self.currentRow = self.myRowDict[self.currentItem]
 
         ijk = self.currentRow.ijk
