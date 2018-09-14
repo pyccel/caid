@@ -65,7 +65,7 @@ class edtTxtDialog( wx.Dialog ):
                             , size = size \
                             , style = wx.DEFAULT_DIALOG_STYLE )
 
-        self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
         bSizer2 = wx.BoxSizer( wx.VERTICAL )
 
