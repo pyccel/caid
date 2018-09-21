@@ -1157,6 +1157,37 @@ class cad_io:
         if self.mode != "w":
             raise ValueError("mode file must be set to w")
 
+        # ... test the Jacobian sign befor to save the given geo into file
+        for i in range(0, geo.npatchs):
+            nrb = geo[i]
+
+            list_t = []
+            for axis in range(0, nrb.dim):
+                tx = np.linspace(0,1,100)
+                list_t.append(tx)
+            Dw = nrb.evaluate_deriv(*list_t,nderiv=1)
+
+            if geo.dim in [1,3]:
+                print("[cad_io/write] Warnning: The Jacobian sign verification is not yet implemented for dimenion 1 and 2.")
+            else:
+                x    = Dw[0,:,:,0]
+                xdu  = Dw[1,:,:,0]
+                xdv  = Dw[2,:,:,0]
+
+                y    = Dw[0,:,:,1]
+                ydu  = Dw[1,:,:,1]
+                ydv  = Dw[2,:,:,1]
+
+                jac = xdu * ydv - xdv * ydu
+
+                if jac.min()*jac.max() < 0.:
+                    print("[cad_io/write] Warnning: The Jacobian determinent change the sign.")
+
+                if jac.min()*jac.max() >= 0. and jac.max() <= 0.:
+                    # TODO check the connectivities to choose the reverse axis
+                    geo._list[i] = nrb.reverse(0)
+
+        # ... export
         if self.__format__=="h5":
             try:
                 rw = HDF5()
